@@ -23,6 +23,58 @@ def format_date_es(date_str):
         pass
     return date_str
 
+def get_indicator_unit_meta(key, name, cat_name):
+    k = key.lower()
+    n = name.lower()
+
+    if k == 'riesgo_pais':
+        return {'type': 'bps', 'prefix': '', 'suffix': ' bps', 'decimals': 0}
+
+    # Percentages (%)
+    if (k.endswith('_pbi') or 'interanual' in k or 'interanual' in n or 
+        'tasa' in n or 'variación' in n or 'variacion' in n or 'porcentaje' in n or 
+        'desocupacion' in k or 'actividad' in k or 'indigencia' in k or 'pobreza' in k or 
+        'empleo_val' in k or 'salarios_indice' in k or 'isac_general' in k or 
+        'ipc' in k or 'ipi' in k or 'emae_interanual' in k or k == 'supermercados_ventas' or 
+        'pbi_interanual' in k or 'emae_agro' in k or '%' in n):
+        return {'type': 'percent', 'prefix': '', 'suffix': '%', 'decimals': 2}
+
+    # USD
+    if k.endswith('_usd') or 'usd' in k or 'en usd' in n or 'en dólares' in n or 'en dolares' in n:
+        return {'type': 'currency_usd', 'prefix': 'USD ', 'suffix': '', 'decimals': 2}
+
+    # Quantities & Indices
+    if 'poblacion' in k:
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' hab.', 'decimals': 0}
+    if 'empleo_privado' in k or 'empleo_total' in k:
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' mil', 'decimals': 1}
+    if 'gas_produccion' in k:
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' MM m³/d', 'decimals': 2}
+    if 'petroleo_produccion' in k:
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' m³/d', 'decimals': 2}
+    if 'cemento_total' in k:
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' Tn', 'decimals': 1}
+    if 'isac_' in k or 'icc_' in k or 'indice_salarios_ipc' in k or 'emae_construccion' in k or 'supermercados_ventas_valor' in k:
+        return {'type': 'index', 'prefix': '', 'suffix': ' pts', 'decimals': 2}
+
+    # Currency ARS ($)
+    return {'type': 'currency_ars', 'prefix': '$', 'suffix': '', 'decimals': 2}
+
+def format_value_with_meta(val, meta, compact=False):
+    if val is None or (isinstance(val, float) and val != val):
+        return 'N/D'
+    num = float(val)
+    dec = meta.get('decimals', 2)
+
+    if compact and abs(num) >= 1_000_000_000:
+        formatted = f"{num / 1_000_000_000:,.1f} B"
+    elif compact and abs(num) >= 1_000_000:
+        formatted = f"{num / 1_000_000:,.1f} M"
+    else:
+        formatted = f"{num:,.{dec}f}"
+
+    return f"{meta.get('prefix', '')}{formatted}{meta.get('suffix', '')}"
+
 def adjust_series_to_constant(dates, nominal_prices, ipc_dict):
     n = len(dates)
     if n == 0 or len(nominal_prices) == 0:
@@ -51,9 +103,9 @@ def compute_aggregate_to_pbi(dates, prices, pbi_dict, mode='billones'):
             pbi_val = pbi_dict[ym]
             if pbi_val > 0:
                 if mode == 'billones':
-                    agg_m = p * 1_000_000 # p in billones -> millions
+                    agg_m = p * 1_000_000
                 elif mode == 'miles':
-                    agg_m = p / 1_000 # p in miles -> millions
+                    agg_m = p / 1_000
                 else:
                     agg_m = p
                 r = round((agg_m / pbi_val) * 100, 2)
@@ -63,10 +115,9 @@ def compute_aggregate_to_pbi(dates, prices, pbi_dict, mode='billones'):
 
 def reconstruct_and_order_dataset():
     print("==========================================================================")
-    print("CALCULANDO Y REORDENANDO AGREGADOS MONETARIOS / PBI...")
+    print("ACTUALIZANDO DATASET CON METADATOS DE UNIDAD Y COHERENCIA TOTAL...")
     print("==========================================================================")
 
-    # Load from master_dataset.json (which has the complete verified series)
     master_path = r'g:\Mi unidad\IA\Tablero-Economía\master_dataset.json'
     with open(master_path, 'r', encoding='utf-8') as f:
         master_data = json.load(f)
@@ -74,7 +125,7 @@ def reconstruct_and_order_dataset():
     ref_cats = master_data.get('categories', [])
     ref_hdb = master_data.get('historical_db', {})
 
-    # Live APIs for fresh updates
+    # Live APIs
     try:
         r = requests.get("https://api.argentinadatos.com/v1/finanzas/indices/inflacion", timeout=8).json()
         ipc_dates = [x["fecha"] for x in r if "fecha" in x and "valor" in x]
@@ -158,9 +209,7 @@ def reconstruct_and_order_dataset():
                 rd, rp = compute_aggregate_to_pbi(dates, prices, pbi_dict, mode)
                 if rd and rp:
                     ref_hdb[pbi_key] = {"dates": rd, "prices": rp}
-                    print(f"  -> {pbi_name}: {len(rp)} pts, último: {rp[-1]}% al {rd[-1]}")
 
-    # PRECIOS Y COSTO DE VIDA KEYS (19 cards)
     precios_ordered_keys = [
         "canasta_alimentaria_val", "canasta_alimentaria_constante", "canasta_alimentaria_usd",
         "canasta_alimentaria_hogar2", "canasta_alimentaria_hogar2_constante", "canasta_alimentaria_hogar2_usd",
@@ -170,7 +219,6 @@ def reconstruct_and_order_dataset():
         "ipc_mayorista_mensual", "ipc_mayorista_interanual", "uva_val"
     ]
 
-    # AGREGADOS MONETARIOS KEYS (15 cards)
     monetario_ordered_keys = [
         "agregado_b1", "agregado_b1_pbi", "agregado_b1_usd",
         "agregado_b2", "agregado_b2_pbi", "agregado_b2_usd",
@@ -225,7 +273,6 @@ def reconstruct_and_order_dataset():
                 continue
             cards_dict[k] = c
 
-        # If Precios, populate constant canastas metadata
         if "Precios" in cat_name:
             for nom_key, const_key, const_name, const_desc in canastas_to_adjust:
                 cards_dict[const_key] = {
@@ -237,7 +284,6 @@ def reconstruct_and_order_dataset():
                     "time_range": "Mensual"
                 }
 
-        # If Monetario, populate PBI ratio metadata
         if "Monetario" in cat_name:
             for agg_key, pbi_key, pbi_name, pbi_desc, mode in monetary_pbi_specs:
                 cards_dict[pbi_key] = {
@@ -249,7 +295,6 @@ def reconstruct_and_order_dataset():
                     "time_range": "Trimestral"
                 }
 
-        # Determine sorted list of cards
         if "Precios" in cat_name:
             ordered_cards = [cards_dict[k] for k in precios_ordered_keys if k in cards_dict]
         elif "Monetario" in cat_name:
@@ -289,17 +334,8 @@ def reconstruct_and_order_dataset():
             spark_dates = dates[-len(spark_slice):]
             final_spark_db[key] = {"dates": spark_dates, "prices": spark_slice}
 
-            # Display value
-            if key.endswith("_pbi") or "%" in name or "Tasa" in name or "Variación" in name or "Porcentaje" in name:
-                display_val = f"{latest_val:.2f}%"
-            elif "USD" in name or "MEP" in name:
-                display_val = f"USD {latest_val:,.2f}"
-            elif latest_val > 1_000_000_000:
-                display_val = f"${latest_val / 1_000_000_000:,.2f} B"
-            elif latest_val > 1_000_000:
-                display_val = f"${latest_val:,.2f}"
-            else:
-                display_val = f"${latest_val:,.2f}" if "$" not in str(latest_val) else f"{latest_val:,.2f}"
+            meta = get_indicator_unit_meta(key, name, cat_name)
+            display_val = format_value_with_meta(latest_val, meta)
 
             if len(prices) >= 2:
                 p_curr = prices[-1]
@@ -348,6 +384,10 @@ def reconstruct_and_order_dataset():
                 "display_value": display_val,
                 "display_change": display_change,
                 "var_ia": var_ia,
+                "unit_type": meta['type'],
+                "unit_prefix": meta['prefix'],
+                "unit_suffix": meta['suffix'],
+                "decimals": meta['decimals'],
                 "latest_date_raw": latest_date_raw,
                 "latest_date": latest_date_formatted,
                 "range_min": min(prices),
@@ -371,7 +411,7 @@ def reconstruct_and_order_dataset():
     master_output = {
         "metadata": {
             "title": "Tablero de Indicadores Económicos - La Segunda",
-            "version": "2.5.0",
+            "version": "2.6.0",
             "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "total_categories": len(enhanced_categories),
             "total_indicators": total_cards
@@ -384,14 +424,7 @@ def reconstruct_and_order_dataset():
     with open(master_path, "w", encoding="utf-8") as f:
         json.dump(master_output, f, ensure_ascii=False, indent=2)
 
-    print(f"\n[SUCCESS] master_dataset.json guardado con {len(enhanced_categories)} categorías y {total_cards} indicadores.")
-    
-    for cat in enhanced_categories:
-        if "Monetario" in cat["name"]:
-            print(f"\nOrden verificado en {cat['name']} ({len(cat['cards'])} tarjetas):")
-            for idx, c in enumerate(cat['cards']):
-                print(f"  {idx+1:02d}. {c['name']:<45} [{c['key']}] -> {c['display_value']}")
-
+    print(f"\n[SUCCESS] master_dataset.json actualizado con {len(enhanced_categories)} categorías y {total_cards} indicadores con metadatos de unidad.")
     return master_output
 
 if __name__ == "__main__":
