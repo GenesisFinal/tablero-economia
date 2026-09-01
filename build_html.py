@@ -1498,12 +1498,105 @@ def build_index_html():
     }}
 
     function exportModalChartPNG() {{
-      const canvas = document.getElementById('modal-main-chart');
-      if (!canvas || !modalState.card) return;
+      const chartCanvas = document.getElementById('modal-main-chart');
+      if (!chartCanvas || !modalState.card) return;
 
+      const card = modalState.card;
+      const meta = modalState.meta || getUnitMeta(card);
+      const formattedVal = formatValueWithMeta(card.value, meta);
+      const isDark = document.documentElement.classList.contains('dark');
+
+      // High DPI 2x retina export canvas
+      const exportCanvas = document.createElement('canvas');
+      const dpr = 2;
+      const width = 1200;
+      const height = 750;
+      exportCanvas.width = width * dpr;
+      exportCanvas.height = height * dpr;
+
+      const ctx = exportCanvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      // Theme Colors
+      const bgColor = isDark ? '#0F172A' : '#FFFFFF';
+      const cardBgColor = isDark ? '#1E293B' : '#F8FAFC';
+      const textColor = isDark ? '#F8FAFC' : '#0F172A';
+      const subTextColor = isDark ? '#94A3B8' : '#475569';
+      const borderColor = isDark ? '#334155' : '#E2E8F0';
+      const brandRed = '#E20039';
+
+      // 1. Fill Solid Canvas Background (NO TRANSPARENCY - GUARANTEED WHITE IN LIGHT MODE)
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, width, height);
+
+      // 2. Header Box
+      ctx.fillStyle = cardBgColor;
+      ctx.fillRect(24, 20, width - 48, 115);
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(24, 20, width - 48, 115);
+
+      // Top Subheader
+      ctx.fillStyle = brandRed;
+      ctx.font = 'bold 12px "Sora", sans-serif';
+      ctx.fillText('LA SEGUNDA SEGUROS  •  TABLERO DE INDICADORES ECONÓMICOS', 44, 44);
+
+      // Indicator Title
+      ctx.fillStyle = textColor;
+      ctx.font = 'bold 20px "Sora", sans-serif';
+      let title = card.name;
+      if (title.length > 55) title = title.slice(0, 52) + '...';
+      ctx.fillText(title, 44, 72);
+
+      // Metadata info line
+      ctx.fillStyle = subTextColor;
+      ctx.font = '600 12px "Sora", sans-serif';
+      let metaInfo = `Categoría: ${{card.category}}   |   Frecuencia: ${{card.freq}}   |   Último Dato: ${{card.latest_date}}`;
+      if (card.ratio_badge) metaInfo += `   |   Ratio: ${{card.ratio_badge}}`;
+      ctx.fillText(metaInfo, 44, 100);
+
+      // Value & Changes on the Right
+      ctx.textAlign = 'right';
+      ctx.fillStyle = textColor;
+      ctx.font = 'bold 26px "JetBrains Mono", monospace';
+      ctx.fillText(formattedVal, width - 44, 62);
+
+      ctx.font = 'bold 13px "JetBrains Mono", monospace';
+      const isPos = String(card.display_change).includes('+');
+      const isNeg = String(card.display_change).includes('-');
+      ctx.fillStyle = isPos ? '#10B981' : (isNeg ? '#E20039' : subTextColor);
+      ctx.fillText(`${{card.display_change}}   ${{card.var_ia}}`, width - 44, 90);
+      ctx.textAlign = 'left';
+
+      // 3. Chart Container
+      const chartX = 24;
+      const chartY = 150;
+      const chartW = width - 48;
+      const chartH = height - 200;
+
+      ctx.fillStyle = isDark ? '#1E293B' : '#FFFFFF';
+      ctx.fillRect(chartX, chartY, chartW, chartH);
+      ctx.strokeStyle = borderColor;
+      ctx.strokeRect(chartX, chartY, chartW, chartH);
+
+      // Draw Chart
+      ctx.drawImage(chartCanvas, chartX + 10, chartY + 10, chartW - 20, chartH - 20);
+
+      // 4. Footer Line
+      ctx.fillStyle = subTextColor;
+      ctx.font = '500 11px "Sora", sans-serif';
+      ctx.fillText(`Fuente oficial: ${{card.source}}  •  Generado el ${{new Date().toLocaleDateString('es-AR')}}  •  Datos 100% Verificados`, 30, height - 18);
+
+      ctx.textAlign = 'right';
+      ctx.fillText('https://genesisfinal.github.io/tablero-economia/', width - 30, height - 18);
+      ctx.textAlign = 'left';
+
+      // 5. Trigger Download
+      const themeTag = isDark ? 'oscuro' : 'claro';
+      const dateTag = new Date().toISOString().slice(0, 10);
       const link = document.createElement('a');
-      link.download = `${{modalState.card.key}}_grafico.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.download = `${{card.key}}_${{themeTag}}_${{dateTag}}.png`;
+      link.href = exportCanvas.toDataURL('image/png');
       link.click();
     }}
 
