@@ -539,6 +539,7 @@ def build_index_html():
 
       // Check Percentage & Ratios
       if (k.endsWith('_pbi') || k.startsWith('ratio_') || k.startsWith('cobertura_') || k.startsWith('tasa_') || 
+          k === 'capacidad_instalada_industria' ||
           k.includes('cobertura') || n.includes('cobertura') ||
           k.includes('interanual') || n.includes('interanual') || 
           n.includes('tasa') || n.includes('variación') || n.includes('variacion') || n.includes('porcentaje') || 
@@ -549,8 +550,11 @@ def build_index_html():
         return {{ type: 'percent', prefix: '', suffix: '%', decimals: 2 }};
       }}
 
-      // Debt, Reserves, FGS in USD Millions
-      if ((k.includes('deuda_') && !k.endsWith('_pbi')) || k === 'reservas_brutas' || k === 'reservas_bcra' || k === 'fgs_total_usd') {{
+      // Debt, Reserves, FGS, CIARA, MOA, PP in USD Millions
+      if ((k.includes('deuda_') && !k.endsWith('_pbi')) || k === 'reservas_brutas' || k === 'reservas_bcra' || 
+          k === 'fgs_total_usd' || k === 'liquidacion_divisas_ciara' || k === 'exportaciones_moa' || 
+          k === 'exportaciones_pp' || k === 'exportaciones_totales' || k === 'importaciones_totales' ||
+          k === 'moa_exportaciones') {{
         return {{ type: 'currency_usd', prefix: 'USD ', suffix: ' M', decimals: 2 }};
       }}
 
@@ -559,23 +563,40 @@ def build_index_html():
         return {{ type: 'currency_usd', prefix: 'USD ', suffix: '', decimals: 2 }};
       }}
 
-      // Check Quantities & Indices
+      // Quantities & Specific Units
+      if (k === 'gas_produccion') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' MM m³/mes', decimals: 2 }};
+      }}
+      if (k === 'petroleo_produccion') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' miles m³/mes', decimals: 2 }};
+      }}
+      if (k === 'produccion_automotriz') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' unid./mes', decimals: 0 }};
+      }}
+      if (k === 'generacion_electrica_total') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' GWh/mes', decimals: 1 }};
+      }}
+      if (k === 'faena_bovina') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' mil cab./mes', decimals: 1 }};
+      }}
+      if (k === 'molienda_oleaginosas') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' mil Tn/mes', decimals: 1 }};
+      }}
+      if (k === 'cosecha_granos_total') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' MM Tn', decimals: 1 }};
+      }}
+
+      // Quantities & Indices
       if (k.includes('poblacion') || k.includes('beneficios_sipa')) {{
         return {{ type: 'quantity', prefix: '', suffix: ' hab.', decimals: 0 }};
       }}
       if (k.includes('empleo_privado') || k.includes('empleo_total')) {{
         return {{ type: 'quantity', prefix: '', suffix: ' mil', decimals: 1 }};
       }}
-      if (k.includes('gas_produccion')) {{
-        return {{ type: 'quantity', prefix: '', suffix: ' MM m³/d', decimals: 2 }};
-      }}
-      if (k.includes('petroleo_produccion')) {{
-        return {{ type: 'quantity', prefix: '', suffix: ' m³/d', decimals: 2 }};
-      }}
       if (k.includes('cemento_total')) {{
         return {{ type: 'quantity', prefix: '', suffix: ' Tn', decimals: 1 }};
       }}
-      if (k.includes('isac_') || k.includes('icc_') || k.includes('indice_salarios_ipc') || k.includes('emae_construccion')) {{
+      if (k.includes('isac_') || k.includes('icc_') || k.includes('indice_salarios_ipc') || k.includes('emae_construccion') || k === 'ipi_manufacturero_nivel') {{
         return {{ type: 'index', prefix: '', suffix: ' pts', decimals: 2 }};
       }}
 
