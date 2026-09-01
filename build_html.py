@@ -2,7 +2,7 @@ import json
 import os
 
 def build_index_html():
-    print("Building index.html with bar charts (Green for Surplus, Red for Deficit) for fiscal/balance results...")
+    print("Building index.html with Reservas y Deuda comparative indicators and ratios...")
 
     workspace = os.path.dirname(os.path.abspath(__file__))
     dataset_path = os.path.join(workspace, 'master_dataset.json')
@@ -268,7 +268,7 @@ def build_index_html():
             <i class="fas fa-layer-group text-brand-red"></i>
             <span>Categorías</span>
           </span>
-          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400" id="sidebar-total-badge">97</span>
+          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400" id="sidebar-total-badge">104</span>
         </div>
         <div class="flex flex-col gap-1 text-xs font-medium" id="sidebar-category-list">
           <!-- Rendered dynamically -->
@@ -281,7 +281,7 @@ def build_index_html():
           <span>Datos 100% Verificados</span>
         </div>
         <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-          Series oficiales extraídas de BCRA, INDEC y ArgentinaDatos sin interpolaciones ni datos inventados.
+          Series oficiales extraídas de BCRA, INDEC, Secretaría de Finanzas y ArgentinaDatos sin interpolaciones ni datos inventados.
         </p>
         <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-1 pt-2 border-t border-slate-200 dark:border-[#334155]/40">
           Act: <span id="sidebar-update-time" class="text-slate-800 dark:text-slate-300 font-bold">...</span>
@@ -337,7 +337,7 @@ def build_index_html():
       <div class="flex items-center gap-4">
         <span>Última Actualización: <strong id="footer-update-time" class="text-slate-900 dark:text-slate-200 font-mono font-bold"></strong></span>
         <span>•</span>
-        <span>Fuentes: INDEC, BCRA, Min. Economía, AFIP/ARCA, ArgentinaDatos</span>
+        <span>Fuentes: INDEC, BCRA, Secretaría de Finanzas, Min. Economía, AFIP/ARCA, ArgentinaDatos</span>
       </div>
     </div>
   </footer>
@@ -490,8 +490,9 @@ def build_index_html():
         return {{ type: 'bps', prefix: '', suffix: ' bps', decimals: 0 }};
       }}
 
-      // Check Percentage
-      if (k.endsWith('_pbi') || k.includes('interanual') || n.includes('interanual') || 
+      // Check Percentage & Ratios
+      if (k.endsWith('_pbi') || k.startsWith('ratio_') || k.includes('cobertura') || n.includes('cobertura') ||
+          k.includes('interanual') || n.includes('interanual') || 
           n.includes('tasa') || n.includes('variación') || n.includes('variacion') || n.includes('porcentaje') || 
           k.includes('desocupacion') || k.includes('actividad') || k.includes('indigencia') || k.includes('pobreza') || 
           k.includes('empleo_val') || k.includes('salarios_indice') || k.includes('isac_general') || 
@@ -500,7 +501,12 @@ def build_index_html():
         return {{ type: 'percent', prefix: '', suffix: '%', decimals: 2 }};
       }}
 
-      // Check USD
+      // Debt and Reserves in USD Millions
+      if ((k.includes('deuda_') && !k.endsWith('_pbi')) || k === 'reservas_brutas' || k === 'reservas_bcra') {{
+        return {{ type: 'currency_usd', prefix: 'USD ', suffix: ' M', decimals: 2 }};
+      }}
+
+      // Check General USD
       if (k.endsWith('_usd') || k.includes('usd') || n.includes('usd') || n.includes('dólares') || n.includes('dolares')) {{
         return {{ type: 'currency_usd', prefix: 'USD ', suffix: '', decimals: 2 }};
       }}
@@ -561,7 +567,7 @@ def build_index_html():
         const totalBadgeEl = document.getElementById('sidebar-total-badge');
         if (updateTimeEl) updateTimeEl.innerText = window.DATASET.metadata.last_updated;
         if (sidebarUpdateEl) sidebarUpdateEl.innerText = window.DATASET.metadata.last_updated.slice(0, 10);
-        if (totalBadgeEl) totalBadgeEl.innerText = window.DATASET.metadata.total_indicators || 97;
+        if (totalBadgeEl) totalBadgeEl.innerText = window.DATASET.metadata.total_indicators || 104;
       }}
     }});
 
@@ -649,8 +655,8 @@ def build_index_html():
         {{ key: 'ipc_interanual', label: 'IPC Interanual', icon: 'fa-chart-simple', color: 'text-rose-600 dark:text-rose-400' }},
         {{ key: 'riesgo_pais', label: 'Riesgo País', icon: 'fa-arrow-trend-down', color: 'text-blue-600 dark:text-blue-400' }},
         {{ key: 'reservas_brutas', label: 'Reservas BCRA', icon: 'fa-vault', color: 'text-emerald-600 dark:text-emerald-400' }},
-        {{ key: 'resultado_fiscal_primario', label: 'Resultado Primario', icon: 'fa-scale-balanced', color: 'text-cyan-600 dark:text-cyan-400' }},
-        {{ key: 'smvm_val', label: 'Salario Mínimo (SMVM)', icon: 'fa-wallet', color: 'text-purple-600 dark:text-purple-400' }}
+        {{ key: 'deuda_publica_total_pbi', label: 'Deuda Pública / PBI', icon: 'fa-landmark', color: 'text-purple-600 dark:text-purple-400' }},
+        {{ key: 'resultado_fiscal_primario', label: 'Resultado Primario', icon: 'fa-scale-balanced', color: 'text-cyan-600 dark:text-cyan-400' }}
       ];
 
       let html = '';
@@ -692,7 +698,7 @@ def build_index_html():
       if (!sidebarContainer || !window.DATASET) return;
 
       const categories = window.DATASET.categories || [];
-      const totalCount = window.DATASET.metadata.total_indicators || 97;
+      const totalCount = window.DATASET.metadata.total_indicators || 104;
 
       let html = `
         <button 
@@ -734,7 +740,7 @@ def build_index_html():
       if (!container || !window.DATASET) return;
 
       const categories = window.DATASET.categories || [];
-      const totalCount = window.DATASET.metadata.total_indicators || 97;
+      const totalCount = window.DATASET.metadata.total_indicators || 104;
 
       let html = `
         <button 
@@ -958,7 +964,6 @@ def build_index_html():
       }}
 
       if (isBar) {{
-        // Bar sparkline with Green for Surplus (>=0) and Red for Deficit (<0)
         const bgColors = prices.map(p => p >= 0 ? '#10B981' : '#E20039');
         const borderColors = prices.map(p => p >= 0 ? '#059669' : '#BE123C');
 
@@ -988,7 +993,6 @@ def build_index_html():
           }}
         }});
       }} else {{
-        // Standard line sparkline
         const isUp = prices[prices.length - 1] >= prices[0];
         const strokeColor = isUp ? '#059669' : '#E20039';
         const fillColor = isUp ? 'rgba(5, 150, 105, 0.15)' : 'rgba(226, 0, 57, 0.15)';
@@ -1250,7 +1254,6 @@ def build_index_html():
       let datasets = [];
 
       if (isBar) {{
-        // BAR CHART DATASET WITH GREEN FOR SURPLUS (>=0) AND RED FOR DEFICIT (<0)
         const bgColors = filteredPrices.map(p => p >= 0 ? 'rgba(16, 185, 129, 0.85)' : 'rgba(226, 0, 57, 0.85)');
         const borderColors = filteredPrices.map(p => p >= 0 ? '#059669' : '#BE123C');
 
@@ -1265,7 +1268,6 @@ def build_index_html():
           barPercentage: 0.85
         }});
       }} else {{
-        // LINE CHART DATASET
         datasets.push({{
           type: 'line',
           label: modalState.card.name,
@@ -1439,7 +1441,7 @@ def build_index_html():
     with open(out_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-    print(f"[SUCCESS] Wrote index.html with bar charts for fiscal results ({len(html_content)} bytes)!")
+    print(f"[SUCCESS] Wrote index.html with Reservas y Deuda indicators ({len(html_content)} bytes)!")
 
 if __name__ == "__main__":
     build_index_html()
