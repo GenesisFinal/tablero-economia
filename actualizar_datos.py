@@ -31,7 +31,8 @@ def get_indicator_unit_meta(key, name, cat_name):
         return {'type': 'bps', 'prefix': '', 'suffix': ' bps', 'decimals': 0}
 
     # Percentages (%)
-    if (k.endswith('_pbi') or 'interanual' in k or 'interanual' in n or 
+    if (k.endswith('_pbi') or k.startswith('ratio_') or 'cobertura' in k or 'cobertura' in n or
+        'interanual' in k or 'interanual' in n or 
         'tasa' in n or 'variación' in n or 'variacion' in n or 'porcentaje' in n or 
         'desocupacion' in k or 'actividad' in k or 'indigencia' in k or 'pobreza' in k or 
         'empleo_val' in k or 'salarios_indice' in k or 'isac_general' in k or 
@@ -39,7 +40,11 @@ def get_indicator_unit_meta(key, name, cat_name):
         'pbi_interanual' in k or 'emae_agro' in k or '%' in n):
         return {'type': 'percent', 'prefix': '', 'suffix': '%', 'decimals': 2}
 
-    # USD
+    # USD Deuda & Reservas
+    if ('deuda_' in k and not k.endswith('_pbi')) or k == 'reservas_brutas' or k == 'reservas_bcra':
+        return {'type': 'currency_usd', 'prefix': 'USD ', 'suffix': ' M', 'decimals': 2}
+
+    # Standard USD
     if k.endswith('_usd') or 'usd' in k or 'en usd' in n or 'en dólares' in n or 'en dolares' in n:
         return {'type': 'currency_usd', 'prefix': 'USD ', 'suffix': '', 'decimals': 2}
 
@@ -113,9 +118,24 @@ def compute_aggregate_to_pbi(dates, prices, pbi_dict, mode='billones'):
                 ratio_prices.append(r)
     return ratio_dates, ratio_prices
 
+def build_ratio_series(num_series, den_dict, is_pct=True):
+    r_dates = []
+    r_prices = []
+    dates = num_series.get('dates', [])
+    prices = num_series.get('prices', [])
+    for d, num_val in zip(dates, prices):
+        ym = d[:7]
+        if ym in den_dict and den_dict[ym] > 0:
+            den_val = den_dict[ym]
+            mult = 100.0 if is_pct else 1.0
+            r = round((num_val / den_val) * mult, 2)
+            r_dates.append(d)
+            r_prices.append(r)
+    return r_dates, r_prices
+
 def reconstruct_and_order_dataset():
     print("==========================================================================")
-    print("ACTUALIZANDO DATASET CON METADATOS DE UNIDAD Y COHERENCIA TOTAL...")
+    print("ACTUALIZANDO DATASET CON COMPARATIVAS DE DEUDA Y RESERVAS...")
     print("==========================================================================")
 
     master_path = r'g:\Mi unidad\IA\Tablero-Economía\master_dataset.json'
@@ -210,6 +230,42 @@ def reconstruct_and_order_dataset():
                 if rd and rp:
                     ref_hdb[pbi_key] = {"dates": rd, "prices": rp}
 
+    # 3. RESERVAS Y DEUDA COMPARATIVAS / RATIOS
+    pbi_usd_s = ref_hdb.get("pbi_usd_mep", {})
+    pbi_usd_dict = {d[:7]: p for d, p in zip(pbi_usd_s.get("dates", []), pbi_usd_s.get("prices", []))}
+    res_s = ref_hdb.get("reservas_brutas", {})
+    res_dict = {d[:7]: p for d, p in zip(res_s.get("dates", []), res_s.get("prices", []))}
+    deuda_tot_s = ref_hdb.get("deuda_publica_total", {})
+    deuda_ext_s = ref_hdb.get("deuda_externa", {})
+    deuda_pub_ext_s = ref_hdb.get("deuda_publica_externa", {})
+    deuda_fmi_s = ref_hdb.get("deuda_publica_fmi", {})
+
+    deuda_ratios_specs = [
+        ("deuda_publica_total_pbi", "Deuda Pública Total / PBI", "Mide la relación porcentual entre el stock total de deuda pública bruta del Estado Nacional y el Producto Bruto Interno expresado en USD.", deuda_tot_s, pbi_usd_dict, "Secretaría de Finanzas / INDEC", "Mensual"),
+        ("deuda_externa_pbi", "Deuda Externa Total / PBI", "Ratio entre la Deuda Externa Bruta Total (sectores público y privado) y el PBI anualizado.", deuda_ext_s, pbi_usd_dict, "INDEC / Min. Economía", "Trimestral"),
+        ("deuda_publica_externa_pbi", "Deuda Pública Externa / PBI", "Ratio entre los títulos y compromisos públicos en moneda extranjera y el PBI.", deuda_pub_ext_s, pbi_usd_dict, "Secretaría de Finanzas", "Mensual"),
+        ("deuda_publica_fmi_pbi", "Deuda Pública con el FMI / PBI", "Porcentaje que representa el pasivo soberano con el Fondo Monetario Internacional respecto al PBI.", deuda_fmi_s, pbi_usd_dict, "Secretaría de Finanzas / FMI", "Mensual"),
+        ("reservas_pbi", "Reservas Internacionales / PBI", "Mide el stock de reservas brutas del Banco Central como porcentaje del Producto Bruto Interno.", res_s, pbi_usd_dict, "BCRA / INDEC", "Diario"),
+        ("ratio_reservas_deuda_externa", "Cobertura de Reservas / Deuda Externa", "Porcentaje de la Deuda Externa Total cubierto por las Reservas Internacionales Brutas del BCRA.", res_s, {d[:7]: p for d, p in zip(deuda_ext_s.get('dates', []), deuda_ext_s.get('prices', []))}, "BCRA / INDEC", "Mensual"),
+        ("ratio_reservas_deuda_fmi", "Cobertura de Reservas / Deuda FMI", "Relación porcentual entre las Reservas Brutas del BCRA y los vencimientos de deuda con el FMI.", res_s, {d[:7]: p for d, p in zip(deuda_fmi_s.get('dates', []), deuda_fmi_s.get('prices', []))}, "BCRA / Min. Economía", "Mensual")
+    ]
+
+    for r_key, r_name, r_desc, num_s, den_d, r_src, r_freq in deuda_ratios_specs:
+        rd, rp = build_ratio_series(num_s, den_d, is_pct=True)
+        if rd and rp:
+            ref_hdb[r_key] = {"dates": rd, "prices": rp}
+
+    # Ensure Riesgo País is in ref_hdb
+    if "riesgo_pais" not in ref_hdb:
+        try:
+            r = requests.get("https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais", timeout=8).json()
+            rp_dates = [x["fecha"] for x in r if "fecha" in x and "valor" in x]
+            rp_prices = [float(x["valor"]) for x in r if "fecha" in x and "valor" in x]
+            if rp_dates:
+                ref_hdb["riesgo_pais"] = {"dates": rp_dates, "prices": rp_prices}
+        except Exception:
+            pass
+
     precios_ordered_keys = [
         "canasta_alimentaria_val", "canasta_alimentaria_constante", "canasta_alimentaria_usd",
         "canasta_alimentaria_hogar2", "canasta_alimentaria_hogar2_constante", "canasta_alimentaria_hogar2_usd",
@@ -225,6 +281,15 @@ def reconstruct_and_order_dataset():
         "agregado_b3", "agregado_b3_pbi", "agregado_b3_usd",
         "base_monetaria", "base_monetaria_pbi", "base_monetaria_usd",
         "billetes_circulacion", "billetes_circulacion_pbi", "billetes_circulacion_usd"
+    ]
+
+    reservas_deuda_ordered_keys = [
+        "reservas_brutas", "reservas_pbi", "ratio_reservas_deuda_externa", "ratio_reservas_deuda_fmi",
+        "deuda_publica_total", "deuda_publica_total_pbi",
+        "deuda_externa", "deuda_externa_pbi",
+        "deuda_publica_externa", "deuda_publica_externa_pbi",
+        "deuda_publica_fmi", "deuda_publica_fmi_pbi",
+        "deuda_publica_pesos", "riesgo_pais"
     ]
 
     category_icons = {
@@ -295,10 +360,33 @@ def reconstruct_and_order_dataset():
                     "time_range": "Trimestral"
                 }
 
+        if "Reservas" in cat_name:
+            for r_key, r_name, r_desc, num_s, den_d, r_src, r_freq in deuda_ratios_specs:
+                cards_dict[r_key] = {
+                    "key": r_key,
+                    "name": r_name,
+                    "desc": r_desc,
+                    "source": r_src,
+                    "freq": r_freq,
+                    "time_range": r_freq
+                }
+
+            # Also add riesgo pais if not present
+            cards_dict["riesgo_pais"] = {
+                "key": "riesgo_pais",
+                "name": "Riesgo País (EMBI+ Argentina)",
+                "desc": "Diferencial de tasa de rendimiento exigida a los bonos soberanos argentinos sobre los bonos del Tesoro de EE.UU., medido por J.P. Morgan.",
+                "source": "J.P. Morgan / Rava",
+                "freq": "Diario",
+                "time_range": "Diario"
+            }
+
         if "Precios" in cat_name:
             ordered_cards = [cards_dict[k] for k in precios_ordered_keys if k in cards_dict]
         elif "Monetario" in cat_name:
             ordered_cards = [cards_dict[k] for k in monetario_ordered_keys if k in cards_dict]
+        elif "Reservas" in cat_name:
+            ordered_cards = [cards_dict[k] for k in reservas_deuda_ordered_keys if k in cards_dict]
         else:
             ordered_cards = list(cards_dict.values())
 
@@ -411,7 +499,7 @@ def reconstruct_and_order_dataset():
     master_output = {
         "metadata": {
             "title": "Tablero de Indicadores Económicos - La Segunda",
-            "version": "2.6.0",
+            "version": "2.7.0",
             "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "total_categories": len(enhanced_categories),
             "total_indicators": total_cards
@@ -424,7 +512,7 @@ def reconstruct_and_order_dataset():
     with open(master_path, "w", encoding="utf-8") as f:
         json.dump(master_output, f, ensure_ascii=False, indent=2)
 
-    print(f"\n[SUCCESS] master_dataset.json actualizado con {len(enhanced_categories)} categorías y {total_cards} indicadores con metadatos de unidad.")
+    print(f"\n[SUCCESS] master_dataset.json actualizado con {len(enhanced_categories)} categorías y {total_cards} indicadores.")
     return master_output
 
 if __name__ == "__main__":
