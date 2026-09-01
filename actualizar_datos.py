@@ -137,7 +137,6 @@ def sample_sparkline_series(dates, prices, freq):
     if not dates or not prices:
         return []
     if freq == "Diario" and len(prices) > 60:
-        # Sample last 60 business days or monthly endpoints
         step = max(1, len(prices[-250:]) // 24)
         sample = prices[-250:][::step]
         if prices[-1] not in sample:
@@ -147,7 +146,7 @@ def sample_sparkline_series(dates, prices, freq):
 
 def reconstruct_and_order_dataset():
     print("==========================================================================")
-    print("ACTUALIZANDO DATASET CON COMPARATIVAS DE DEUDA Y RESERVAS...")
+    print("ACTUALIZANDO DATASET CON JUBILACIONES CONSTANTES (AJUSTADAS POR IPC)...")
     print("==========================================================================")
 
     master_path = r'g:\Mi unidad\IA\Tablero-Economía\master_dataset.json'
@@ -217,7 +216,23 @@ def reconstruct_and_order_dataset():
                 const_prices = adjust_series_to_constant(dates, prices, ipc_dict)
                 ref_hdb[const_key] = {"dates": dates, "prices": const_prices}
 
-    # 2. AGREGADOS MONETARIOS / PBI
+    # 2. JUBILACIONES A PRECIOS CONSTANTES (AJUSTADAS POR IPC)
+    jubilaciones_to_adjust = [
+        ("jubilacion_minima", "jubilacion_minima_constante", "Jubilación Mínima a Precios Constantes", "Monto histórico del haber mínimo de ANSES ajustado por inflación (IPC) a pesos del último dato disponible. Refleja la evolución del poder adquisitivo real."),
+        ("jubilacion_maxima", "jubilacion_maxima_constante", "Jubilación Máxima a Precios Constantes", "Monto histórico del haber máximo previsional ajustado por inflación (IPC) a pesos del último dato disponible."),
+        ("jubilacion_promedio", "jubilacion_promedio_constante", "Jubilación Promedio a Precios Constantes", "Haber previsional medio del SIPA ajustado por inflación (IPC) a pesos del último dato disponible.")
+    ]
+
+    for nom_key, const_key, const_name, const_desc in jubilaciones_to_adjust:
+        if nom_key in ref_hdb:
+            nom_s = ref_hdb[nom_key]
+            dates = nom_s.get("dates", [])
+            prices = nom_s.get("prices", [])
+            if dates and prices:
+                const_prices = adjust_series_to_constant(dates, prices, ipc_dict)
+                ref_hdb[const_key] = {"dates": dates, "prices": const_prices}
+
+    # 3. AGREGADOS MONETARIOS / PBI
     pbi_dict = {}
     pbi_s = ref_hdb.get("pbi_corriente", {})
     if pbi_s:
@@ -242,7 +257,7 @@ def reconstruct_and_order_dataset():
                 if rd and rp:
                     ref_hdb[pbi_key] = {"dates": rd, "prices": rp}
 
-    # 3. RESERVAS Y DEUDA COMPARATIVAS / RATIOS
+    # 4. RESERVAS Y DEUDA COMPARATIVAS / RATIOS
     pbi_usd_s = ref_hdb.get("pbi_usd_mep", {})
     pbi_usd_dict = {d[:7]: p for d, p in zip(pbi_usd_s.get("dates", []), pbi_usd_s.get("prices", []))}
     res_s = ref_hdb.get("reservas_brutas", {})
@@ -303,6 +318,12 @@ def reconstruct_and_order_dataset():
         "deuda_publica_pesos", "riesgo_pais"
     ]
 
+    jubilaciones_ordered_keys = [
+        "jubilacion_minima", "jubilacion_minima_constante", "jubilacion_minima_usd",
+        "jubilacion_maxima", "jubilacion_maxima_constante", "jubilacion_maxima_usd",
+        "jubilacion_promedio", "jubilacion_promedio_constante", "jubilacion_promedio_usd"
+    ]
+
     category_icons = {
         "Precios y Costo de Vida": "fa-tags",
         "Agregados Monetarios": "fa-money-bill-wave",
@@ -360,6 +381,17 @@ def reconstruct_and_order_dataset():
                     "time_range": "Mensual"
                 }
 
+        if "Jubilaciones" in cat_name:
+            for nom_key, const_key, const_name, const_desc in jubilaciones_to_adjust:
+                cards_dict[const_key] = {
+                    "key": const_key,
+                    "name": const_name,
+                    "desc": const_desc,
+                    "source": "ANSES / Ajuste IPC",
+                    "freq": "Mensual",
+                    "time_range": "Mensual"
+                }
+
         if "Monetario" in cat_name:
             for agg_key, pbi_key, pbi_name, pbi_desc, mode in monetary_pbi_specs:
                 cards_dict[pbi_key] = {
@@ -397,6 +429,8 @@ def reconstruct_and_order_dataset():
             ordered_cards = [cards_dict[k] for k in monetario_ordered_keys if k in cards_dict]
         elif "Reservas" in cat_name:
             ordered_cards = [cards_dict[k] for k in reservas_deuda_ordered_keys if k in cards_dict]
+        elif "Jubilaciones" in cat_name:
+            ordered_cards = [cards_dict[k] for k in jubilaciones_ordered_keys if k in cards_dict]
         else:
             ordered_cards = list(cards_dict.values())
 
@@ -405,7 +439,7 @@ def reconstruct_and_order_dataset():
             key = card.get("key") or card.get("id")
             name = card.get("name") or card.get("title")
             desc = card.get("desc") or card.get("meaning") or f"Indicador económico oficial de {name}."
-            source = card.get("source") or "INDEC / BCRA / Min. Economía"
+            source = card.get("source") or "INDEC / BCRA / ANSES / Min. Economía"
             freq = card.get("time_range") or card.get("freq") or "Mensual"
 
             series = ref_hdb.get(key, {})
@@ -509,7 +543,7 @@ def reconstruct_and_order_dataset():
     master_output = {
         "metadata": {
             "title": "Tablero de Indicadores Económicos - La Segunda",
-            "version": "2.8.0",
+            "version": "2.9.0",
             "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "total_categories": len(enhanced_categories),
             "total_indicators": total_cards
