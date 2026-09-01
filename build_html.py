@@ -21,6 +21,11 @@ def build_index_html():
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tablero de Indicadores Económicos | La Segunda Seguros</title>
   
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="shortcut icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+
   <!-- Cache Control -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
