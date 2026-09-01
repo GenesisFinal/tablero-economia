@@ -85,7 +85,18 @@
       border-color: rgba(226, 0, 57, 0.5);
       box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.1);
     }
-    .tab-btn.active {
+    .sidebar-item.active {
+      background: linear-gradient(90deg, rgba(226, 0, 57, 0.2) 0%, rgba(226, 0, 57, 0.05) 100%);
+      border-left: 3px solid #E20039;
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+    html.light .sidebar-item.active {
+      background: linear-gradient(90deg, rgba(226, 0, 57, 0.12) 0%, rgba(226, 0, 57, 0.02) 100%);
+      border-left: 3px solid #E20039;
+      color: #E20039;
+    }
+    .top-tab-btn.active {
       background-color: #E20039;
       color: #FFFFFF;
       box-shadow: 0 4px 14px rgba(226, 0, 57, 0.4);
@@ -122,12 +133,16 @@
 </head>
 <body class="min-h-screen flex flex-col selection:bg-brand-red selection:text-white">
 
-  <!-- HEADER -->
-  <header class="sticky top-0 z-40 bg-[#0F172A]/90 dark:bg-[#0F172A]/90 light:bg-white/90 backdrop-blur-md border-b border-[#334155]/60 light:border-slate-200 transition-colors">
-    <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 bg-[#0F172A]/95 dark:bg-[#0F172A]/95 light:bg-white/95 backdrop-blur-md border-b border-[#334155]/60 light:border-slate-200 transition-colors">
+    <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       
-      <!-- Brand & Title -->
+      <!-- Left: Mobile Menu Toggle & Brand Logo -->
       <div class="flex items-center gap-3 shrink-0">
+        <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-[#1E293B] light:bg-slate-100 text-slate-300 light:text-slate-700 hover:text-white border border-[#334155] light:border-slate-300">
+          <i class="fas fa-bars text-sm"></i>
+        </button>
+
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-red to-[#9B0024] flex items-center justify-center text-white shadow-lg shadow-brand-red/30">
           <i class="fas fa-chart-pie text-base"></i>
         </div>
@@ -142,14 +157,14 @@
         </div>
       </div>
 
-      <!-- Quick Search Bar -->
-      <div class="flex-1 max-w-md hidden md:block">
+      <!-- Center: Quick Search Bar -->
+      <div class="flex-1 max-w-lg hidden md:block">
         <div class="relative">
           <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
           <input 
             type="text" 
             id="global-search-input"
-            placeholder="Buscar indicador (ej. IPC, Reservas, Salarios, Deuda, PBI)..."
+            placeholder="Buscar indicador (ej. IPC, Reservas, Salarios, Deuda, PBI)... (Ctrl + K)"
             oninput="handleSearch(this.value)"
             class="w-full bg-[#1E293B]/80 light:bg-slate-100 text-xs text-slate-200 light:text-slate-800 rounded-xl pl-9 pr-8 py-2 border border-[#334155]/60 light:border-slate-300 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-all"
           >
@@ -159,14 +174,37 @@
         </div>
       </div>
 
-      <!-- Actions & Theme Toggle -->
+      <!-- Right: Layout Switcher & Theme Toggle -->
       <div class="flex items-center gap-2">
+        
+        <!-- Navigation Layout Mode Toggle (Sidebar vs 2-Row Top Menu) -->
+        <div class="hidden sm:flex items-center p-1 rounded-xl bg-[#1E293B] light:bg-slate-100 border border-[#334155] light:border-slate-300 text-xs font-semibold">
+          <button 
+            onclick="setNavLayout('sidebar')" 
+            id="layout-btn-sidebar"
+            class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm"
+            title="Menú lateral izquierdo fijo"
+          >
+            <i class="fas fa-table-columns"></i>
+            <span>Menú Lateral</span>
+          </button>
+          <button 
+            onclick="setNavLayout('topgrid')" 
+            id="layout-btn-topgrid"
+            class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black"
+            title="Menú superior en 2 filas sin scroll"
+          >
+            <i class="fas fa-grip-lines"></i>
+            <span>Menú 2 Filas</span>
+          </button>
+        </div>
+
         <button onclick="exportAllCSV()" title="Exportar indicadores a CSV" class="p-2 rounded-xl bg-[#1E293B] light:bg-slate-100 text-slate-300 light:text-slate-700 hover:text-white light:hover:text-black border border-[#334155] light:border-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors">
           <i class="fas fa-file-csv text-brand-red"></i>
-          <span class="hidden sm:inline">Exportar CSV</span>
+          <span class="hidden xl:inline">Exportar CSV</span>
         </button>
 
-        <button onclick="toggleTheme()" id="theme-toggle-btn" title="Cambiar Tema" class="p-2 w-9 h-9 rounded-xl bg-[#1E293B] light:bg-slate-100 text-slate-300 light:text-slate-700 hover:text-white light:hover:text-black border border-[#334155] light:border-slate-300 flex items-center justify-center text-sm transition-colors">
+        <button onclick="toggleTheme()" id="theme-toggle-btn" title="Cambiar Tema (Oscuro / Claro)" class="p-2 w-9 h-9 rounded-xl bg-[#1E293B] light:bg-slate-100 text-slate-300 light:text-slate-700 hover:text-white light:hover:text-black border border-[#334155] light:border-slate-300 flex items-center justify-center text-sm transition-colors">
           <i class="fas fa-moon dark:hidden"></i>
           <i class="fas fa-sun hidden dark:inline text-amber-400"></i>
         </button>
@@ -176,48 +214,116 @@
   </header>
 
   <!-- TOP HIGHLIGHTS / KPIS BANNER -->
-  <section class="bg-[#0F172A]/50 light:bg-slate-100/70 border-b border-[#334155]/40 light:border-slate-200 py-3 transition-colors">
-    <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8">
+  <section class="bg-[#0F172A]/60 light:bg-slate-100/80 border-b border-[#334155]/40 light:border-slate-200 py-3 transition-colors">
+    <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="top-kpis-container">
         <!-- Rendered dynamically -->
       </div>
     </div>
   </section>
 
-  <!-- CATEGORY NAVIGATION BAR -->
-  <nav class="sticky top-16 z-30 bg-[#0B1120]/95 light:bg-[#F8FAFC]/95 backdrop-blur-md border-b border-[#334155]/50 light:border-slate-200 py-2.5 transition-colors">
-    <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 text-xs font-semibold" id="category-tabs-container">
-        <!-- Rendered dynamically -->
+  <!-- TOP 2-ROW CATEGORY GRID (Shown when NavLayout is 'topgrid') -->
+  <nav id="top-categories-grid-nav" class="hidden bg-[#0B1120]/95 light:bg-[#F8FAFC]/95 border-b border-[#334155]/50 light:border-slate-200 py-3 transition-colors">
+    <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 light:text-slate-500 mb-2 flex items-center justify-between">
+        <span>Categorías Macroeconómicas</span>
+        <span class="text-[10px] text-brand-red font-mono">12 Secciones</span>
+      </div>
+      <div class="flex flex-wrap gap-2 text-xs font-semibold" id="top-grid-tabs-container">
+        <!-- Rendered dynamically (wraps in 2 neat rows without horizontal scroll) -->
       </div>
     </div>
   </nav>
 
-  <!-- MAIN CONTENT CONTAINER -->
-  <main class="flex-grow max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+  <!-- MAIN APP WRAPPER (SIDEBAR + CONTENT) -->
+  <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow flex items-start gap-6">
     
-    <!-- Search Results Status Banner (When searching) -->
-    <div id="search-status-banner" class="hidden mb-6 p-4 rounded-2xl bg-brand-red/10 border border-brand-red/30 flex items-center justify-between">
-      <div class="flex items-center gap-2 text-sm text-slate-200 light:text-slate-800">
-        <i class="fas fa-search text-brand-red"></i>
-        <span>Resultados para: <strong id="search-query-text" class="text-white light:text-black"></strong></span>
-        <span id="search-count-badge" class="px-2 py-0.5 rounded-full bg-brand-red text-white text-xs font-bold"></span>
+    <!-- LEFT SIDEBAR NAVIGATION -->
+    <aside id="left-sidebar" class="w-64 xl:w-72 shrink-0 sticky top-20 flex flex-col gap-4 max-h-[calc(100vh-100px)] overflow-y-auto pr-1">
+      
+      <!-- Sidebar Box -->
+      <div class="glass-card rounded-2xl p-3 border border-[#334155]/60 light:border-slate-200">
+        
+        <!-- Sidebar Header -->
+        <div class="px-3 py-2 border-b border-[#334155]/50 light:border-slate-200 flex items-center justify-between mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-300 light:text-slate-700 flex items-center gap-1.5">
+            <i class="fas fa-layer-group text-brand-red"></i>
+            <span>Categorías</span>
+          </span>
+          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-800 light:bg-slate-200 text-slate-400 light:text-slate-600" id="sidebar-total-badge">88</span>
+        </div>
+
+        <!-- Sidebar Category Links List -->
+        <div class="flex flex-col gap-1 text-xs" id="sidebar-category-list">
+          <!-- Rendered dynamically -->
+        </div>
+
       </div>
-      <button onclick="clearSearch()" class="text-xs text-brand-red hover:underline font-semibold">
-        Mostrar todas las categorías
-      </button>
+
+      <!-- Quick Info Box -->
+      <div class="glass-card rounded-2xl p-4 border border-[#334155]/50 light:border-slate-200 text-xs flex flex-col gap-2">
+        <div class="flex items-center gap-2 text-emerald-400 font-bold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Verificación Automática</span>
+        </div>
+        <p class="text-[11px] text-slate-400 light:text-slate-600 leading-relaxed">
+          Series auditadas 2 veces al día desde BCRA, INDEC y ArgentinaDatos.
+        </p>
+        <div class="text-[10px] text-slate-400 light:text-slate-500 font-mono mt-1 pt-2 border-t border-[#334155]/40 light:border-slate-200">
+          Act: <span id="sidebar-update-time" class="text-slate-300 light:text-slate-700">...</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- MOBILE OFF-CANVAS SIDEBAR BACKDROP & DRAWER -->
+    <div id="mobile-sidebar-backdrop" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200" onclick="toggleMobileSidebar()">
+      <div id="mobile-sidebar-drawer" class="w-72 max-w-[85vw] h-full bg-[#0F172A] light:bg-white p-4 shadow-2xl flex flex-col gap-4 overflow-y-auto transform -translate-x-full transition-transform duration-250 ease-out" onclick="event.stopPropagation()">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-slate-700 light:border-slate-200">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-brand-red"></span>
+            <span class="font-bold text-sm text-white light:text-black">Categorías Económicas</span>
+          </div>
+          <button onclick="toggleMobileSidebar()" class="p-1.5 rounded-lg text-slate-400 hover:text-white">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="flex flex-col gap-1 text-xs" id="mobile-sidebar-category-list">
+          <!-- Rendered dynamically -->
+        </div>
+
+      </div>
     </div>
 
-    <!-- CATEGORIES SECTION -->
-    <div id="categories-root" class="flex flex-col gap-10">
-      <!-- Rendered dynamically -->
-    </div>
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 w-full min-w-0">
+      
+      <!-- Search Results Status Banner (When searching) -->
+      <div id="search-status-banner" class="hidden mb-6 p-4 rounded-2xl bg-brand-red/10 border border-brand-red/30 flex items-center justify-between">
+        <div class="flex items-center gap-2 text-sm text-slate-200 light:text-slate-800">
+          <i class="fas fa-search text-brand-red"></i>
+          <span>Resultados para: <strong id="search-query-text" class="text-white light:text-black"></strong></span>
+          <span id="search-count-badge" class="px-2 py-0.5 rounded-full bg-brand-red text-white text-xs font-bold"></span>
+        </div>
+        <button onclick="clearSearch()" class="text-xs text-brand-red hover:underline font-semibold">
+          Mostrar todas las categorías
+        </button>
+      </div>
 
-  </main>
+      <!-- CATEGORIES SECTION -->
+      <div id="categories-root" class="flex flex-col gap-10">
+        <!-- Rendered dynamically -->
+      </div>
+
+    </main>
+
+  </div>
 
   <!-- FOOTER -->
   <footer class="bg-[#0F172A] light:bg-slate-100 border-t border-[#334155]/60 light:border-slate-200 py-6 mt-12 transition-colors">
-    <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 light:text-slate-600">
+    <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 light:text-slate-600">
       <div class="flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
         <span>Sistema de Monitoreo Macroeconómico • <strong>La Segunda Seguros</strong></span>
@@ -345,6 +451,7 @@
     let currentCategory = 'all';
     let searchQuery = '';
     let isDarkMode = true;
+    let navLayout = localStorage.getItem('navLayout') || 'sidebar';
     let sparklineCharts = {};
     let modalChart = null;
 
@@ -359,16 +466,81 @@
     // Initialization
     document.addEventListener('DOMContentLoaded', () => {
       initTheme();
+      initNavLayout();
       renderTopKPIs();
-      renderCategoryTabs();
+      renderSidebarNavigation();
+      renderTopGridNavigation();
       renderAllCategories();
       setupKeyboardShortcuts();
 
       if (window.DATASET && window.DATASET.metadata) {
         const updateTimeEl = document.getElementById('footer-update-time');
+        const sidebarUpdateEl = document.getElementById('sidebar-update-time');
+        const totalBadgeEl = document.getElementById('sidebar-total-badge');
         if (updateTimeEl) updateTimeEl.innerText = window.DATASET.metadata.last_updated;
+        if (sidebarUpdateEl) sidebarUpdateEl.innerText = window.DATASET.metadata.last_updated.slice(0, 10);
+        if (totalBadgeEl) totalBadgeEl.innerText = window.DATASET.metadata.total_indicators || 88;
       }
     });
+
+    // Layout Switcher (Sidebar vs 2-Row Top Menu)
+    function initNavLayout() {
+      setNavLayout(navLayout);
+    }
+
+    function setNavLayout(mode) {
+      navLayout = mode;
+      localStorage.setItem('navLayout', mode);
+
+      const sidebarEl = document.getElementById('left-sidebar');
+      const topGridEl = document.getElementById('top-categories-grid-nav');
+      const btnSidebar = document.getElementById('layout-btn-sidebar');
+      const btnTopGrid = document.getElementById('layout-btn-topgrid');
+
+      if (mode === 'topgrid') {
+        if (sidebarEl) sidebarEl.classList.add('hidden');
+        if (topGridEl) topGridEl.classList.remove('hidden');
+
+        if (btnTopGrid) {
+          btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
+        }
+        if (btnSidebar) {
+          btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black";
+        }
+      } else {
+        // Sidebar Mode
+        if (sidebarEl) sidebarEl.classList.remove('hidden');
+        if (topGridEl) topGridEl.classList.add('hidden');
+
+        if (btnSidebar) {
+          btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
+        }
+        if (btnTopGrid) {
+          btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black";
+        }
+      }
+    }
+
+    // Mobile Sidebar Drawer Toggle
+    function toggleMobileSidebar() {
+      const backdrop = document.getElementById('mobile-sidebar-backdrop');
+      const drawer = document.getElementById('mobile-sidebar-drawer');
+      if (!backdrop || !drawer) return;
+
+      if (backdrop.classList.contains('hidden')) {
+        backdrop.classList.remove('hidden');
+        setTimeout(() => {
+          backdrop.classList.remove('opacity-0');
+          drawer.classList.remove('-translate-x-full');
+        }, 10);
+      } else {
+        backdrop.classList.add('opacity-0');
+        drawer.classList.add('-translate-x-full');
+        setTimeout(() => {
+          backdrop.classList.add('hidden');
+        }, 250);
+      }
+    }
 
     // Theme Switcher
     function initTheme() {
@@ -396,7 +568,6 @@
         localStorage.setItem('theme', 'dark');
         isDarkMode = true;
       }
-      // Re-render charts with correct theme colors
       if (modalState.key) updateModalChart();
     }
 
@@ -445,19 +616,63 @@
       container.innerHTML = html;
     }
 
-    // Category Tabs Navigation
-    function renderCategoryTabs() {
-      const container = document.getElementById('category-tabs-container');
-      if (!container || !window.DATASET) return;
+    // Sidebar Category Navigation
+    function renderSidebarNavigation() {
+      const sidebarContainer = document.getElementById('sidebar-category-list');
+      const mobileContainer = document.getElementById('mobile-sidebar-category-list');
+      if (!sidebarContainer || !window.DATASET) return;
 
       const categories = window.DATASET.categories || [];
-      const totalCount = window.DATASET.metadata.total_indicators || 0;
+      const totalCount = window.DATASET.metadata.total_indicators || 88;
 
       let html = `
         <button 
           onclick="selectCategory('all')" 
-          id="tab-btn-all"
-          class="tab-btn active shrink-0 px-3.5 py-1.5 rounded-xl border border-transparent transition-all flex items-center gap-2 text-slate-300 light:text-slate-700 hover:text-white"
+          id="sidebar-item-all"
+          class="sidebar-item active w-full px-3 py-2 rounded-xl text-left transition-all flex items-center justify-between text-slate-300 light:text-slate-700 hover:bg-slate-800/60 light:hover:bg-slate-200/70"
+        >
+          <span class="flex items-center gap-2">
+            <i class="fas fa-layer-group text-slate-400"></i>
+            <span>Todas las Categorías</span>
+          </span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 light:bg-slate-300 font-mono font-bold">${totalCount}</span>
+        </button>
+      `;
+
+      categories.forEach(cat => {
+        const count = cat.cards ? cat.cards.length : 0;
+        html += `
+          <button 
+            onclick="selectCategory('${cat.id}')" 
+            id="sidebar-item-${cat.id}"
+            class="sidebar-item w-full px-3 py-2 rounded-xl text-left transition-all flex items-center justify-between text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black hover:bg-slate-800/60 light:hover:bg-slate-200/70"
+          >
+            <span class="flex items-center gap-2 truncate">
+              <i class="fas ${cat.icon} text-brand-red w-4 text-center"></i>
+              <span class="truncate">${cat.name}</span>
+            </span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800/80 light:bg-slate-200 font-mono font-bold shrink-0">${count}</span>
+          </button>
+        `;
+      });
+
+      sidebarContainer.innerHTML = html;
+      if (mobileContainer) mobileContainer.innerHTML = html;
+    }
+
+    // Top 2-Row Category Grid Navigation
+    function renderTopGridNavigation() {
+      const container = document.getElementById('top-grid-tabs-container');
+      if (!container || !window.DATASET) return;
+
+      const categories = window.DATASET.categories || [];
+      const totalCount = window.DATASET.metadata.total_indicators || 88;
+
+      let html = `
+        <button 
+          onclick="selectCategory('all')" 
+          id="top-grid-item-all"
+          class="top-tab-btn active px-3 py-1.5 rounded-xl border border-transparent transition-all flex items-center gap-1.5 text-slate-300 light:text-slate-700"
         >
           <i class="fas fa-layer-group"></i>
           <span>Todas (${totalCount})</span>
@@ -469,12 +684,12 @@
         html += `
           <button 
             onclick="selectCategory('${cat.id}')" 
-            id="tab-btn-${cat.id}"
-            class="tab-btn shrink-0 px-3.5 py-1.5 rounded-xl border border-transparent transition-all flex items-center gap-2 text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black bg-slate-900/60 light:bg-slate-200/70"
+            id="top-grid-item-${cat.id}"
+            class="top-tab-btn px-3 py-1.5 rounded-xl border border-transparent transition-all flex items-center gap-1.5 text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black bg-[#1E293B] light:bg-slate-200/80"
           >
             <i class="fas ${cat.icon} text-brand-red"></i>
             <span>${cat.name}</span>
-            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 light:bg-slate-300 text-slate-300 light:text-slate-700 font-mono font-bold">${count}</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 light:bg-slate-300 font-mono font-bold">${count}</span>
           </button>
         `;
       });
@@ -484,15 +699,30 @@
 
     function selectCategory(catId) {
       currentCategory = catId;
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-        btn.classList.add('bg-slate-900/60', 'light:bg-slate-200/70', 'text-slate-400', 'light:text-slate-600');
-      });
 
-      const activeBtn = document.getElementById(`tab-btn-${catId}`);
-      if (activeBtn) {
-        activeBtn.classList.add('active');
-        activeBtn.classList.remove('bg-slate-900/60', 'light:bg-slate-200/70', 'text-slate-400', 'light:text-slate-600');
+      // Update Sidebar Items
+      document.querySelectorAll('.sidebar-item').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.add('text-slate-400', 'light:text-slate-600');
+      });
+      const activeSidebar = document.getElementById(`sidebar-item-${catId}`);
+      if (activeSidebar) activeSidebar.classList.add('active');
+
+      // Update Top Grid Items
+      document.querySelectorAll('.top-tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-brand-red', 'text-white');
+        btn.classList.add('bg-[#1E293B]', 'light:bg-slate-200/80', 'text-slate-400', 'light:text-slate-600');
+      });
+      const activeTop = document.getElementById(`top-grid-item-${catId}`);
+      if (activeTop) {
+        activeTop.classList.add('active', 'bg-brand-red', 'text-white');
+        activeTop.classList.remove('bg-[#1E293B]', 'light:bg-slate-200/80', 'text-slate-400', 'light:text-slate-600');
+      }
+
+      // Close mobile drawer if open
+      const backdrop = document.getElementById('mobile-sidebar-backdrop');
+      if (backdrop && !backdrop.classList.contains('hidden')) {
+        toggleMobileSidebar();
       }
 
       renderAllCategories();
@@ -527,7 +757,7 @@
         totalVisibleCards += filteredCards.length;
 
         html += `
-          <section id="sec-${cat.id}" class="flex flex-col gap-4">
+          <section id="sec-${cat.id}" class="flex flex-col gap-4 scroll-mt-24">
             
             <!-- Category Header -->
             <div class="flex items-center justify-between border-b border-[#334155]/60 light:border-slate-200 pb-3">
