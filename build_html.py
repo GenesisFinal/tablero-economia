@@ -500,10 +500,16 @@ def build_index_html():
         k.startsWith('resultado_') ||
         k.startsWith('saldo_') ||
         k.startsWith('balanza_') ||
+        k.includes('_interanual') ||
+        k.includes('interanual') ||
+        k === 'supermercados_ventas' ||
         n.includes('resultado fiscal') ||
         n.includes('resultado financiero') ||
         n.includes('resultado primario') ||
-        n.includes('saldo comercial')
+        n.includes('saldo comercial') ||
+        n.includes('interanual') ||
+        n.includes('variación') ||
+        n.includes('variacion')
       );
     }}
 
@@ -517,6 +523,18 @@ def build_index_html():
 
       if (k === 'relacion_activo_pasivo') {{
         return {{ type: 'ratio', prefix: '', suffix: ' act/pas', decimals: 2 }};
+      }}
+
+      if (k === 'pbi_corriente' || k === 'pbi_constante_hoy') {{
+        return {{ type: 'currency_ars_m', prefix: '$ ', suffix: ' M', decimals: 2 }};
+      }}
+
+      if (k === 'supermercados_ventas_usd') {{
+        return {{ type: 'currency_usd_m', prefix: 'USD ', suffix: ' M', decimals: 2 }};
+      }}
+
+      if (k === 'supermercados_ventas_valor') {{
+        return {{ type: 'currency_ars_const', prefix: '$ ', suffix: ' M (Dic-16)', decimals: 2 }};
       }}
 
       // Check Percentage & Ratios
@@ -557,7 +575,7 @@ def build_index_html():
       if (k.includes('cemento_total')) {{
         return {{ type: 'quantity', prefix: '', suffix: ' Tn', decimals: 1 }};
       }}
-      if (k.includes('isac_') || k.includes('icc_') || k.includes('indice_salarios_ipc') || k.includes('emae_construccion') || k.includes('supermercados_ventas_valor')) {{
+      if (k.includes('isac_') || k.includes('icc_') || k.includes('indice_salarios_ipc') || k.includes('emae_construccion')) {{
         return {{ type: 'index', prefix: '', suffix: ' pts', decimals: 2 }};
       }}
 
@@ -1458,7 +1476,10 @@ def build_index_html():
                   const val = context.raw || 0;
                   const formatted = formatValueWithMeta(val, meta);
                   if (isBar && context.dataset.type === 'bar') {{
-                    const prefixState = val >= 0 ? '🟢 Superávit: ' : '🔴 Déficit: ';
+                    const isPct = meta.type === 'percent';
+                    const prefixState = val >= 0 
+                      ? (isPct ? '🟢 Crecimiento: +' : '🟢 Superávit: ') 
+                      : (isPct ? '🔴 Caída: ' : '🔴 Déficit: ');
                     return `${{prefixState}}${{formatted}}`;
                   }}
                   return `${{context.dataset.label}}: ${{formatted}}`;
