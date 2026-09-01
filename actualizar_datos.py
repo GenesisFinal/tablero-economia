@@ -730,6 +730,20 @@ def reconstruct_and_order_dataset():
                 cards_dict['emae_agro']['name'] = 'EMAE Sector Agropecuario (Variación Interanual)'
                 cards_dict['emae_agro']['desc'] = 'Variación porcentual interanual de la actividad económica del sector agricultura, ganadería, caza y silvicultura.'
 
+        if "Construcción" in cat_name:
+            if 'isac_general' in cards_dict:
+                cards_dict['isac_general']['name'] = 'ISAC Construcción (Variación Interanual)'
+                cards_dict['isac_general']['desc'] = 'Indicador Sintético de la Actividad de la Construcción (ISAC) del INDEC. Mide la tasa de variación porcentual interanual del volumen físico del sector.'
+            if 'isac_cemento' in cards_dict:
+                cards_dict['isac_cemento']['name'] = 'Consumo de Cemento (Índice ISAC)'
+                cards_dict['isac_cemento']['desc'] = 'Índice de consumo de Cemento Portland para obras públicas y privadas (Base 2004 = 100, INDEC).'
+            if 'isac_asfalto' in cards_dict:
+                cards_dict['isac_asfalto']['name'] = 'Consumo de Asfalto Vial (Índice ISAC)'
+                cards_dict['isac_asfalto']['desc'] = 'Índice de consumo de asfalto vial para obras públicas y viales (Base 2004 = 100, INDEC).'
+            if 'cemento_total' in cards_dict:
+                cards_dict['cemento_total']['name'] = 'Despachos de Cemento Portland (AFCP)'
+                cards_dict['cemento_total']['desc'] = 'Despachos totales de cemento portland al mercado interno en miles de toneladas (Asociación de Fabricantes de Cemento Portland).'
+
         if "Precios" in cat_name:
             ordered_cards = [cards_dict[k] for k in precios_ordered_keys if k in cards_dict]
         elif "Monetario" in cat_name:
