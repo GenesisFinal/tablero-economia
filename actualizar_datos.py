@@ -23,9 +23,29 @@ def format_date_es(date_str):
         pass
     return date_str
 
+def adjust_series_to_constant(dates, nominal_prices, ipc_dict):
+    """Adjusts historical nominal values to constant purchasing power of the latest date using official IPC."""
+    n = len(dates)
+    if n == 0 or len(nominal_prices) == 0:
+        return []
+
+    indices = [1.0] * n
+    for i in range(1, n):
+        ym = dates[i][:7]
+        m_rate = ipc_dict.get(ym, 0.0)
+        indices[i] = indices[i-1] * (1.0 + m_rate / 100.0)
+
+    final_idx = indices[-1] if indices else 1.0
+    constant_prices = []
+    for i in range(n):
+        factor = (final_idx / indices[i]) if indices[i] > 0 else 1.0
+        constant_prices.append(round(nominal_prices[i] * factor, 2))
+
+    return constant_prices
+
 def reconstruct_real_dataset():
     print("==========================================================================")
-    print("RECONSTRUYENDO SERIE HISTÓRICA CON DATOS 100% REALES Y VERIFICADOS...")
+    print("ACTUALIZANDO TABLERO CON CANASTAS AJUSTADAS POR IPC A PRECIOS DE HOY...")
     print("==========================================================================")
 
     ref_file = r'g:\Mi unidad\IA\Valores Financieros\master_dataset_PUNTO_RESTAURACION_BALANCES_UNIFICADOS_COMPLETO.json'
@@ -85,6 +105,31 @@ def reconstruct_real_dataset():
     except Exception as e:
         print("[WARN] UVA:", e)
 
+    # Build IPC dictionary for deflating
+    ipc_dict = {}
+    ipc_series = ref_hdb.get("ipc_mensual", {})
+    if ipc_series:
+        for d, p in zip(ipc_series.get("dates", []), ipc_series.get("prices", [])):
+            ipc_dict[d[:7]] = float(p)
+
+    # Compute Constant Series for Canastas
+    canastas_to_adjust = [
+        ("canasta_alimentaria_val", "canasta_alimentaria_constante", "Canasta Básica Alimentaria a Precios Constantes", "Mide el costo histórico de la CBA ajustado por inflación (IPC) a pesos del último dato disponible. Refleja la variación real de la línea de indigencia."),
+        ("canasta_total_val", "canasta_total_constante", "Canasta Básica Total a Precios Constantes", "Mide el costo histórico de la CBT ajustado por inflación (IPC) a pesos del último dato disponible. Refleja la variación real de la línea de pobreza."),
+        ("canasta_alimentaria_hogar2", "canasta_alimentaria_hogar2_constante", "CBA Familiar (Hogar 2) a Precios Constantes", "Costo histórico de la CBA para un hogar de 4 integrantes ajustado por inflación (IPC) a pesos del último dato disponible."),
+        ("canasta_total_hogar2", "canasta_total_hogar2_constante", "CBT Familiar (Hogar 2) a Precios Constantes", "Costo histórico de la CBT para un hogar de 4 integrantes ajustado por inflación (IPC) a pesos del último dato disponible.")
+    ]
+
+    for nom_key, const_key, const_name, const_desc in canastas_to_adjust:
+        if nom_key in ref_hdb:
+            nom_s = ref_hdb[nom_key]
+            dates = nom_s.get("dates") or (nom_s.get("daily") or {}).get("dates") or (nom_s.get("monthly") or {}).get("dates") or []
+            prices = nom_s.get("prices") or (nom_s.get("daily") or {}).get("prices") or (nom_s.get("monthly") or {}).get("prices") or []
+            if dates and prices:
+                const_prices = adjust_series_to_constant(dates, prices, ipc_dict)
+                ref_hdb[const_key] = {"dates": dates, "prices": const_prices}
+                print(f"  -> Calculada serie constante: {const_name} ({len(const_prices)} pts, último: ${const_prices[-1]:,.2f})")
+
     category_icons = {
         "Precios y Costo de Vida": "fa-tags",
         "Agregados Monetarios": "fa-money-bill-wave",
@@ -120,11 +165,25 @@ def reconstruct_real_dataset():
     final_spark_db = {}
     total_cards = 0
 
-    print("\n[3] Procesando y validando cada tarjeta con sus series reales...")
+    print("\n[3] Estructurando tarjetas de cada categoría...")
 
     for cat in ref_cats:
         cat_name = cat.get("name") or cat.get("category")
-        cards = cat.get("cards") or cat.get("indicators") or []
+        cards = list(cat.get("cards") or cat.get("indicators") or [])
+
+        # If Precios y Costo de Vida, inject constant canasta cards if not already present
+        if "Precios" in cat_name:
+            existing_keys = [c.get("key") or c.get("id") for c in cards]
+            for nom_key, const_key, const_name, const_desc in canastas_to_adjust:
+                if const_key not in existing_keys and const_key in ref_hdb:
+                    cards.append({
+                        "key": const_key,
+                        "name": const_name,
+                        "desc": const_desc,
+                        "source": "INDEC / Ajuste IPC",
+                        "freq": "Mensual",
+                        "time_range": "Mensual"
+                    })
 
         enhanced_cards = []
         for card in cards:
@@ -144,7 +203,6 @@ def reconstruct_real_dataset():
             prices = [x[1] for x in clean_pairs]
 
             if not dates or not prices:
-                # If no historical series exists, keep the single card real point
                 c_date = card.get("date") or "2026-07-01"
                 c_val = card.get("value") or 0
                 dates = [c_date]
@@ -161,9 +219,9 @@ def reconstruct_real_dataset():
             spark_dates = dates[-len(spark_slice):]
             final_spark_db[key] = {"dates": spark_dates, "prices": spark_slice}
 
-            # Real display value formatting
+            # Display value
             display_val = card.get("display_value")
-            if not display_val:
+            if not display_val or key.endswith("_constante"):
                 if "%" in name or "Tasa" in name or "Variación" in name or "Porcentaje" in name:
                     display_val = f"{latest_val:.2f}%"
                 elif "USD" in name or "MEP" in name:
@@ -173,34 +231,36 @@ def reconstruct_real_dataset():
                 elif latest_val > 1_000_000:
                     display_val = f"${latest_val:,.2f}"
                 else:
-                    display_val = f"{latest_val:,.2f}"
+                    display_val = f"${latest_val:,.2f}" if "$" not in str(latest_val) else f"{latest_val:,.2f}"
 
-            # Real Period variation calculation
+            # Period variation
             if len(prices) >= 2:
                 p_curr = prices[-1]
                 p_prev = prices[-2]
                 if p_prev != 0:
                     chg_pct = ((p_curr - p_prev) / abs(p_prev)) * 100
                     prefix = "+" if chg_pct > 0 else ""
+                    suffix = " real" if key.endswith("_constante") else ""
                     if freq == "Trimestral":
-                        display_change = f"{prefix}{chg_pct:.2f}% t/t"
+                        display_change = f"{prefix}{chg_pct:.2f}% t/t{suffix}"
                     elif freq == "Diario":
                         display_change = f"{prefix}{chg_pct:.2f}% diario"
                     else:
-                        display_change = f"{prefix}{chg_pct:.2f}% m/m"
+                        display_change = f"{prefix}{chg_pct:.2f}% m/m{suffix}"
                 else:
                     display_change = "0.00%"
             else:
                 display_change = card.get("display_change") or "0.00%"
 
-            # Real YoY variation calculation
+            # YoY variation
             if len(prices) >= 13:
                 p_curr = prices[-1]
                 p_yoy = prices[-13]
                 if p_yoy != 0:
                     yoy_pct = ((p_curr - p_yoy) / abs(p_yoy)) * 100
                     prefix = "+" if yoy_pct > 0 else ""
-                    var_ia = f"{prefix}{yoy_pct:.2f}% i.a."
+                    suffix = " Real" if key.endswith("_constante") else ""
+                    var_ia = f"{prefix}{yoy_pct:.2f}% i.a.{suffix}"
                 else:
                     var_ia = "0.00% i.a."
             elif card.get("var_ia") and card.get("var_ia") != "N/D":
@@ -247,7 +307,7 @@ def reconstruct_real_dataset():
     master_output = {
         "metadata": {
             "title": "Tablero de Indicadores Económicos - La Segunda",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "total_categories": len(enhanced_categories),
             "total_indicators": total_cards
@@ -265,7 +325,7 @@ def reconstruct_real_dataset():
     with open(master_path, "w", encoding="utf-8") as f:
         json.dump(master_output, f, ensure_ascii=False, indent=2)
 
-    print(f"\n[SUCCESS] master_dataset.json reconstruido con {len(enhanced_categories)} categorías, {total_cards} indicadores y {len(final_hdb)} series reales.")
+    print(f"\n[SUCCESS] master_dataset.json actualizado con {len(enhanced_categories)} categorías, {total_cards} indicadores y canastas ajustadas por IPC.")
     return master_output
 
 if __name__ == "__main__":
