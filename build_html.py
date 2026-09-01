@@ -2,7 +2,7 @@ import json
 import os
 
 def build_index_html():
-    print("Building index.html with real calendar date filtering, coherent time axes, and Spanish date formatting...")
+    print("Building index.html with complete social security indicators, ratio badges, and calendar filtering...")
 
     workspace = os.path.dirname(os.path.abspath(__file__))
     dataset_path = os.path.join(workspace, 'master_dataset.json')
@@ -59,7 +59,8 @@ def build_index_html():
               borderDark: '#334155',
               borderLight: '#E2E8F0',
               green: '#10B981',
-              gold: '#F59E0B'
+              gold: '#F59E0B',
+              purple: '#8B5CF6'
             }}
           }}
         }}
@@ -188,7 +189,7 @@ def build_index_html():
           <input 
             type="text" 
             id="global-search-input"
-            placeholder="Buscar indicador (ej. IPC, Reservas, Salarios, Deuda, PBI)... (Ctrl + K)"
+            placeholder="Buscar indicador (ej. Jubilación, AUH, PUAM, IPC, Reservas, Deuda)... (Ctrl + K)"
             oninput="handleSearch(this.value)"
             class="w-full bg-slate-100 dark:bg-[#1E293B]/80 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400 rounded-xl pl-9 pr-8 py-2 border border-slate-300 dark:border-[#334155]/60 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-all font-medium"
           >
@@ -268,7 +269,7 @@ def build_index_html():
             <i class="fas fa-layer-group text-brand-red"></i>
             <span>Categorías</span>
           </span>
-          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400" id="sidebar-total-badge">104</span>
+          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400" id="sidebar-total-badge">120</span>
         </div>
         <div class="flex flex-col gap-1 text-xs font-medium" id="sidebar-category-list">
           <!-- Rendered dynamically -->
@@ -281,7 +282,7 @@ def build_index_html():
           <span>Datos 100% Verificados</span>
         </div>
         <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-          Series oficiales extraídas de BCRA, INDEC, Secretaría de Finanzas y ArgentinaDatos sin interpolaciones ni datos inventados.
+          Series oficiales extraídas de ANSES, BCRA, INDEC, Secretaría de Finanzas y Trabajo sin interpolaciones ni datos inventados.
         </p>
         <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-1 pt-2 border-t border-slate-200 dark:border-[#334155]/40">
           Act: <span id="sidebar-update-time" class="text-slate-800 dark:text-slate-300 font-bold">...</span>
@@ -337,7 +338,7 @@ def build_index_html():
       <div class="flex items-center gap-4">
         <span>Última Actualización: <strong id="footer-update-time" class="text-slate-900 dark:text-slate-200 font-mono font-bold"></strong></span>
         <span>•</span>
-        <span>Fuentes: INDEC, BCRA, Secretaría de Finanzas, Min. Economía, AFIP/ARCA, ArgentinaDatos</span>
+        <span>Fuentes: ANSES, INDEC, BCRA, Secretaría de Finanzas, Min. Capital Humano, ArgentinaDatos</span>
       </div>
     </div>
   </footer>
@@ -357,6 +358,7 @@ def build_index_html():
               <span id="modal-category-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-300"></span>
               <span id="modal-freq-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20"></span>
               <span id="modal-source-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20"></span>
+              <span id="modal-ratio-badge" class="hidden px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30"></span>
               <span id="modal-date-badge" class="px-2.5 py-0.5 rounded-md text-[11px] font-black bg-rose-50 dark:bg-brand-red/20 text-brand-red border border-rose-200 dark:border-brand-red/30 font-mono"></span>
             </div>
             <h2 id="modal-title" class="text-lg sm:text-xl font-bold text-slate-950 dark:text-slate-100 tracking-tight"></h2>
@@ -465,7 +467,6 @@ def build_index_html():
       showRegression: true
     }};
 
-    // Check if indicator is a Fiscal or Trade Result (Surplus / Deficit)
     function isBarChartIndicator(card) {{
       if (!card) return false;
       const k = (card.key || '').toLowerCase();
@@ -490,8 +491,13 @@ def build_index_html():
         return {{ type: 'bps', prefix: '', suffix: ' bps', decimals: 0 }};
       }}
 
+      if (k === 'relacion_activo_pasivo') {{
+        return {{ type: 'ratio', prefix: '', suffix: ' act/pas', decimals: 2 }};
+      }}
+
       // Check Percentage & Ratios
-      if (k.endsWith('_pbi') || k.startsWith('ratio_') || k.includes('cobertura') || n.includes('cobertura') ||
+      if (k.endsWith('_pbi') || k.startsWith('ratio_') || k.startsWith('cobertura_') || k.startsWith('tasa_') || 
+          k.includes('cobertura') || n.includes('cobertura') ||
           k.includes('interanual') || n.includes('interanual') || 
           n.includes('tasa') || n.includes('variación') || n.includes('variacion') || n.includes('porcentaje') || 
           k.includes('desocupacion') || k.includes('actividad') || k.includes('indigencia') || k.includes('pobreza') || 
@@ -501,8 +507,8 @@ def build_index_html():
         return {{ type: 'percent', prefix: '', suffix: '%', decimals: 2 }};
       }}
 
-      // Debt and Reserves in USD Millions
-      if ((k.includes('deuda_') && !k.endsWith('_pbi')) || k === 'reservas_brutas' || k === 'reservas_bcra') {{
+      // Debt, Reserves, FGS in USD Millions
+      if ((k.includes('deuda_') && !k.endsWith('_pbi')) || k === 'reservas_brutas' || k === 'reservas_bcra' || k === 'fgs_total_usd') {{
         return {{ type: 'currency_usd', prefix: 'USD ', suffix: ' M', decimals: 2 }};
       }}
 
@@ -512,7 +518,7 @@ def build_index_html():
       }}
 
       // Check Quantities & Indices
-      if (k.includes('poblacion')) {{
+      if (k.includes('poblacion') || k.includes('beneficios_sipa')) {{
         return {{ type: 'quantity', prefix: '', suffix: ' hab.', decimals: 0 }};
       }}
       if (k.includes('empleo_privado') || k.includes('empleo_total')) {{
@@ -579,7 +585,7 @@ def build_index_html():
       return dateStr;
     }}
 
-    // Real Calendar Date Filter: calculates exact (LastDate - N Years) cutoff
+    // Real Calendar Date Filter
     function filterSeriesByCalendar(dates, prices, period) {{
       if (!dates || !dates.length || period === 'ALL') {{
         return {{ dates, prices }};
@@ -636,7 +642,7 @@ def build_index_html():
         const totalBadgeEl = document.getElementById('sidebar-total-badge');
         if (updateTimeEl) updateTimeEl.innerText = window.DATASET.metadata.last_updated;
         if (sidebarUpdateEl) sidebarUpdateEl.innerText = window.DATASET.metadata.last_updated.slice(0, 10);
-        if (totalBadgeEl) totalBadgeEl.innerText = window.DATASET.metadata.total_indicators || 104;
+        if (totalBadgeEl) totalBadgeEl.innerText = window.DATASET.metadata.total_indicators || 120;
       }}
     }});
 
@@ -721,17 +727,17 @@ def build_index_html():
 
       const kpiKeys = [
         {{ key: 'ipc_mensual', label: 'IPC Mensual', icon: 'fa-percentage', color: 'text-amber-600 dark:text-amber-400' }},
-        {{ key: 'ipc_interanual', label: 'IPC Interanual', icon: 'fa-chart-simple', color: 'text-rose-600 dark:text-rose-400' }},
+        {{ key: 'jubilacion_minima_bono', label: 'Jub. Mínima + Bono', icon: 'fa-hands-holding-circle', color: 'text-purple-600 dark:text-purple-400' }},
+        {{ key: 'auh_val', label: 'AUH por Hijo', icon: 'fa-child', color: 'text-blue-600 dark:text-blue-400' }},
         {{ key: 'riesgo_pais', label: 'Riesgo País', icon: 'fa-arrow-trend-down', color: 'text-blue-600 dark:text-blue-400' }},
         {{ key: 'reservas_brutas', label: 'Reservas BCRA', icon: 'fa-vault', color: 'text-emerald-600 dark:text-emerald-400' }},
-        {{ key: 'deuda_publica_total_pbi', label: 'Deuda Pública / PBI', icon: 'fa-landmark', color: 'text-purple-600 dark:text-purple-400' }},
         {{ key: 'resultado_fiscal_primario', label: 'Resultado Primario', icon: 'fa-scale-balanced', color: 'text-cyan-600 dark:text-cyan-400' }}
       ];
 
       let html = '';
       kpiKeys.forEach(k => {{
         let cardData = findCardByKey(k.key);
-        if (!cardData && k.key === 'smvm_val') cardData = findCardByKey('salario_minimo');
+        if (!cardData && k.key === 'jubilacion_minima_bono') cardData = findCardByKey('jubilacion_minima');
         if (!cardData && k.key === 'reservas_brutas') cardData = findCardByKey('reservas_bcra');
 
         if (cardData) {{
@@ -767,7 +773,7 @@ def build_index_html():
       if (!sidebarContainer || !window.DATASET) return;
 
       const categories = window.DATASET.categories || [];
-      const totalCount = window.DATASET.metadata.total_indicators || 104;
+      const totalCount = window.DATASET.metadata.total_indicators || 120;
 
       let html = `
         <button 
@@ -809,7 +815,7 @@ def build_index_html():
       if (!container || !window.DATASET) return;
 
       const categories = window.DATASET.categories || [];
-      const totalCount = window.DATASET.metadata.total_indicators || 104;
+      const totalCount = window.DATASET.metadata.total_indicators || 120;
 
       let html = `
         <button 
@@ -887,7 +893,8 @@ def build_index_html():
             (c.desc && c.desc.toLowerCase().includes(q)) ||
             (c.category && c.category.toLowerCase().includes(q)) ||
             (c.source && c.source.toLowerCase().includes(q)) ||
-            (c.key && c.key.toLowerCase().includes(q))
+            (c.key && c.key.toLowerCase().includes(q)) ||
+            (c.ratio_badge && c.ratio_badge.toLowerCase().includes(q))
           );
         }});
 
@@ -924,7 +931,7 @@ def build_index_html():
           <div class="p-12 text-center flex flex-col items-center justify-center glass-card rounded-3xl">
             <i class="fas fa-search text-4xl text-slate-400 dark:text-slate-500 mb-3"></i>
             <h3 class="text-lg font-bold text-slate-900 dark:text-slate-200">No se encontraron indicadores</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">Intenta con otros términos de búsqueda como "IPC", "Reservas", "Salarios", o "PBI".</p>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">Intenta con otros términos de búsqueda como "Jubilación", "AUH", "PUAM", "IPC", o "Reservas".</p>
             <button onclick="clearSearch()" class="mt-4 px-4 py-2 rounded-xl bg-brand-red text-white text-xs font-bold hover:bg-brand-redHover transition-all shadow-lg shadow-brand-red/30">
               Limpiar Búsqueda
             </button>
@@ -963,6 +970,12 @@ def build_index_html():
             ? '<i class="fas fa-arrow-trend-down text-[10px] mr-1 text-rose-600 dark:text-rose-400"></i>' 
             : '');
 
+      const ratioBadgeHTML = card.ratio_badge ? `
+        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 truncate max-w-[130px]" title="Ratio: ${{card.ratio_badge}}">
+          <i class="fas fa-link text-[8px] mr-0.5"></i>${{card.ratio_badge}}
+        </span>
+      ` : '';
+
       return `
         <div 
           onclick="openModalByKey('${{card.key}}')"
@@ -970,18 +983,16 @@ def build_index_html():
           title="Click para ver serie histórica verificada (${{card.total_points || 0}} pts) y regresión"
         >
           <div>
-            <div class="flex items-center justify-between gap-1 mb-2.5">
+            <div class="flex items-center justify-between gap-1 mb-2.5 flex-wrap">
               <span class="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/60 font-mono">
                 ${{card.freq}}
               </span>
 
+              ${{ratioBadgeHTML}}
+
               <span class="text-[10px] font-black font-mono px-2 py-0.5 rounded-md bg-rose-50 dark:bg-brand-red/15 text-brand-red border border-rose-200 dark:border-brand-red/30 flex items-center gap-1 shadow-2xs" title="Fecha del último dato oficial publicado">
                 <i class="far fa-calendar-check text-[9px]"></i>
                 <span>${{card.latest_date}}</span>
-              </span>
-
-              <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold truncate max-w-[75px]" title="Fuente: ${{card.source}}">
-                ${{card.source.split('/')[0].trim()}}
               </span>
             </div>
 
@@ -1021,7 +1032,6 @@ def build_index_html():
       `;
     }}
 
-    // Draw Sparklines (Line vs Bar)
     function drawSparkline(key, prices, isBar = false) {{
       const canvas = document.getElementById(`sparkline-${{key}}`);
       if (!canvas || !prices || prices.length < 2) return;
@@ -1169,6 +1179,16 @@ def build_index_html():
       document.getElementById('modal-source-badge').innerText = card.source;
       document.getElementById('modal-date-badge').innerText = `Último Dato: ${{card.latest_date}}`;
 
+      const ratioBadgeEl = document.getElementById('modal-ratio-badge');
+      if (ratioBadgeEl) {{
+        if (card.ratio_badge) {{
+          ratioBadgeEl.innerText = `Ratio: ${{card.ratio_badge}}`;
+          ratioBadgeEl.classList.remove('hidden');
+        }} else {{
+          ratioBadgeEl.classList.add('hidden');
+        }}
+      }}
+
       // Icon
       const iconEl = document.getElementById('modal-icon');
       if (iconEl) {{
@@ -1243,7 +1263,7 @@ def build_index_html():
       const isBar = modalState.isBar;
       const {{ dates: rawDates, prices: rawPrices }} = modalState.series;
 
-      // Real Calendar Filter (LastDate - N Years)
+      // Real Calendar Filter
       const {{ dates: filteredDates, prices: filteredPrices }} = filterSeriesByCalendar(rawDates, rawPrices, modalState.period);
       const targetLen = filteredPrices.length;
 
@@ -1451,7 +1471,7 @@ def build_index_html():
     function exportAllCSV() {{
       if (!window.DATASET || !window.DATASET.categories) return;
 
-      let csv = 'Categoria,Indicador,Clave,Frecuencia,Fuente,Fecha_Publicacion,Valor_Actual,Var_Periodo,Var_Interanual\\n';
+      let csv = 'Categoria,Indicador,Clave,Frecuencia,Fuente,Fecha_Publicacion,Valor_Actual,Var_Periodo,Var_Interanual,Ratio_Badge\\n';
       window.DATASET.categories.forEach(cat => {{
         (cat.cards || []).forEach(c => {{
           const meta = getUnitMeta(c);
@@ -1465,7 +1485,8 @@ def build_index_html():
             `"${{c.latest_date}}"`,
             `"${{formattedVal}}"`,
             `"${{c.display_change}}"`,
-            `"${{c.var_ia}}"`
+            `"${{c.var_ia}}"`,
+            `"${{c.ratio_badge || ''}}"`
           ].join(',');
           csv += row + '\\n';
         }});
@@ -1513,7 +1534,7 @@ def build_index_html():
     with open(out_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-    print(f"[SUCCESS] Wrote index.html with calendar date filtering ({len(html_content)} bytes)!")
+    print(f"[SUCCESS] Wrote index.html with social security and ratio badges ({len(html_content)} bytes)!")
 
 if __name__ == "__main__":
     build_index_html()
