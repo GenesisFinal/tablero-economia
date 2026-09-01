@@ -2,7 +2,7 @@ import json
 import os
 
 def build_index_html():
-    print("Building index.html with Reservas y Deuda comparative indicators and ratios...")
+    print("Building index.html with real calendar date filtering, coherent time axes, and Spanish date formatting...")
 
     workspace = os.path.dirname(os.path.abspath(__file__))
     dataset_path = os.path.join(workspace, 'master_dataset.json')
@@ -550,6 +550,75 @@ def build_index_html():
       }}
 
       return `${{meta.prefix}}${{formattedNumber}}${{meta.suffix}}`;
+    }}
+
+    // Clean Spanish Date Formatter for Chart X-Axis and Tooltips
+    function formatDateSpanish(dateStr, formatType = 'short') {{
+      if (!dateStr || dateStr.length < 4) return dateStr;
+      const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      const monthsFull = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+      try {{
+        const parts = dateStr.split('-');
+        if (parts.length >= 2) {{
+          const y = parts[0];
+          const m = parseInt(parts[1], 10);
+          const mStr = (m >= 1 && m <= 12) ? months[m - 1] : parts[1];
+          const mFullStr = (m >= 1 && m <= 12) ? monthsFull[m - 1] : parts[1];
+
+          if (parts.length === 3 && parts[2] !== '01') {{
+            const d = parseInt(parts[2], 10);
+            if (formatType === 'full') return `${{d}} de ${{mFullStr}} de ${{y}}`;
+            return `${{d}} ${{mStr}} ${{y.slice(-2)}}`;
+          }}
+
+          if (formatType === 'full') return `${{mFullStr}} de ${{y}}`;
+          return `${{mStr}} ${{y}}`;
+        }}
+      }} catch (e) {{}}
+      return dateStr;
+    }}
+
+    // Real Calendar Date Filter: calculates exact (LastDate - N Years) cutoff
+    function filterSeriesByCalendar(dates, prices, period) {{
+      if (!dates || !dates.length || period === 'ALL') {{
+        return {{ dates, prices }};
+      }}
+
+      const lastDateStr = dates[dates.length - 1];
+      let cutoffStr = '';
+
+      try {{
+        const parts = lastDateStr.split('-');
+        const y = parseInt(parts[0], 10);
+        const m = parts[1] || '01';
+        const d = parts[2] || '01';
+
+        const yearsBack = {{ '1A': 1, '2A': 2, '3A': 3, '5A': 5 }}[period] || 2;
+        const targetYear = y - yearsBack;
+
+        cutoffStr = `${{targetYear}}-${{m}}-${{d}}`;
+        if (parts.length === 2) cutoffStr = `${{targetYear}}-${{m}}`;
+      }} catch (e) {{
+        const count = {{ '1A': 12, '2A': 24, '3A': 36, '5A': 60 }}[period] || 24;
+        return {{ dates: dates.slice(-count), prices: prices.slice(-count) }};
+      }}
+
+      const filtered = [];
+      for (let i = 0; i < dates.length; i++) {{
+        if (dates[i] >= cutoffStr) {{
+          filtered.push({{ d: dates[i], p: prices[i] }});
+        }}
+      }}
+
+      if (filtered.length < 2) {{
+        return {{ dates: dates.slice(-12), prices: prices.slice(-12) }};
+      }}
+
+      return {{
+        dates: filtered.map(x => x.d),
+        prices: filtered.map(x => x.p)
+      }};
     }}
 
     document.addEventListener('DOMContentLoaded', () => {{
@@ -1172,19 +1241,13 @@ def build_index_html():
 
       const meta = modalState.meta || getUnitMeta(modalState.card);
       const isBar = modalState.isBar;
-      const {{ dates, prices }} = modalState.series;
-      let targetLen = prices.length;
+      const {{ dates: rawDates, prices: rawPrices }} = modalState.series;
 
-      if (modalState.period === '1A') targetLen = Math.min(12, prices.length);
-      else if (modalState.period === '2A') targetLen = Math.min(24, prices.length);
-      else if (modalState.period === '3A') targetLen = Math.min(36, prices.length);
-      else if (modalState.period === '5A') targetLen = Math.min(60, prices.length);
-      else if (modalState.period === 'ALL') targetLen = prices.length;
+      // Real Calendar Filter (LastDate - N Years)
+      const {{ dates: filteredDates, prices: filteredPrices }} = filterSeriesByCalendar(rawDates, rawPrices, modalState.period);
+      const targetLen = filteredPrices.length;
 
-      const filteredDates = dates.slice(-targetLen);
-      const filteredPrices = prices.slice(-targetLen);
-
-      // Period buttons
+      // Period buttons highlight
       ['1A', '2A', '3A', '5A', 'ALL'].forEach(p => {{
         const btn = document.getElementById(`btn-period-${{p}}`);
         if (btn) {{
@@ -1277,7 +1340,7 @@ def build_index_html():
           pointBackgroundColor: '#E20039',
           pointBorderColor: '#FFFFFF',
           pointBorderWidth: 1.5,
-          pointRadius: targetLen > 40 ? 1 : 3,
+          pointRadius: targetLen > 60 ? 0 : (targetLen > 30 ? 1.5 : 3),
           pointHoverRadius: 6,
           fill: true,
           backgroundColor: isDark ? 'rgba(226, 0, 57, 0.15)' : 'rgba(226, 0, 57, 0.08)',
@@ -1330,6 +1393,10 @@ def build_index_html():
               padding: 10,
               displayColors: true,
               callbacks: {{
+                title: function(context) {{
+                  const rawD = context[0].label;
+                  return formatDateSpanish(rawD, 'full');
+                }},
                 label: function(context) {{
                   const val = context.raw || 0;
                   const formatted = formatValueWithMeta(val, meta);
@@ -1348,7 +1415,12 @@ def build_index_html():
               ticks: {{
                 color: textColor,
                 font: {{ family: 'JetBrains Mono', size: 10, weight: '600' }},
-                maxRotation: 45
+                maxTicksLimit: 8,
+                maxRotation: 30,
+                callback: function(val, index) {{
+                  const rawD = this.getLabelForValue(val);
+                  return formatDateSpanish(rawD, 'short');
+                }}
               }}
             }},
             y: {{
@@ -1441,7 +1513,7 @@ def build_index_html():
     with open(out_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-    print(f"[SUCCESS] Wrote index.html with Reservas y Deuda indicators ({len(html_content)} bytes)!")
+    print(f"[SUCCESS] Wrote index.html with calendar date filtering ({len(html_content)} bytes)!")
 
 if __name__ == "__main__":
     build_index_html()
