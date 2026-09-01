@@ -1,10 +1,10 @@
 {
   "metadata": {
     "title": "Tablero de Indicadores Económicos - La Segunda",
-    "version": "2.4.0",
-    "last_updated": "2026-09-01 18:01:02",
+    "version": "2.5.0",
+    "last_updated": "2026-09-01 18:02:24",
     "total_categories": 12,
-    "total_indicators": 106
+    "total_indicators": 97
   },
   "categories": [
     {
@@ -828,106 +828,6 @@
             2096.27,
             2100.49
           ]
-        },
-        {
-          "key": "agregado_b1_pbi",
-          "name": "Agregado Monetario B1 (M1) / PBI",
-          "category": "Precios y Costo de Vida",
-          "desc": "Mide la relación entre el Agregado B1 (circulante + depósitos a la vista en pesos y USD) y el PBI corriente. Refleja la liquidez transaccional sobre el producto.",
-          "source": "BCRA / INDEC",
-          "freq": "Trimestral",
-          "value": 0.0,
-          "display_value": "0.00%",
-          "display_change": "0.00%",
-          "var_ia": "0.00%",
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 0.0,
-          "range_max": 0.0,
-          "total_points": 1,
-          "sparkline": [
-            0.0
-          ]
-        },
-        {
-          "key": "agregado_b2_pbi",
-          "name": "Agregado Monetario B2 (M2) / PBI",
-          "category": "Precios y Costo de Vida",
-          "desc": "Mide la relación entre el Agregado B2 (B1 + depósitos en cajas de ahorro en pesos y USD) y el PBI corriente.",
-          "source": "BCRA / INDEC",
-          "freq": "Trimestral",
-          "value": 0.0,
-          "display_value": "0.00%",
-          "display_change": "0.00%",
-          "var_ia": "0.00%",
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 0.0,
-          "range_max": 0.0,
-          "total_points": 1,
-          "sparkline": [
-            0.0
-          ]
-        },
-        {
-          "key": "agregado_b3_pbi",
-          "name": "Agregado Monetario B3 (M3) / PBI",
-          "category": "Precios y Costo de Vida",
-          "desc": "Mide la relación entre el Agregado B3 (M3 amplio: B2 + plazos fijos en pesos y USD) y el PBI corriente. Indica el grado de profundidad financiera total.",
-          "source": "BCRA / INDEC",
-          "freq": "Trimestral",
-          "value": 0.0,
-          "display_value": "0.00%",
-          "display_change": "0.00%",
-          "var_ia": "0.00%",
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 0.0,
-          "range_max": 0.0,
-          "total_points": 1,
-          "sparkline": [
-            0.0
-          ]
-        },
-        {
-          "key": "base_monetaria_pbi",
-          "name": "Base Monetaria / PBI",
-          "category": "Precios y Costo de Vida",
-          "desc": "Mide la relación entre la Base Monetaria (circulante + encajes) y el PBI corriente. Refleja la monetización básica de la economía.",
-          "source": "BCRA / INDEC",
-          "freq": "Trimestral",
-          "value": 0.0,
-          "display_value": "0.00%",
-          "display_change": "0.00%",
-          "var_ia": "0.00%",
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 0.0,
-          "range_max": 0.0,
-          "total_points": 1,
-          "sparkline": [
-            0.0
-          ]
-        },
-        {
-          "key": "billetes_circulacion_pbi",
-          "name": "Billetes en Circulación / PBI",
-          "category": "Precios y Costo de Vida",
-          "desc": "Mide la relación entre el dinero físico en poder del público y el PBI corriente.",
-          "source": "BCRA / INDEC",
-          "freq": "Trimestral",
-          "value": 0.0,
-          "display_value": "0.00%",
-          "display_change": "0.00%",
-          "var_ia": "0.00%",
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 0.0,
-          "range_max": 0.0,
-          "total_points": 1,
-          "sparkline": [
-            0.0
-          ]
         }
       ]
     },
@@ -1464,178 +1364,6 @@
             17304079390.28,
             17080757049.46,
             15301874247.63
-          ]
-        },
-        {
-          "key": "canasta_alimentaria_constante",
-          "name": "Canasta Básica Alimentaria a Precios Constantes",
-          "category": "Agregados Monetarios",
-          "desc": "Mide el costo histórico de la CBA ajustado por inflación (IPC) a pesos del último dato disponible. Refleja la variación real de la línea de indigencia.",
-          "source": "INDEC / Ajuste IPC",
-          "freq": "Mensual",
-          "value": 229131.47,
-          "display_value": "$229,131.47",
-          "display_change": "+0.52% m/m real",
-          "var_ia": "+2.65% i.a. Real",
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 203369.76,
-          "range_max": 265999.08,
-          "total_points": 124,
-          "sparkline": [
-            239203.13,
-            235087.5,
-            232057.0,
-            229027.14,
-            228120.69,
-            225232.15,
-            227096.26,
-            231862.51,
-            228585.06,
-            224305.65,
-            223300.66,
-            223206.54,
-            221222.48,
-            219672.38,
-            221474.97,
-            224830.34,
-            227644.61,
-            234168.42,
-            234898.68,
-            232085.31,
-            228624.98,
-            229374.68,
-            227941.61,
-            229131.47
-          ]
-        },
-        {
-          "key": "canasta_alimentaria_hogar2_constante",
-          "name": "CBA Familiar (Hogar 2) a Precios Constantes",
-          "category": "Agregados Monetarios",
-          "desc": "Costo histórico de la CBA para un hogar de 4 integrantes ajustado por inflación (IPC) a pesos del último dato disponible.",
-          "source": "INDEC / Ajuste IPC",
-          "freq": "Mensual",
-          "value": 708016.24,
-          "display_value": "$708,016.24",
-          "display_change": "+0.52% m/m real",
-          "var_ia": "+2.65% i.a. Real",
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 628412.58,
-          "range_max": 821937.16,
-          "total_points": 124,
-          "sparkline": [
-            739137.66,
-            726420.38,
-            717056.13,
-            707693.86,
-            704892.95,
-            695967.33,
-            701727.45,
-            716455.16,
-            706327.83,
-            693104.45,
-            689999.05,
-            689708.2,
-            683577.46,
-            678787.65,
-            684357.68,
-            694725.76,
-            703421.84,
-            723580.42,
-            725836.92,
-            717143.62,
-            706451.18,
-            708767.75,
-            704339.58,
-            708016.24
-          ]
-        },
-        {
-          "key": "canasta_total_constante",
-          "name": "Canasta Básica Total a Precios Constantes",
-          "category": "Agregados Monetarios",
-          "desc": "Mide el costo histórico de la CBT ajustado por inflación (IPC) a pesos del último dato disponible. Refleja la variación real de la línea de pobreza.",
-          "source": "INDEC / Ajuste IPC",
-          "freq": "Mensual",
-          "value": 506380.55,
-          "display_value": "$506,380.55",
-          "display_change": "+0.07% m/m real",
-          "var_ia": "+1.73% i.a. Real",
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 489869.41,
-          "range_max": 564054.91,
-          "total_points": 124,
-          "sparkline": [
-            533422.97,
-            528946.88,
-            526769.39,
-            522181.86,
-            520115.18,
-            513529.29,
-            513237.54,
-            514734.78,
-            505172.97,
-            497958.54,
-            497960.48,
-            497750.58,
-            493326.14,
-            489869.41,
-            493889.2,
-            499123.36,
-            505371.03,
-            510487.15,
-            509730.12,
-            505945.97,
-            505261.2,
-            504624.29,
-            506030.37,
-            506380.55
-          ]
-        },
-        {
-          "key": "canasta_total_hogar2_constante",
-          "name": "CBT Familiar (Hogar 2) a Precios Constantes",
-          "category": "Agregados Monetarios",
-          "desc": "Costo histórico de la CBT para un hogar de 4 integrantes ajustado por inflación (IPC) a pesos del último dato disponible.",
-          "source": "INDEC / Ajuste IPC",
-          "freq": "Mensual",
-          "value": 1564715.9,
-          "display_value": "$1,564,715.90",
-          "display_change": "+0.07% m/m real",
-          "var_ia": "+1.73% i.a. Real",
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 1513696.47,
-          "range_max": 1742929.68,
-          "total_points": 124,
-          "sparkline": [
-            1648276.98,
-            1634445.86,
-            1627717.39,
-            1613541.96,
-            1607155.92,
-            1586805.5,
-            1585904.0,
-            1590530.46,
-            1560984.49,
-            1538691.9,
-            1538697.87,
-            1538049.3,
-            1524377.76,
-            1513696.47,
-            1526117.61,
-            1542291.18,
-            1561596.47,
-            1577405.31,
-            1575066.08,
-            1563373.06,
-            1561257.09,
-            1559289.05,
-            1563633.84,
-            1564715.9
           ]
         }
       ]
@@ -19781,46 +19509,6 @@
         2100.49
       ]
     },
-    "agregado_b1_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
-    "agregado_b2_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
-    "agregado_b3_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
-    "base_monetaria_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
-    "billetes_circulacion_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
     "agregado_b1": {
       "dates": [
         "2013-11-01",
@@ -20125,6 +19813,14 @@
         52.467312,
         56.59924,
         52.833567
+      ]
+    },
+    "agregado_b1_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
       ]
     },
     "agregado_b1_usd": {
@@ -20619,6 +20315,14 @@
         52.05941385806452
       ]
     },
+    "agregado_b2_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
+      ]
+    },
     "agregado_b2_usd": {
       "dates": [
         "2018-11-01",
@@ -21109,6 +20813,14 @@
         54.47939940898616,
         58.98967888133642,
         57.60595062580643
+      ]
+    },
+    "agregado_b3_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
       ]
     },
     "agregado_b3_usd": {
@@ -21603,6 +21315,14 @@
         42.132457
       ]
     },
+    "base_monetaria_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
+      ]
+    },
     "base_monetaria_usd": {
       "dates": [
         "2018-11-01",
@@ -22093,6 +21813,14 @@
         23640833263.0,
         23619270848.0,
         23419518536.0
+      ]
+    },
+    "billetes_circulacion_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
       ]
     },
     "billetes_circulacion_usd": {
@@ -41965,46 +41693,6 @@
         2100.49
       ]
     },
-    "agregado_b1_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
-    "agregado_b2_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
-    "agregado_b3_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
-    "base_monetaria_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
-    "billetes_circulacion_pbi": {
-      "dates": [
-        "2026-07-01"
-      ],
-      "prices": [
-        0.0
-      ]
-    },
     "agregado_b1": {
       "dates": [
         "2024-05-01",
@@ -42057,6 +41745,14 @@
         52.467312,
         56.59924,
         52.833567
+      ]
+    },
+    "agregado_b1_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
       ]
     },
     "agregado_b1_usd": {
@@ -42167,6 +41863,14 @@
         52.05941385806452
       ]
     },
+    "agregado_b2_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
+      ]
+    },
     "agregado_b2_usd": {
       "dates": [
         "2024-05-01",
@@ -42273,6 +41977,14 @@
         54.47939940898616,
         58.98967888133642,
         57.60595062580643
+      ]
+    },
+    "agregado_b3_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
       ]
     },
     "agregado_b3_usd": {
@@ -42383,6 +42095,14 @@
         42.132457
       ]
     },
+    "base_monetaria_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
+      ]
+    },
     "base_monetaria_usd": {
       "dates": [
         "2024-05-01",
@@ -42489,6 +42209,14 @@
         23640833263.0,
         23619270848.0,
         23419518536.0
+      ]
+    },
+    "billetes_circulacion_pbi": {
+      "dates": [
+        "2026-07-01"
+      ],
+      "prices": [
+        0.0
       ]
     },
     "billetes_circulacion_usd": {
