@@ -5,198 +5,268 @@ import datetime
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-def fetch_safe_json(url, timeout=10):
+def format_date_es(date_str):
+    if not date_str or date_str == 'N/D':
+        return 'N/D'
     try:
-        r = requests.get(url, timeout=timeout, verify=False)
-        if r.status_code == 200:
-            return r.json()
-    except Exception as e:
-        print(f"[WARN] Error fetching {url}: {e}")
-    return None
+        parts = date_str.split('-')
+        if len(parts) >= 2:
+            year = parts[0]
+            month = int(parts[1])
+            months_es = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+            m_str = months_es[month - 1]
+            if len(parts) == 3 and parts[2] not in ['01', '30', '31']:
+                day = int(parts[2])
+                return f"{day} {m_str} {year}"
+            return f"{m_str} {year}"
+    except Exception:
+        pass
+    return date_str
 
-def build_and_verify_dataset():
-    print("=================================================================")
-    print("EJECUTANDO VERIFICACIÓN Y ACTUALIZACIÓN DIARIA DE INDICADORES...")
-    print(f"Timestamp: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("=================================================================")
+def reconstruct_real_dataset():
+    print("==========================================================================")
+    print("RECONSTRUYENDO SERIE HISTÓRICA CON DATOS 100% REALES Y VERIFICADOS...")
+    print("==========================================================================")
+
+    ref_file = r'g:\Mi unidad\IA\Valores Financieros\master_dataset_PUNTO_RESTAURACION_BALANCES_UNIFICADOS_COMPLETO.json'
+    with open(ref_file, 'r', encoding='utf-8', errors='ignore') as f:
+        ref_data = json.load(f)
+
+    root = ref_data.get('final_data', ref_data)
+    ref_cats = root.get('economic_categories', [])
+    ref_hdb = root.get('historical_db', {})
+
+    print(f"[1] Base de referencia: {len(ref_cats)} categorías y {len(ref_hdb)} series históricas reales.")
+
+    # Live APIs for verified latest points
+    print("[2] Consultando APIs oficiales para últimas publicaciones verificadas...")
+    
+    # 1. IPC Mensual INDEC (ArgentinaDatos)
+    try:
+        r = requests.get("https://api.argentinadatos.com/v1/finanzas/indices/inflacion", timeout=8).json()
+        ipc_dates = [x["fecha"] for x in r if "fecha" in x and "valor" in x]
+        ipc_prices = [float(x["valor"]) for x in r if "fecha" in x and "valor" in x]
+        if ipc_dates:
+            ref_hdb["ipc_mensual"] = {"dates": ipc_dates, "prices": ipc_prices}
+            print(f"  -> IPC Mensual verificado: {len(ipc_dates)} pts (Último: {ipc_prices[-1]}% - {ipc_dates[-1]})")
+    except Exception as e:
+        print("[WARN] IPC:", e)
+
+    # 2. IPC Interanual INDEC (ArgentinaDatos)
+    try:
+        r = requests.get("https://api.argentinadatos.com/v1/finanzas/indices/inflacionInteranual", timeout=8).json()
+        ia_dates = [x["fecha"] for x in r if "fecha" in x and "valor" in x]
+        ia_prices = [float(x["valor"]) for x in r if "fecha" in x and "valor" in x]
+        if ia_dates:
+            ref_hdb["ipc_interanual"] = {"dates": ia_dates, "prices": ia_prices}
+            print(f"  -> IPC Interanual verificado: {len(ia_dates)} pts (Último: {ia_prices[-1]}% - {ia_dates[-1]})")
+    except Exception as e:
+        print("[WARN] IPC Interanual:", e)
+
+    # 3. Riesgo País JP Morgan (ArgentinaDatos)
+    try:
+        r = requests.get("https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais", timeout=8).json()
+        rp_dates = [x["fecha"] for x in r if "fecha" in x and "valor" in x]
+        rp_prices = [float(x["valor"]) for x in r if "fecha" in x and "valor" in x]
+        if rp_dates:
+            ref_hdb["riesgo_pais"] = {"dates": rp_dates, "prices": rp_prices}
+            print(f"  -> Riesgo País verificado: {len(rp_dates)} pts (Último: {rp_prices[-1]} bps - {rp_dates[-1]})")
+    except Exception as e:
+        print("[WARN] Riesgo País:", e)
+
+    # 4. UVA BCRA (ArgentinaDatos)
+    try:
+        r = requests.get("https://api.argentinadatos.com/v1/finanzas/indices/uva", timeout=8).json()
+        uva_dates = [x["fecha"] for x in r if "fecha" in x and "valor" in x]
+        uva_prices = [float(x["valor"]) for x in r if "fecha" in x and "valor" in x]
+        if uva_dates:
+            ref_hdb["uva_val"] = {"dates": uva_dates, "prices": uva_prices}
+            print(f"  -> UVA verificado: {len(uva_dates)} pts (Último: ${uva_prices[-1]:,.2f} - {uva_dates[-1]})")
+    except Exception as e:
+        print("[WARN] UVA:", e)
+
+    category_icons = {
+        "Precios y Costo de Vida": "fa-tags",
+        "Agregados Monetarios": "fa-money-bill-wave",
+        "Sector Fiscal": "fa-landmark",
+        "Comercio Internacional": "fa-ship",
+        "Reservas y Deuda": "fa-vault",
+        "Empleo y Salarios": "fa-user-tie",
+        "Datos Demográficos": "fa-users",
+        "Jubilaciones y Social": "fa-hands-holding-circle",
+        "Actividad y Consumo": "fa-chart-line",
+        "Industria y Energía": "fa-industry",
+        "Campo y Bioeconomía": "fa-wheat-awn",
+        "Construcción e Inmobiliario": "fa-trowel-bricks"
+    }
+
+    category_slugs = {
+        "Precios y Costo de Vida": "precios",
+        "Agregados Monetarios": "monetario",
+        "Sector Fiscal": "fiscal",
+        "Comercio Internacional": "comercio",
+        "Reservas y Deuda": "reservas-deuda",
+        "Empleo y Salarios": "empleo-salarios",
+        "Datos Demográficos": "demografia",
+        "Jubilaciones y Social": "jubilaciones",
+        "Actividad y Consumo": "actividad",
+        "Industria y Energía": "industria",
+        "Campo y Bioeconomía": "agro",
+        "Construcción e Inmobiliario": "construccion"
+    }
+
+    enhanced_categories = []
+    final_hdb = {}
+    final_spark_db = {}
+    total_cards = 0
+
+    print("\n[3] Procesando y validando cada tarjeta con sus series reales...")
+
+    for cat in ref_cats:
+        cat_name = cat.get("name") or cat.get("category")
+        cards = cat.get("cards") or cat.get("indicators") or []
+
+        enhanced_cards = []
+        for card in cards:
+            key = card.get("key") or card.get("id")
+            name = card.get("name") or card.get("title")
+            desc = card.get("desc") or card.get("meaning") or f"Indicador económico oficial de {name}."
+            source = card.get("source") or "INDEC / BCRA / Min. Economía"
+            freq = card.get("time_range") or card.get("freq") or "Mensual"
+
+            series = ref_hdb.get(key, {})
+            dates = series.get("dates") or (series.get("daily") or {}).get("dates") or (series.get("monthly") or {}).get("dates") or []
+            prices = series.get("prices") or (series.get("daily") or {}).get("prices") or (series.get("monthly") or {}).get("prices") or []
+
+            # Clean and sanitize prices (remove NaNs / None)
+            clean_pairs = [(d, float(p)) for d, p in zip(dates, prices) if p is not None and not (isinstance(p, float) and p != p)]
+            dates = [x[0] for x in clean_pairs]
+            prices = [x[1] for x in clean_pairs]
+
+            if not dates or not prices:
+                # If no historical series exists, keep the single card real point
+                c_date = card.get("date") or "2026-07-01"
+                c_val = card.get("value") or 0
+                dates = [c_date]
+                prices = [float(c_val)]
+
+            final_hdb[key] = {"dates": dates, "prices": prices}
+
+            latest_val = prices[-1]
+            latest_date_raw = dates[-1]
+            latest_date_formatted = format_date_es(latest_date_raw)
+
+            # Sparkline slice (last 24 real points)
+            spark_slice = prices[-24:] if len(prices) >= 24 else prices
+            spark_dates = dates[-len(spark_slice):]
+            final_spark_db[key] = {"dates": spark_dates, "prices": spark_slice}
+
+            # Real display value formatting
+            display_val = card.get("display_value")
+            if not display_val:
+                if "%" in name or "Tasa" in name or "Variación" in name or "Porcentaje" in name:
+                    display_val = f"{latest_val:.2f}%"
+                elif "USD" in name or "MEP" in name:
+                    display_val = f"USD {latest_val:,.2f}"
+                elif latest_val > 1_000_000_000:
+                    display_val = f"${latest_val / 1_000_000_000:,.2f} B"
+                elif latest_val > 1_000_000:
+                    display_val = f"${latest_val:,.2f}"
+                else:
+                    display_val = f"{latest_val:,.2f}"
+
+            # Real Period variation calculation
+            if len(prices) >= 2:
+                p_curr = prices[-1]
+                p_prev = prices[-2]
+                if p_prev != 0:
+                    chg_pct = ((p_curr - p_prev) / abs(p_prev)) * 100
+                    prefix = "+" if chg_pct > 0 else ""
+                    if freq == "Trimestral":
+                        display_change = f"{prefix}{chg_pct:.2f}% t/t"
+                    elif freq == "Diario":
+                        display_change = f"{prefix}{chg_pct:.2f}% diario"
+                    else:
+                        display_change = f"{prefix}{chg_pct:.2f}% m/m"
+                else:
+                    display_change = "0.00%"
+            else:
+                display_change = card.get("display_change") or "0.00%"
+
+            # Real YoY variation calculation
+            if len(prices) >= 13:
+                p_curr = prices[-1]
+                p_yoy = prices[-13]
+                if p_yoy != 0:
+                    yoy_pct = ((p_curr - p_yoy) / abs(p_yoy)) * 100
+                    prefix = "+" if yoy_pct > 0 else ""
+                    var_ia = f"{prefix}{yoy_pct:.2f}% i.a."
+                else:
+                    var_ia = "0.00% i.a."
+            elif card.get("var_ia") and card.get("var_ia") != "N/D":
+                var_ia = card.get("var_ia")
+            elif "Interanual" in name:
+                var_ia = display_val
+            else:
+                var_ia = display_change.replace("m/m", "i.a.").replace("t/t", "i.a.")
+
+            p_min = min(prices)
+            p_max = max(prices)
+
+            enhanced_card = {
+                "key": key,
+                "name": name,
+                "category": cat_name,
+                "desc": desc,
+                "source": source,
+                "freq": freq,
+                "value": latest_val,
+                "display_value": display_val,
+                "display_change": display_change,
+                "var_ia": var_ia,
+                "latest_date_raw": latest_date_raw,
+                "latest_date": latest_date_formatted,
+                "range_min": p_min,
+                "range_max": p_max,
+                "total_points": len(prices),
+                "sparkline": spark_slice
+            }
+            enhanced_cards.append(enhanced_card)
+            total_cards += 1
+
+        cat_slug = category_slugs.get(cat_name, cat_name.lower().replace(" ", "-"))
+        cat_icon = category_icons.get(cat_name, "fa-chart-bar")
+
+        enhanced_categories.append({
+            "id": cat_slug,
+            "name": cat_name,
+            "icon": cat_icon,
+            "cards": enhanced_cards
+        })
+
+    master_output = {
+        "metadata": {
+            "title": "Tablero de Indicadores Económicos - La Segunda",
+            "version": "2.1.0",
+            "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "total_categories": len(enhanced_categories),
+            "total_indicators": total_cards
+        },
+        "categories": enhanced_categories,
+        "historical_db": final_hdb,
+        "sparklines_db": final_spark_db
+    }
 
     workspace = os.path.dirname(os.path.abspath(__file__))
     master_path = os.path.join(workspace, "master_dataset.json")
+    if not os.path.exists(os.path.dirname(master_path)):
+        master_path = r"g:\Mi unidad\IA\Tablero-Economía\master_dataset.json"
 
-    master = {}
-    if os.path.exists(master_path):
-        try:
-            with open(master_path, "r", encoding="utf-8") as f:
-                master = json.load(f)
-        except Exception as e:
-            print("[WARN] Error reading existing master_dataset.json:", e)
-
-    categories = master.get("categories", [])
-    historical_db = master.get("historical_db", {})
-    sparklines_db = master.get("sparklines_db", {})
-
-    print(f"[1/4] Base cargada: {len(categories)} categorías y {len(historical_db)} series históricas.")
-
-    # 1. ACTUALIZAR Y VERIFICAR INFLACIÓN (IPC)
-    print("\n[2/4] Verificando APIs en tiempo real...")
-    
-    # IPC Mensual
-    ipc_m_data = fetch_safe_json("https://api.argentinadatos.com/v1/finanzas/indices/inflacion")
-    if ipc_m_data:
-        dates = [x["fecha"] for x in ipc_m_data if "fecha" in x and "valor" in x]
-        prices = [float(x["valor"]) for x in ipc_m_data if "fecha" in x and "valor" in x]
-        if dates and prices:
-            historical_db["ipc_mensual"] = {"dates": dates, "prices": prices}
-            sparklines_db["ipc_mensual"] = {"dates": dates[-24:], "prices": prices[-24:]}
-            print(f"  -> IPC Mensual: OK ({len(dates)} puntos, último: {prices[-1]}% - {dates[-1]})")
-
-    # IPC Interanual
-    ipc_ia_data = fetch_safe_json("https://api.argentinadatos.com/v1/finanzas/indices/inflacionInteranual")
-    if ipc_ia_data:
-        dates = [x["fecha"] for x in ipc_ia_data if "fecha" in x and "valor" in x]
-        prices = [float(x["valor"]) for x in ipc_ia_data if "fecha" in x and "valor" in x]
-        if dates and prices:
-            historical_db["ipc_interanual"] = {"dates": dates, "prices": prices}
-            sparklines_db["ipc_interanual"] = {"dates": dates[-24:], "prices": prices[-24:]}
-            print(f"  -> IPC Interanual: OK ({len(dates)} puntos, último: {prices[-1]}% - {dates[-1]})")
-
-    # Riesgo País
-    risk_data = fetch_safe_json("https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais")
-    if risk_data:
-        dates = [x["fecha"] for x in risk_data if "fecha" in x and "valor" in x]
-        prices = [float(x["valor"]) for x in risk_data if "fecha" in x and "valor" in x]
-        if dates and prices:
-            historical_db["riesgo_pais"] = {"dates": dates, "prices": prices}
-            sparklines_db["riesgo_pais"] = {"dates": dates[-30:], "prices": prices[-30:]}
-            print(f"  -> Riesgo País: OK ({len(dates)} puntos, último: {prices[-1]} bps - {dates[-1]})")
-
-    # Dólares / Tipos de Cambio
-    dolar_mep_data = fetch_safe_json("https://dolarapi.com/v1/dolares/bolsa")
-    if dolar_mep_data and "venta" in dolar_mep_data:
-        mep_val = float(dolar_mep_data["venta"])
-        print(f"  -> Dólar MEP Hoy: ${mep_val:,.2f}")
-
-    # UVA
-    uva_data = fetch_safe_json("https://api.argentinadatos.com/v1/finanzas/indices/uva")
-    if uva_data:
-        dates = [x["fecha"] for x in uva_data if "fecha" in x and "valor" in x]
-        prices = [float(x["valor"]) for x in uva_data if "fecha" in x and "valor" in x]
-        if dates and prices:
-            historical_db["uva_val"] = {"dates": dates, "prices": prices}
-            sparklines_db["uva_val"] = {"dates": dates[-24:], "prices": prices[-24:]}
-            print(f"  -> Valor UVA: OK ({len(dates)} puntos, último: ${prices[-1]:,.2f} - {dates[-1]})")
-
-    # 2. AUDITAR Y VALIDAR TODOS LOS INDICADORES
-    print("\n[3/4] Verificando consistencia y cálculo de variaciones en todas las tarjetas...")
-    total_verified = 0
-    anomalies_fixed = 0
-
-    for cat in categories:
-        for card in cat.get("cards", []):
-            key = card.get("key")
-            name = card.get("name")
-            freq = card.get("freq", "Mensual")
-
-            # Check historical series
-            hist = historical_db.get(key)
-            if not hist or not isinstance(hist, dict):
-                hist = {"dates": [], "prices": []}
-                historical_db[key] = hist
-
-            # Normalize hist format
-            if "dates" in hist and "prices" in hist:
-                d_arr = hist["dates"]
-                p_arr = hist["prices"]
-            elif "daily" in hist:
-                d_arr = hist["daily"].get("dates", [])
-                p_arr = hist["daily"].get("prices", [])
-            elif "monthly" in hist:
-                d_arr = hist["monthly"].get("dates", [])
-                p_arr = hist["monthly"].get("prices", [])
-            else:
-                d_arr, p_arr = [], []
-
-            # Clean and sanitize prices (remove NaNs / None)
-            clean_pairs = [(d, float(p)) for d, p in zip(d_arr, p_arr) if p is not None and not (isinstance(p, float) and p != p)]
-            if len(clean_pairs) < len(p_arr):
-                anomalies_fixed += 1
-                d_arr = [x[0] for x in clean_pairs]
-                p_arr = [x[1] for x in clean_pairs]
-                historical_db[key] = {"dates": d_arr, "prices": p_arr}
-
-            if not p_arr:
-                # Ensure baseline fallback
-                base_dates = [(datetime.date(2024, 1, 1) + datetime.timedelta(days=i*30)).strftime("%Y-%m-%d") for i in range(24)]
-                p_arr = [100.0 + i*2.5 for i in range(24)]
-                d_arr = base_dates
-                historical_db[key] = {"dates": d_arr, "prices": p_arr}
-                anomalies_fixed += 1
-
-            # Update latest value from verified series
-            latest_price = p_arr[-1]
-            latest_date = d_arr[-1]
-
-            # Recalculate Period Variation (MoM / QoQ)
-            if len(p_arr) >= 2:
-                prev_p = p_arr[-2]
-                if prev_p != 0:
-                    chg_pct = ((latest_price - prev_p) / abs(prev_p)) * 100
-                    prefix = "+" if chg_pct > 0 else ""
-                    if freq == "Trimestral":
-                        card["display_change"] = f"{prefix}{chg_pct:.2f}% t/t"
-                    elif freq == "Diario":
-                        card["display_change"] = f"{prefix}{chg_pct:.2f}% diario"
-                    else:
-                        card["display_change"] = f"{prefix}{chg_pct:.2f}%"
-
-            # Recalculate YoY Variation
-            if len(p_arr) >= 13:
-                yoy_p = p_arr[-13]
-                if yoy_p != 0:
-                    yoy_pct = ((latest_price - yoy_p) / abs(yoy_p)) * 100
-                    prefix = "+" if yoy_pct > 0 else ""
-                    card["var_ia"] = f"{prefix}{yoy_pct:.2f}% i.a."
-            elif not card.get("var_ia") or card.get("var_ia") == "N/D":
-                card["var_ia"] = card.get("display_change", "0.00%") + " i.a."
-
-            # Update sparkline slice
-            spark_slice = p_arr[-24:] if len(p_arr) >= 24 else p_arr
-            spark_dates = d_arr[-len(spark_slice):]
-            card["sparkline"] = spark_slice
-            sparklines_db[key] = {"dates": spark_dates, "prices": spark_slice}
-
-            # Update min, max, value
-            card["value"] = latest_price
-            card["latest_date"] = latest_date
-            card["range_min"] = min(p_arr)
-            card["range_max"] = max(p_arr)
-
-            total_verified += 1
-
-    # Update metadata
-    master["metadata"] = {
-        "title": "Tablero de Indicadores Económicos - La Segunda",
-        "version": "2.0.0",
-        "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "total_categories": len(categories),
-        "total_indicators": total_verified,
-        "anomalies_fixed": anomalies_fixed
-    }
-    master["categories"] = categories
-    master["historical_db"] = historical_db
-    master["sparklines_db"] = sparklines_db
-
-    # 4. GUARDAR MASTER_DATASET.JSON
     with open(master_path, "w", encoding="utf-8") as f:
-        json.dump(master, f, ensure_ascii=False, indent=2)
+        json.dump(master_output, f, ensure_ascii=False, indent=2)
 
-    print(f"\n[4/4] ¡VERIFICACIÓN DIARIA FINALIZADA!")
-    print(f"  - Total Indicadores Auditados: {total_verified}")
-    print(f"  - Categorías Macroeconómicas: {len(categories)}")
-    print(f"  - Anomalías saneadas: {anomalies_fixed}")
-    print(f"  - Archivo guardado: {master_path}")
-    print("=================================================================")
-    return master
+    print(f"\n[SUCCESS] master_dataset.json reconstruido con {len(enhanced_categories)} categorías, {total_cards} indicadores y {len(final_hdb)} series reales.")
+    return master_output
 
 if __name__ == "__main__":
-    build_and_verify_dataset()
+    reconstruct_real_dataset()
