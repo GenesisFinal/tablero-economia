@@ -63,18 +63,18 @@ def compute_aggregate_to_pbi(dates, prices, pbi_dict, mode='billones'):
 
 def reconstruct_and_order_dataset():
     print("==========================================================================")
-    print("GENERANDO DATASET CON CANASTAS CONSTANTES Y AGREGADOS / PBI...")
+    print("CALCULANDO Y REORDENANDO AGREGADOS MONETARIOS / PBI...")
     print("==========================================================================")
 
-    ref_file = r'g:\Mi unidad\IA\Valores Financieros\master_dataset_PUNTO_RESTAURACION_BALANCES_UNIFICADOS_COMPLETO.json'
-    with open(ref_file, 'r', encoding='utf-8', errors='ignore') as f:
-        ref_data = json.load(f)
+    # Load from master_dataset.json (which has the complete verified series)
+    master_path = r'g:\Mi unidad\IA\Tablero-Economía\master_dataset.json'
+    with open(master_path, 'r', encoding='utf-8') as f:
+        master_data = json.load(f)
 
-    root = ref_data.get('final_data', ref_data)
-    ref_cats = root.get('economic_categories', [])
-    ref_hdb = root.get('historical_db', {})
+    ref_cats = master_data.get('categories', [])
+    ref_hdb = master_data.get('historical_db', {})
 
-    # Live APIs
+    # Live APIs for fresh updates
     try:
         r = requests.get("https://api.argentinadatos.com/v1/finanzas/indices/inflacion", timeout=8).json()
         ipc_dates = [x["fecha"] for x in r if "fecha" in x and "valor" in x]
@@ -128,8 +128,8 @@ def reconstruct_and_order_dataset():
     for nom_key, const_key, const_name, const_desc in canastas_to_adjust:
         if nom_key in ref_hdb:
             nom_s = ref_hdb[nom_key]
-            dates = nom_s.get("dates") or (nom_s.get("daily") or {}).get("dates") or (nom_s.get("monthly") or {}).get("dates") or []
-            prices = nom_s.get("prices") or (nom_s.get("daily") or {}).get("prices") or (nom_s.get("monthly") or {}).get("prices") or []
+            dates = nom_s.get("dates", [])
+            prices = nom_s.get("prices", [])
             if dates and prices:
                 const_prices = adjust_series_to_constant(dates, prices, ipc_dict)
                 ref_hdb[const_key] = {"dates": dates, "prices": const_prices}
@@ -152,13 +152,13 @@ def reconstruct_and_order_dataset():
     for agg_key, pbi_key, pbi_name, pbi_desc, mode in monetary_pbi_specs:
         if agg_key in ref_hdb and pbi_dict:
             agg_s = ref_hdb[agg_key]
-            dates = agg_s.get("dates") or (agg_s.get("daily") or {}).get("dates") or (agg_s.get("monthly") or {}).get("dates") or []
-            prices = agg_s.get("prices") or (agg_s.get("daily") or {}).get("prices") or (agg_s.get("monthly") or {}).get("prices") or []
+            dates = agg_s.get("dates", [])
+            prices = agg_s.get("prices", [])
             if dates and prices:
                 rd, rp = compute_aggregate_to_pbi(dates, prices, pbi_dict, mode)
                 if rd and rp:
                     ref_hdb[pbi_key] = {"dates": rd, "prices": rp}
-                    print(f"  -> {pbi_name}: {len(rp)} pts, último: {rp[-1]}% ({rd[-1]})")
+                    print(f"  -> {pbi_name}: {len(rp)} pts, último: {rp[-1]}% al {rd[-1]}")
 
     # PRECIOS Y COSTO DE VIDA KEYS (19 cards)
     precios_ordered_keys = [
@@ -221,12 +221,11 @@ def reconstruct_and_order_dataset():
         cards_dict = {}
         for c in raw_cards:
             k = c.get("key") or c.get("id")
-            # Filter out any misplaced keys
             if "Monetario" in cat_name and "canasta" in k:
                 continue
             cards_dict[k] = c
 
-        # If Precios, populate constant canastas
+        # If Precios, populate constant canastas metadata
         if "Precios" in cat_name:
             for nom_key, const_key, const_name, const_desc in canastas_to_adjust:
                 cards_dict[const_key] = {
@@ -238,7 +237,7 @@ def reconstruct_and_order_dataset():
                     "time_range": "Mensual"
                 }
 
-        # If Monetario, populate PBI ratio cards
+        # If Monetario, populate PBI ratio metadata
         if "Monetario" in cat_name:
             for agg_key, pbi_key, pbi_name, pbi_desc, mode in monetary_pbi_specs:
                 cards_dict[pbi_key] = {
@@ -290,18 +289,17 @@ def reconstruct_and_order_dataset():
             spark_dates = dates[-len(spark_slice):]
             final_spark_db[key] = {"dates": spark_dates, "prices": spark_slice}
 
-            display_val = card.get("display_value")
-            if not display_val or key.endswith("_constante") or key.endswith("_pbi"):
-                if key.endswith("_pbi") or "%" in name or "Tasa" in name or "Variación" in name or "Porcentaje" in name:
-                    display_val = f"{latest_val:.2f}%"
-                elif "USD" in name or "MEP" in name:
-                    display_val = f"USD {latest_val:,.2f}"
-                elif latest_val > 1_000_000_000:
-                    display_val = f"${latest_val / 1_000_000_000:,.2f} B"
-                elif latest_val > 1_000_000:
-                    display_val = f"${latest_val:,.2f}"
-                else:
-                    display_val = f"${latest_val:,.2f}" if "$" not in str(latest_val) else f"{latest_val:,.2f}"
+            # Display value
+            if key.endswith("_pbi") or "%" in name or "Tasa" in name or "Variación" in name or "Porcentaje" in name:
+                display_val = f"{latest_val:.2f}%"
+            elif "USD" in name or "MEP" in name:
+                display_val = f"USD {latest_val:,.2f}"
+            elif latest_val > 1_000_000_000:
+                display_val = f"${latest_val / 1_000_000_000:,.2f} B"
+            elif latest_val > 1_000_000:
+                display_val = f"${latest_val:,.2f}"
+            else:
+                display_val = f"${latest_val:,.2f}" if "$" not in str(latest_val) else f"{latest_val:,.2f}"
 
             if len(prices) >= 2:
                 p_curr = prices[-1]
@@ -382,11 +380,6 @@ def reconstruct_and_order_dataset():
         "historical_db": final_hdb,
         "sparklines_db": final_spark_db
     }
-
-    workspace = os.path.dirname(os.path.abspath(__file__))
-    master_path = os.path.join(workspace, "master_dataset.json")
-    if not os.path.exists(os.path.dirname(master_path)):
-        master_path = r"g:\Mi unidad\IA\Tablero-Economía\master_dataset.json"
 
     with open(master_path, "w", encoding="utf-8") as f:
         json.dump(master_output, f, ensure_ascii=False, indent=2)
