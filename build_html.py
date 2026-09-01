@@ -2,7 +2,7 @@ import json
 import os
 
 def build_index_html():
-    print("Building index.html with complete social security indicators, ratio badges, and calendar filtering...")
+    print("Building index.html with 85% min and 115% max Y-scale padding across all charts and sparklines...")
 
     workspace = os.path.dirname(os.path.abspath(__file__))
     dataset_path = os.path.join(workspace, 'master_dataset.json')
@@ -269,7 +269,7 @@ def build_index_html():
             <i class="fas fa-layer-group text-brand-red"></i>
             <span>Categorías</span>
           </span>
-          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400" id="sidebar-total-badge">120</span>
+          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400" id="sidebar-total-badge">123</span>
         </div>
         <div class="flex flex-col gap-1 text-xs font-medium" id="sidebar-category-list">
           <!-- Rendered dynamically -->
@@ -467,6 +467,30 @@ def build_index_html():
       showRegression: true
     }};
 
+    // Compute 85% min and 115% max Y-scale padding to prevent visual exaggeration on low-variance series
+    function computeScaleBounds(prices) {{
+      if (!prices || !prices.length) return {{ min: undefined, max: undefined }};
+      const pMin = Math.min(...prices);
+      const pMax = Math.max(...prices);
+
+      let sMin, sMax;
+      if (pMin >= 0 && pMax >= 0) {{
+        sMin = pMin * 0.85;
+        sMax = pMax * 1.15;
+        if (sMin < 0) sMin = 0;
+      }} else if (pMin < 0 && pMax > 0) {{
+        sMin = pMin * 1.15;
+        sMax = pMax * 1.15;
+      }} else if (pMax <= 0) {{
+        sMin = pMin * 1.15;
+        sMax = pMax * 0.85;
+      }} else {{
+        sMin = pMin * 0.85;
+        sMax = pMax * 1.15;
+      }}
+      return {{ min: sMin, max: sMax }};
+    }}
+
     function isBarChartIndicator(card) {{
       if (!card) return false;
       const k = (card.key || '').toLowerCase();
@@ -642,7 +666,7 @@ def build_index_html():
         const totalBadgeEl = document.getElementById('sidebar-total-badge');
         if (updateTimeEl) updateTimeEl.innerText = window.DATASET.metadata.last_updated;
         if (sidebarUpdateEl) sidebarUpdateEl.innerText = window.DATASET.metadata.last_updated.slice(0, 10);
-        if (totalBadgeEl) totalBadgeEl.innerText = window.DATASET.metadata.total_indicators || 120;
+        if (totalBadgeEl) totalBadgeEl.innerText = window.DATASET.metadata.total_indicators || 123;
       }}
     }});
 
@@ -773,7 +797,7 @@ def build_index_html():
       if (!sidebarContainer || !window.DATASET) return;
 
       const categories = window.DATASET.categories || [];
-      const totalCount = window.DATASET.metadata.total_indicators || 120;
+      const totalCount = window.DATASET.metadata.total_indicators || 123;
 
       let html = `
         <button 
@@ -815,7 +839,7 @@ def build_index_html():
       if (!container || !window.DATASET) return;
 
       const categories = window.DATASET.categories || [];
-      const totalCount = window.DATASET.metadata.total_indicators || 120;
+      const totalCount = window.DATASET.metadata.total_indicators || 123;
 
       let html = `
         <button 
@@ -1042,6 +1066,8 @@ def build_index_html():
         sparklineCharts[key].destroy();
       }}
 
+      const scaleBounds = computeScaleBounds(prices);
+
       if (isBar) {{
         const bgColors = prices.map(p => p >= 0 ? '#10B981' : '#E20039');
         const borderColors = prices.map(p => p >= 0 ? '#059669' : '#BE123C');
@@ -1066,7 +1092,11 @@ def build_index_html():
             plugins: {{ legend: {{ display: false }}, tooltip: {{ enabled: false }} }},
             scales: {{
               x: {{ display: false }},
-              y: {{ display: false }}
+              y: {{ 
+                display: false,
+                min: scaleBounds.min,
+                max: scaleBounds.max
+              }}
             }},
             animation: false
           }}
@@ -1097,7 +1127,11 @@ def build_index_html():
             plugins: {{ legend: {{ display: false }}, tooltip: {{ enabled: false }} }},
             scales: {{
               x: {{ display: false }},
-              y: {{ display: false }}
+              y: {{ 
+                display: false,
+                min: scaleBounds.min,
+                max: scaleBounds.max
+              }}
             }},
             animation: false
           }}
@@ -1266,6 +1300,9 @@ def build_index_html():
       // Real Calendar Filter
       const {{ dates: filteredDates, prices: filteredPrices }} = filterSeriesByCalendar(rawDates, rawPrices, modalState.period);
       const targetLen = filteredPrices.length;
+
+      // Calculate 85% min and 115% max Y-scale padding for realistic, non-distorted visualization
+      const scaleBounds = computeScaleBounds(filteredPrices);
 
       // Period buttons highlight
       ['1A', '2A', '3A', '5A', 'ALL'].forEach(p => {{
@@ -1444,6 +1481,8 @@ def build_index_html():
               }}
             }},
             y: {{
+              min: scaleBounds.min,
+              max: scaleBounds.max,
               grid: {{ color: gridColor }},
               ticks: {{
                 color: textColor,
@@ -1534,7 +1573,7 @@ def build_index_html():
     with open(out_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-    print(f"[SUCCESS] Wrote index.html with social security and ratio badges ({len(html_content)} bytes)!")
+    print(f"[SUCCESS] Wrote index.html with 85% min and 115% max Y-scale padding ({len(html_content)} bytes)!")
 
 if __name__ == "__main__":
     build_index_html()
