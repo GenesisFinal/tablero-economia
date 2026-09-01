@@ -1,0 +1,53 @@
+name: Actualización Diaria de Indicadores Económicos
+
+on:
+  schedule:
+    # Runs twice a day: 09:00 UTC (06:00 ART) and 21:00 UTC (18:00 ART)
+    - cron: '0 9,21 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repositorio
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pandas beautifulsoup4 urllib3
+
+      - name: Verificar y Actualizar Datos Macroeconómicos
+        run: |
+          python actualizar_datos.py
+
+      - name: Compilar Tablero Web
+        run: |
+          python build_html.py
+
+      - name: Commit y Push de Actualizaciones
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add master_dataset.json index.html
+          if git diff --staged --quiet; then
+            echo "No se detectaron cambios en los datos del día."
+          else
+            git commit -m "Auto-update: Verificación diaria de indicadores económicos $(date -u +'%Y-%m-%d %H:%M:%S UTC') [skip ci]"
+            git push
+          fi
