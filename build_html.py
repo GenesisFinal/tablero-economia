@@ -338,7 +338,7 @@ def build_index_html():
     <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-slate-400">
       <div class="flex items-center gap-2 font-medium">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span>Sistema de Monitoreo Macroeconómico • <strong class="text-slate-900 dark:text-slate-200">La Segunda Seguros</strong></span>
+        <span class="text-slate-900 dark:text-slate-200 font-bold">Sistema de Monitoreo Macroeconómico</span>
       </div>
       <div class="flex items-center gap-4">
         <span>Última Actualización: <strong id="footer-update-time" class="text-slate-900 dark:text-slate-200 font-mono font-bold"></strong></span>
