@@ -2,7 +2,7 @@ import json
 import os
 
 def build_index_html():
-    print("Building index.html with 100% unified formatting across cards, modal, Y-axis, tooltips and stats...")
+    print("Building index.html with bar charts (Green for Surplus, Red for Deficit) for fiscal/balance results...")
 
     workspace = os.path.dirname(os.path.abspath(__file__))
     dataset_path = os.path.join(workspace, 'master_dataset.json')
@@ -161,7 +161,7 @@ def build_index_html():
   <header class="sticky top-0 z-40 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#334155]/60 transition-colors shadow-sm">
     <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       
-      <!-- Left: Brand Logo -->
+      <!-- Left: Logo -->
       <div class="flex items-center gap-3 shrink-0">
         <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white border border-slate-300 dark:border-[#334155]">
           <i class="fas fa-bars text-sm"></i>
@@ -181,7 +181,7 @@ def build_index_html():
         </div>
       </div>
 
-      <!-- Center: Quick Search Bar -->
+      <!-- Center: Search Bar -->
       <div class="flex-1 max-w-lg hidden md:block">
         <div class="relative">
           <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -204,7 +204,7 @@ def build_index_html():
           <button 
             onclick="setNavLayout('sidebar')" 
             id="layout-btn-sidebar"
-            class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm"
+            class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold"
             title="Menú lateral izquierdo fijo"
           >
             <i class="fas fa-table-columns"></i>
@@ -465,11 +465,26 @@ def build_index_html():
       showRegression: true
     }};
 
-    // UNIFIED INDICATOR FORMATTER
+    // Check if indicator is a Fiscal or Trade Result (Surplus / Deficit)
+    function isBarChartIndicator(card) {{
+      if (!card) return false;
+      const k = (card.key || '').toLowerCase();
+      const n = (card.name || '').toLowerCase();
+      return (
+        card.chart_type === 'bar' ||
+        k.startsWith('resultado_') ||
+        k.startsWith('saldo_') ||
+        k.startsWith('balanza_') ||
+        n.includes('resultado fiscal') ||
+        n.includes('resultado financiero') ||
+        n.includes('resultado primario') ||
+        n.includes('saldo comercial')
+      );
+    }}
+
     function getUnitMeta(card) {{
       const k = (card.key || '').toLowerCase();
       const n = (card.name || '').toLowerCase();
-      const c = (card.category || '').toLowerCase();
 
       if (k === 'riesgo_pais') {{
         return {{ type: 'bps', prefix: '', suffix: ' bps', decimals: 0 }};
@@ -634,7 +649,7 @@ def build_index_html():
         {{ key: 'ipc_interanual', label: 'IPC Interanual', icon: 'fa-chart-simple', color: 'text-rose-600 dark:text-rose-400' }},
         {{ key: 'riesgo_pais', label: 'Riesgo País', icon: 'fa-arrow-trend-down', color: 'text-blue-600 dark:text-blue-400' }},
         {{ key: 'reservas_brutas', label: 'Reservas BCRA', icon: 'fa-vault', color: 'text-emerald-600 dark:text-emerald-400' }},
-        {{ key: 'base_monetaria_pbi', label: 'Base Monetaria / PBI', icon: 'fa-money-bill-wave', color: 'text-cyan-600 dark:text-cyan-400' }},
+        {{ key: 'resultado_fiscal_primario', label: 'Resultado Primario', icon: 'fa-scale-balanced', color: 'text-cyan-600 dark:text-cyan-400' }},
         {{ key: 'smvm_val', label: 'Salario Mínimo (SMVM)', icon: 'fa-wallet', color: 'text-purple-600 dark:text-purple-400' }}
       ];
 
@@ -847,7 +862,8 @@ def build_index_html():
       setTimeout(() => {{
         categories.forEach(cat => {{
           (cat.cards || []).forEach(c => {{
-            drawSparkline(c.key, c.sparkline);
+            const isBar = isBarChartIndicator(c);
+            drawSparkline(c.key, c.sparkline, isBar);
           }});
         }});
       }}, 50);
@@ -930,45 +946,80 @@ def build_index_html():
       `;
     }}
 
-    function drawSparkline(key, prices) {{
+    // Draw Sparklines (Line vs Bar)
+    function drawSparkline(key, prices, isBar = false) {{
       const canvas = document.getElementById(`sparkline-${{key}}`);
       if (!canvas || !prices || prices.length < 2) return;
 
       const ctx = canvas.getContext('2d');
-      const isUp = prices[prices.length - 1] >= prices[0];
-      const strokeColor = isUp ? '#059669' : '#E20039';
-      const fillColor = isUp ? 'rgba(5, 150, 105, 0.15)' : 'rgba(226, 0, 57, 0.15)';
 
       if (sparklineCharts[key]) {{
         sparklineCharts[key].destroy();
       }}
 
-      sparklineCharts[key] = new Chart(ctx, {{
-        type: 'line',
-        data: {{
-          labels: prices.map((_, i) => i),
-          datasets: [{{
-            data: prices,
-            borderColor: strokeColor,
-            borderWidth: 2,
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            tension: 0.35,
-            fill: true,
-            backgroundColor: fillColor
-          }}]
-        }},
-        options: {{
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {{ legend: {{ display: false }}, tooltip: {{ enabled: false }} }},
-          scales: {{
-            x: {{ display: false }},
-            y: {{ display: false }}
+      if (isBar) {{
+        // Bar sparkline with Green for Surplus (>=0) and Red for Deficit (<0)
+        const bgColors = prices.map(p => p >= 0 ? '#10B981' : '#E20039');
+        const borderColors = prices.map(p => p >= 0 ? '#059669' : '#BE123C');
+
+        sparklineCharts[key] = new Chart(ctx, {{
+          type: 'bar',
+          data: {{
+            labels: prices.map((_, i) => i),
+            datasets: [{{
+              data: prices,
+              backgroundColor: bgColors,
+              borderColor: borderColors,
+              borderWidth: 1,
+              borderRadius: 2,
+              barPercentage: 0.9,
+              categoryPercentage: 0.9
+            }}]
           }},
-          animation: false
-        }}
-      }});
+          options: {{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {{ legend: {{ display: false }}, tooltip: {{ enabled: false }} }},
+            scales: {{
+              x: {{ display: false }},
+              y: {{ display: false }}
+            }},
+            animation: false
+          }}
+        }});
+      }} else {{
+        // Standard line sparkline
+        const isUp = prices[prices.length - 1] >= prices[0];
+        const strokeColor = isUp ? '#059669' : '#E20039';
+        const fillColor = isUp ? 'rgba(5, 150, 105, 0.15)' : 'rgba(226, 0, 57, 0.15)';
+
+        sparklineCharts[key] = new Chart(ctx, {{
+          type: 'line',
+          data: {{
+            labels: prices.map((_, i) => i),
+            datasets: [{{
+              data: prices,
+              borderColor: strokeColor,
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              tension: 0.35,
+              fill: true,
+              backgroundColor: fillColor
+            }}]
+          }},
+          options: {{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {{ legend: {{ display: false }}, tooltip: {{ enabled: false }} }},
+            scales: {{
+              x: {{ display: false }},
+              y: {{ display: false }}
+            }},
+            animation: false
+          }}
+        }});
+      }}
     }}
 
     function handleSearch(val) {{
@@ -1032,6 +1083,7 @@ def build_index_html():
       modalState.key = key;
       modalState.card = card;
       modalState.meta = meta;
+      modalState.isBar = isBarChartIndicator(card);
       modalState.series = {{ dates, prices }};
       modalState.period = '2A';
       modalState.showRegression = true;
@@ -1044,7 +1096,13 @@ def build_index_html():
       document.getElementById('modal-source-badge').innerText = card.source;
       document.getElementById('modal-date-badge').innerText = `Último Dato: ${{card.latest_date}}`;
 
-      // Populate Stats with 100% UNIFIED FORMATTING
+      // Icon
+      const iconEl = document.getElementById('modal-icon');
+      if (iconEl) {{
+        iconEl.className = modalState.isBar ? "fas fa-chart-column" : "fas fa-chart-line";
+      }}
+
+      // Populate Stats
       const formattedLatest = formatValueWithMeta(card.value, meta);
       document.getElementById('modal-stat-latest').innerText = formattedLatest;
       document.getElementById('modal-stat-date').innerText = `Publicación: ${{card.latest_date}}`;
@@ -1109,6 +1167,7 @@ def build_index_html():
       if (!modalState.series || !modalState.series.prices.length) return;
 
       const meta = modalState.meta || getUnitMeta(modalState.card);
+      const isBar = modalState.isBar;
       const {{ dates, prices }} = modalState.series;
       let targetLen = prices.length;
 
@@ -1121,7 +1180,7 @@ def build_index_html():
       const filteredDates = dates.slice(-targetLen);
       const filteredPrices = prices.slice(-targetLen);
 
-      // Period buttons highlight
+      // Period buttons
       ['1A', '2A', '3A', '5A', 'ALL'].forEach(p => {{
         const btn = document.getElementById(`btn-period-${{p}}`);
         if (btn) {{
@@ -1160,7 +1219,6 @@ def build_index_html():
       const intercept = (sumY - slope * sumX) / (n || 1);
       const regressionPrices = filteredPrices.map((_, i) => slope * i + intercept);
 
-      // Trend label & Slope with unified unit
       const trendEl = document.getElementById('modal-stat-trend');
       const slopeEl = document.getElementById('modal-stat-slope');
       if (slope > 0.001) {{
@@ -1177,7 +1235,6 @@ def build_index_html():
       const slopeUnit = meta.type === 'percent' ? 'p.p. / per' : (meta.suffix ? `${{meta.suffix.trim()}} / per` : (meta.prefix ? `${{meta.prefix.trim()}} / per` : '/ per'));
       slopeEl.innerText = `Pendiente: ${{slope.toFixed(2)}} ${{slopeUnit}}`;
 
-      // Render Chart.js
       const canvas = document.getElementById('modal-main-chart');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -1190,8 +1247,27 @@ def build_index_html():
       const textColor = isDark ? '#CBD5E1' : '#334155';
       const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)';
 
-      const datasets = [
-        {{
+      let datasets = [];
+
+      if (isBar) {{
+        // BAR CHART DATASET WITH GREEN FOR SURPLUS (>=0) AND RED FOR DEFICIT (<0)
+        const bgColors = filteredPrices.map(p => p >= 0 ? 'rgba(16, 185, 129, 0.85)' : 'rgba(226, 0, 57, 0.85)');
+        const borderColors = filteredPrices.map(p => p >= 0 ? '#059669' : '#BE123C');
+
+        datasets.push({{
+          type: 'bar',
+          label: modalState.card.name,
+          data: filteredPrices,
+          backgroundColor: bgColors,
+          borderColor: borderColors,
+          borderWidth: 1.5,
+          borderRadius: 4,
+          barPercentage: 0.85
+        }});
+      }} else {{
+        // LINE CHART DATASET
+        datasets.push({{
+          type: 'line',
           label: modalState.card.name,
           data: filteredPrices,
           borderColor: '#E20039',
@@ -1204,11 +1280,12 @@ def build_index_html():
           fill: true,
           backgroundColor: isDark ? 'rgba(226, 0, 57, 0.15)' : 'rgba(226, 0, 57, 0.08)',
           tension: 0.25
-        }}
-      ];
+        }});
+      }}
 
       if (modalState.showRegression) {{
         datasets.push({{
+          type: 'line',
           label: 'Recta de Regresión (Tendencia)',
           data: regressionPrices,
           borderColor: '#0284C7',
@@ -1221,7 +1298,7 @@ def build_index_html():
       }}
 
       modalChart = new Chart(ctx, {{
-        type: 'line',
+        type: isBar ? 'bar' : 'line',
         data: {{
           labels: filteredDates,
           datasets: datasets
@@ -1254,6 +1331,10 @@ def build_index_html():
                 label: function(context) {{
                   const val = context.raw || 0;
                   const formatted = formatValueWithMeta(val, meta);
+                  if (isBar && context.dataset.type === 'bar') {{
+                    const prefixState = val >= 0 ? '🟢 Superávit: ' : '🔴 Déficit: ';
+                    return `${{prefixState}}${{formatted}}`;
+                  }}
                   return `${{context.dataset.label}}: ${{formatted}}`;
                 }}
               }}
@@ -1358,7 +1439,7 @@ def build_index_html():
     with open(out_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-    print(f"[SUCCESS] Wrote index.html with 100% unified formatting ({len(html_content)} bytes)!")
+    print(f"[SUCCESS] Wrote index.html with bar charts for fiscal results ({len(html_content)} bytes)!")
 
 if __name__ == "__main__":
     build_index_html()
