@@ -2,7 +2,7 @@ import json
 import os
 
 def build_index_html():
-    print("Building index.html with real historical series and visible date badges on every card...")
+    print("Building index.html with 100% unified formatting across cards, modal, Y-axis, tooltips and stats...")
 
     workspace = os.path.dirname(os.path.abspath(__file__))
     dataset_path = os.path.join(workspace, 'master_dataset.json')
@@ -68,7 +68,6 @@ def build_index_html():
   </script>
 
   <style>
-    /* Base Theme Styles */
     body {{
       font-family: 'Sora', sans-serif;
       background-color: #F8FAFC;
@@ -84,7 +83,6 @@ def build_index_html():
       font-family: 'JetBrains Mono', monospace;
     }}
 
-    /* High Contrast Glass Cards */
     .glass-card {{
       background-color: #FFFFFF;
       border: 1px solid #E2E8F0;
@@ -107,7 +105,6 @@ def build_index_html():
       box-shadow: 0 12px 24px -6px rgba(226, 0, 57, 0.2);
     }}
 
-    /* Sidebar Active States */
     .sidebar-item.active {{
       background: linear-gradient(90deg, rgba(226, 0, 57, 0.12) 0%, rgba(226, 0, 57, 0.02) 100%);
       border-left: 4px solid #E20039;
@@ -127,7 +124,6 @@ def build_index_html():
       box-shadow: 0 4px 14px rgba(226, 0, 57, 0.35);
     }}
 
-    /* Scrollbars */
     ::-webkit-scrollbar {{
       width: 6px;
       height: 6px;
@@ -165,7 +161,7 @@ def build_index_html():
   <header class="sticky top-0 z-40 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#334155]/60 transition-colors shadow-sm">
     <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       
-      <!-- Left: Mobile Menu Toggle & Brand Logo -->
+      <!-- Left: Brand Logo -->
       <div class="flex items-center gap-3 shrink-0">
         <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white border border-slate-300 dark:border-[#334155]">
           <i class="fas fa-bars text-sm"></i>
@@ -202,10 +198,8 @@ def build_index_html():
         </div>
       </div>
 
-      <!-- Right: Layout Switcher & Theme Toggle -->
+      <!-- Right: Controls -->
       <div class="flex items-center gap-2">
-        
-        <!-- Navigation Layout Mode Toggle (Sidebar vs 2-Row Top Menu) -->
         <div class="hidden sm:flex items-center p-1 rounded-xl bg-slate-100 dark:bg-[#1E293B] border border-slate-300 dark:border-[#334155] text-xs font-semibold">
           <button 
             onclick="setNavLayout('sidebar')" 
@@ -250,7 +244,7 @@ def build_index_html():
     </div>
   </section>
 
-  <!-- TOP 2-ROW CATEGORY GRID (Shown when NavLayout is 'topgrid') -->
+  <!-- TOP 2-ROW CATEGORY GRID -->
   <nav id="top-categories-grid-nav" class="hidden bg-[#F8FAFC]/95 dark:bg-[#0B1120]/95 border-b border-slate-200 dark:border-[#334155]/50 py-3 transition-colors">
     <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2 flex items-center justify-between">
@@ -263,51 +257,41 @@ def build_index_html():
     </div>
   </nav>
 
-  <!-- MAIN APP WRAPPER (SIDEBAR + CONTENT) -->
+  <!-- MAIN APP WRAPPER -->
   <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow flex items-start gap-6">
     
-    <!-- LEFT SIDEBAR NAVIGATION -->
+    <!-- LEFT SIDEBAR -->
     <aside id="left-sidebar" class="w-64 xl:w-72 shrink-0 sticky top-20 flex flex-col gap-4 max-h-[calc(100vh-100px)] overflow-y-auto pr-1">
-      
-      <!-- Sidebar Box -->
       <div class="glass-card rounded-2xl p-3 border border-slate-200 dark:border-[#334155]/60">
-        
-        <!-- Sidebar Header -->
         <div class="px-3 py-2 border-b border-slate-200 dark:border-[#334155]/50 flex items-center justify-between mb-2">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 flex items-center gap-1.5">
             <i class="fas fa-layer-group text-brand-red"></i>
             <span>Categorías</span>
           </span>
-          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400" id="sidebar-total-badge">88</span>
+          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400" id="sidebar-total-badge">97</span>
         </div>
-
-        <!-- Sidebar Category Links List -->
         <div class="flex flex-col gap-1 text-xs font-medium" id="sidebar-category-list">
           <!-- Rendered dynamically -->
         </div>
-
       </div>
 
-      <!-- Quick Info Box -->
       <div class="glass-card rounded-2xl p-4 border border-slate-200 dark:border-[#334155]/50 text-xs flex flex-col gap-2">
         <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Datos 100% Verificados</span>
         </div>
         <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-          Series oficiales extraídas directamente de BCRA, INDEC y ArgentinaDatos sin interpolación.
+          Series oficiales extraídas de BCRA, INDEC y ArgentinaDatos sin interpolaciones ni datos inventados.
         </p>
         <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-1 pt-2 border-t border-slate-200 dark:border-[#334155]/40">
           Act: <span id="sidebar-update-time" class="text-slate-800 dark:text-slate-300 font-bold">...</span>
         </div>
       </div>
-
     </aside>
 
-    <!-- MOBILE OFF-CANVAS SIDEBAR BACKDROP & DRAWER -->
+    <!-- MOBILE DRAWER -->
     <div id="mobile-sidebar-backdrop" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200" onclick="toggleMobileSidebar()">
       <div id="mobile-sidebar-drawer" class="w-72 max-w-[85vw] h-full bg-white dark:bg-[#0F172A] p-4 shadow-2xl flex flex-col gap-4 overflow-y-auto transform -translate-x-full transition-transform duration-250 ease-out" onclick="event.stopPropagation()">
-        
         <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-brand-red"></span>
@@ -317,18 +301,14 @@ def build_index_html():
             <i class="fas fa-times"></i>
           </button>
         </div>
-
         <div class="flex flex-col gap-1 text-xs" id="mobile-sidebar-category-list">
           <!-- Rendered dynamically -->
         </div>
-
       </div>
     </div>
 
-    <!-- MAIN CONTENT AREA -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 w-full min-w-0">
-      
-      <!-- Search Results Status Banner (When searching) -->
       <div id="search-status-banner" class="hidden mb-6 p-4 rounded-2xl bg-brand-red/10 border border-brand-red/30 flex items-center justify-between">
         <div class="flex items-center gap-2 text-sm text-slate-800 dark:text-slate-200">
           <i class="fas fa-search text-brand-red"></i>
@@ -340,11 +320,9 @@ def build_index_html():
         </button>
       </div>
 
-      <!-- CATEGORIES SECTION -->
       <div id="categories-root" class="flex flex-col gap-10">
         <!-- Rendered dynamically -->
       </div>
-
     </main>
 
   </div>
@@ -391,7 +369,7 @@ def build_index_html():
         </button>
       </div>
 
-      <!-- Modal Body (Stats + Chart + Controls) -->
+      <!-- Modal Body -->
       <div class="p-6 overflow-y-auto flex-grow flex flex-col gap-5">
         
         <!-- Summary Stat Pills -->
@@ -427,10 +405,8 @@ def build_index_html():
           </div>
         </div>
 
-        <!-- Chart Controls (Time Range & Regression Line Switch) -->
+        <!-- Controls -->
         <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-100/80 dark:bg-[#0F172A]/40 p-2.5 rounded-2xl border border-slate-200 dark:border-[#334155]/40">
-          
-          <!-- Period Selector -->
           <div class="flex items-center gap-1 text-xs font-semibold">
             <span class="text-slate-600 dark:text-slate-400 mr-1 text-[11px] font-bold">Rango:</span>
             <button onclick="setModalPeriod('1A')" id="btn-period-1A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">1A</button>
@@ -440,7 +416,6 @@ def build_index_html():
             <button onclick="setModalPeriod('ALL')" id="btn-period-ALL" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">Histórico</button>
           </div>
 
-          <!-- Regression Line Toggle & Download PNG -->
           <div class="flex items-center gap-2">
             <button 
               onclick="toggleRegressionLine()" 
@@ -456,10 +431,9 @@ def build_index_html():
               <i class="fas fa-camera"></i>
             </button>
           </div>
-
         </div>
 
-        <!-- Main Interactive Chart Canvas -->
+        <!-- Chart Canvas -->
         <div class="relative w-full h-[360px] min-h-[300px] bg-white dark:bg-[#0F172A]/40 rounded-2xl p-3 border border-slate-200 dark:border-[#334155]/40 flex items-center justify-center">
           <canvas id="modal-main-chart"></canvas>
         </div>
@@ -476,7 +450,6 @@ def build_index_html():
 
   <!-- APPLICATION LOGIC -->
   <script>
-    // State Management
     let currentCategory = 'all';
     let searchQuery = '';
     let isDarkMode = false;
@@ -492,7 +465,72 @@ def build_index_html():
       showRegression: true
     }};
 
-    // Initialization
+    // UNIFIED INDICATOR FORMATTER
+    function getUnitMeta(card) {{
+      const k = (card.key || '').toLowerCase();
+      const n = (card.name || '').toLowerCase();
+      const c = (card.category || '').toLowerCase();
+
+      if (k === 'riesgo_pais') {{
+        return {{ type: 'bps', prefix: '', suffix: ' bps', decimals: 0 }};
+      }}
+
+      // Check Percentage
+      if (k.endsWith('_pbi') || k.includes('interanual') || n.includes('interanual') || 
+          n.includes('tasa') || n.includes('variación') || n.includes('variacion') || n.includes('porcentaje') || 
+          k.includes('desocupacion') || k.includes('actividad') || k.includes('indigencia') || k.includes('pobreza') || 
+          k.includes('empleo_val') || k.includes('salarios_indice') || k.includes('isac_general') || 
+          k.includes('ipc') || k.includes('ipi') || k.includes('emae_interanual') || k === 'supermercados_ventas' || 
+          k.includes('pbi_interanual') || k.includes('emae_agro') || n.includes('%')) {{
+        return {{ type: 'percent', prefix: '', suffix: '%', decimals: 2 }};
+      }}
+
+      // Check USD
+      if (k.endsWith('_usd') || k.includes('usd') || n.includes('usd') || n.includes('dólares') || n.includes('dolares')) {{
+        return {{ type: 'currency_usd', prefix: 'USD ', suffix: '', decimals: 2 }};
+      }}
+
+      // Check Quantities & Indices
+      if (k.includes('poblacion')) {{
+        return {{ type: 'quantity', prefix: '', suffix: ' hab.', decimals: 0 }};
+      }}
+      if (k.includes('empleo_privado') || k.includes('empleo_total')) {{
+        return {{ type: 'quantity', prefix: '', suffix: ' mil', decimals: 1 }};
+      }}
+      if (k.includes('gas_produccion')) {{
+        return {{ type: 'quantity', prefix: '', suffix: ' MM m³/d', decimals: 2 }};
+      }}
+      if (k.includes('petroleo_produccion')) {{
+        return {{ type: 'quantity', prefix: '', suffix: ' m³/d', decimals: 2 }};
+      }}
+      if (k.includes('cemento_total')) {{
+        return {{ type: 'quantity', prefix: '', suffix: ' Tn', decimals: 1 }};
+      }}
+      if (k.includes('isac_') || k.includes('icc_') || k.includes('indice_salarios_ipc') || k.includes('emae_construccion') || k.includes('supermercados_ventas_valor')) {{
+        return {{ type: 'index', prefix: '', suffix: ' pts', decimals: 2 }};
+      }}
+
+      // Currency ARS
+      return {{ type: 'currency_ars', prefix: '$', suffix: '', decimals: 2 }};
+    }}
+
+    function formatValueWithMeta(val, meta, compact = false) {{
+      if (val === null || val === undefined || isNaN(val)) return 'N/D';
+      const num = Number(val);
+      const dec = meta.decimals !== undefined ? meta.decimals : 2;
+
+      let formattedNumber = '';
+      if (compact && Math.abs(num) >= 1_000_000_000) {{
+        formattedNumber = (num / 1_000_000_000).toLocaleString('es-AR', {{ minimumFractionDigits: 1, maximumFractionDigits: 2 }}) + ' B';
+      }} else if (compact && Math.abs(num) >= 1_000_000) {{
+        formattedNumber = (num / 1_000_000).toLocaleString('es-AR', {{ minimumFractionDigits: 1, maximumFractionDigits: 2 }}) + ' M';
+      }} else {{
+        formattedNumber = num.toLocaleString('es-AR', {{ minimumFractionDigits: dec, maximumFractionDigits: dec }});
+      }}
+
+      return `${{meta.prefix}}${{formattedNumber}}${{meta.suffix}}`;
+    }}
+
     document.addEventListener('DOMContentLoaded', () => {{
       initTheme();
       initNavLayout();
@@ -508,11 +546,10 @@ def build_index_html():
         const totalBadgeEl = document.getElementById('sidebar-total-badge');
         if (updateTimeEl) updateTimeEl.innerText = window.DATASET.metadata.last_updated;
         if (sidebarUpdateEl) sidebarUpdateEl.innerText = window.DATASET.metadata.last_updated.slice(0, 10);
-        if (totalBadgeEl) totalBadgeEl.innerText = window.DATASET.metadata.total_indicators || 88;
+        if (totalBadgeEl) totalBadgeEl.innerText = window.DATASET.metadata.total_indicators || 97;
       }}
     }});
 
-    // Layout Switcher (Sidebar vs 2-Row Top Menu)
     function initNavLayout() {{
       setNavLayout(navLayout);
     }}
@@ -529,28 +566,16 @@ def build_index_html():
       if (mode === 'topgrid') {{
         if (sidebarEl) sidebarEl.classList.add('hidden');
         if (topGridEl) topGridEl.classList.remove('hidden');
-
-        if (btnTopGrid) {{
-          btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
-        }}
-        if (btnSidebar) {{
-          btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white";
-        }}
+        if (btnTopGrid) btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
+        if (btnSidebar) btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white";
       }} else {{
-        // Sidebar Mode
         if (sidebarEl) sidebarEl.classList.remove('hidden');
         if (topGridEl) topGridEl.classList.add('hidden');
-
-        if (btnSidebar) {{
-          btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
-        }}
-        if (btnTopGrid) {{
-          btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white";
-        }}
+        if (btnSidebar) btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
+        if (btnTopGrid) btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white";
       }}
     }}
 
-    // Mobile Sidebar Drawer Toggle
     function toggleMobileSidebar() {{
       const backdrop = document.getElementById('mobile-sidebar-backdrop');
       const drawer = document.getElementById('mobile-sidebar-drawer');
@@ -571,7 +596,6 @@ def build_index_html():
       }}
     }}
 
-    // Theme Switcher
     function initTheme() {{
       const savedTheme = localStorage.getItem('theme') || 'light';
       if (savedTheme === 'dark') {{
@@ -601,7 +625,6 @@ def build_index_html():
       if (modalState.key) updateModalChart();
     }}
 
-    // Top Highlight KPIs
     function renderTopKPIs() {{
       const container = document.getElementById('top-kpis-container');
       if (!container || !window.DATASET) return;
@@ -611,7 +634,7 @@ def build_index_html():
         {{ key: 'ipc_interanual', label: 'IPC Interanual', icon: 'fa-chart-simple', color: 'text-rose-600 dark:text-rose-400' }},
         {{ key: 'riesgo_pais', label: 'Riesgo País', icon: 'fa-arrow-trend-down', color: 'text-blue-600 dark:text-blue-400' }},
         {{ key: 'reservas_brutas', label: 'Reservas BCRA', icon: 'fa-vault', color: 'text-emerald-600 dark:text-emerald-400' }},
-        {{ key: 'base_monetaria', label: 'Base Monetaria', icon: 'fa-money-bill-wave', color: 'text-cyan-600 dark:text-cyan-400' }},
+        {{ key: 'base_monetaria_pbi', label: 'Base Monetaria / PBI', icon: 'fa-money-bill-wave', color: 'text-cyan-600 dark:text-cyan-400' }},
         {{ key: 'smvm_val', label: 'Salario Mínimo (SMVM)', icon: 'fa-wallet', color: 'text-purple-600 dark:text-purple-400' }}
       ];
 
@@ -622,6 +645,8 @@ def build_index_html():
         if (!cardData && k.key === 'reservas_brutas') cardData = findCardByKey('reservas_bcra');
 
         if (cardData) {{
+          const meta = getUnitMeta(cardData);
+          const formattedVal = formatValueWithMeta(cardData.value, meta);
           const isPos = String(cardData.display_change).includes('+');
           const isNeg = String(cardData.display_change).includes('-');
           const colorClass = isPos ? 'text-emerald-700 dark:text-emerald-400 font-bold' : (isNeg ? 'text-rose-700 dark:text-rose-400 font-bold' : 'text-slate-600 dark:text-slate-300');
@@ -633,7 +658,7 @@ def build_index_html():
                 <span class="text-[10px] text-brand-red font-mono font-bold">${{cardData.latest_date}}</span>
               </div>
               <div class="text-base sm:text-lg font-black font-mono text-slate-950 dark:text-slate-100 mt-1 tracking-tight">
-                ${{cardData.display_value}}
+                ${{formattedVal}}
               </div>
               <div class="flex items-center justify-between text-[10px] font-mono mt-0.5">
                 <span class="${{colorClass}}">${{cardData.display_change}}</span>
@@ -646,14 +671,13 @@ def build_index_html():
       container.innerHTML = html;
     }}
 
-    // Sidebar Category Navigation
     function renderSidebarNavigation() {{
       const sidebarContainer = document.getElementById('sidebar-category-list');
       const mobileContainer = document.getElementById('mobile-sidebar-category-list');
       if (!sidebarContainer || !window.DATASET) return;
 
       const categories = window.DATASET.categories || [];
-      const totalCount = window.DATASET.metadata.total_indicators || 88;
+      const totalCount = window.DATASET.metadata.total_indicators || 97;
 
       let html = `
         <button 
@@ -690,13 +714,12 @@ def build_index_html():
       if (mobileContainer) mobileContainer.innerHTML = html;
     }}
 
-    // Top 2-Row Category Grid Navigation
     function renderTopGridNavigation() {{
       const container = document.getElementById('top-grid-tabs-container');
       if (!container || !window.DATASET) return;
 
       const categories = window.DATASET.categories || [];
-      const totalCount = window.DATASET.metadata.total_indicators || 88;
+      const totalCount = window.DATASET.metadata.total_indicators || 97;
 
       let html = `
         <button 
@@ -730,7 +753,6 @@ def build_index_html():
     function selectCategory(catId) {{
       currentCategory = catId;
 
-      // Update Sidebar Items
       document.querySelectorAll('.sidebar-item').forEach(btn => {{
         btn.classList.remove('active');
         btn.classList.add('text-slate-700', 'dark:text-slate-400');
@@ -738,7 +760,6 @@ def build_index_html():
       const activeSidebar = document.getElementById(`sidebar-item-${{catId}}`);
       if (activeSidebar) activeSidebar.classList.add('active');
 
-      // Update Top Grid Items
       document.querySelectorAll('.top-tab-btn').forEach(btn => {{
         btn.classList.remove('active', 'bg-brand-red', 'text-white');
         btn.classList.add('bg-slate-100', 'dark:bg-[#1E293B]', 'text-slate-700', 'dark:text-slate-400');
@@ -749,7 +770,6 @@ def build_index_html():
         activeTop.classList.remove('bg-slate-100', 'dark:bg-[#1E293B]', 'text-slate-700', 'dark:text-slate-400');
       }}
 
-      // Close mobile drawer if open
       const backdrop = document.getElementById('mobile-sidebar-backdrop');
       if (backdrop && !backdrop.classList.contains('hidden')) {{
         toggleMobileSidebar();
@@ -758,7 +778,6 @@ def build_index_html():
       renderAllCategories();
     }}
 
-    // Render Categories & Indicator Cards
     function renderAllCategories() {{
       const root = document.getElementById('categories-root');
       if (!root || !window.DATASET) return;
@@ -770,7 +789,6 @@ def build_index_html():
       categories.forEach(cat => {{
         if (currentCategory !== 'all' && cat.id !== currentCategory) return;
 
-        // Filter cards by search query if applicable
         const filteredCards = (cat.cards || []).filter(c => {{
           if (!searchQuery) return true;
           const q = searchQuery.toLowerCase();
@@ -788,8 +806,6 @@ def build_index_html():
 
         html += `
           <section id="sec-${{cat.id}}" class="flex flex-col gap-4 scroll-mt-24">
-            
-            <!-- Category Header with High Contrast -->
             <div class="flex items-center justify-between border-b border-slate-200 dark:border-[#334155]/60 pb-3">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-xl bg-brand-red/10 border border-brand-red/30 flex items-center justify-center text-brand-red text-sm">
@@ -806,11 +822,9 @@ def build_index_html():
               </span>
             </div>
 
-            <!-- Cards Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               ${{filteredCards.map(c => renderIndicatorCardHTML(c)).join('')}}
             </div>
-
           </section>
         `;
       }});
@@ -830,7 +844,6 @@ def build_index_html():
 
       root.innerHTML = html;
 
-      // Draw all sparklines in DOM
       setTimeout(() => {{
         categories.forEach(cat => {{
           (cat.cards || []).forEach(c => {{
@@ -840,8 +853,10 @@ def build_index_html():
       }}, 50);
     }}
 
-    // Indicator Card Template with Visible Date Badge & High Contrast
     function renderIndicatorCardHTML(card) {{
+      const meta = getUnitMeta(card);
+      const formattedVal = formatValueWithMeta(card.value, meta);
+
       const isPos = String(card.display_change).includes('+');
       const isNeg = String(card.display_change).includes('-');
       
@@ -863,14 +878,12 @@ def build_index_html():
           class="glass-card rounded-2xl p-4 flex flex-col justify-between cursor-pointer group relative overflow-hidden"
           title="Click para ver serie histórica verificada (${{card.total_points || 0}} pts) y regresión"
         >
-          <!-- Top row: Frequency, Date Badge & Source -->
           <div>
             <div class="flex items-center justify-between gap-1 mb-2.5">
               <span class="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/60 font-mono">
                 ${{card.freq}}
               </span>
 
-              <!-- PROMINENT LAST UPDATED DATE BADGE -->
               <span class="text-[10px] font-black font-mono px-2 py-0.5 rounded-md bg-rose-50 dark:bg-brand-red/15 text-brand-red border border-rose-200 dark:border-brand-red/30 flex items-center gap-1 shadow-2xs" title="Fecha del último dato oficial publicado">
                 <i class="far fa-calendar-check text-[9px]"></i>
                 <span>${{card.latest_date}}</span>
@@ -881,16 +894,14 @@ def build_index_html():
               </span>
             </div>
 
-            <!-- Indicator Title: High Contrast Text -->
             <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-brand-red transition-colors line-clamp-2 leading-snug">
               ${{card.name}}
             </h3>
           </div>
 
-          <!-- Mid row: Big Bold Value & Dual Variation Badges -->
           <div class="my-3">
             <div class="text-xl sm:text-2xl font-black font-mono text-slate-950 dark:text-slate-50 tracking-tight">
-              ${{card.display_value}}
+              ${{formattedVal}}
             </div>
 
             <div class="flex items-center gap-2 mt-2 flex-wrap">
@@ -904,7 +915,6 @@ def build_index_html():
             </div>
           </div>
 
-          <!-- Bottom: Real Sparkline Canvas & Points Counter -->
           <div class="pt-2 border-t border-slate-200 dark:border-slate-700/40 flex items-center justify-between gap-2">
             <div class="flex-1 h-10 relative">
               <canvas id="sparkline-${{card.key}}" class="sparkline-canvas"></canvas>
@@ -916,12 +926,10 @@ def build_index_html():
               </div>
             </div>
           </div>
-
         </div>
       `;
     }}
 
-    // Draw Smooth Canvas Sparkline
     function drawSparkline(key, prices) {{
       const canvas = document.getElementById(`sparkline-${{key}}`);
       if (!canvas || !prices || prices.length < 2) return;
@@ -963,7 +971,6 @@ def build_index_html():
       }});
     }}
 
-    // Search Filtering
     function handleSearch(val) {{
       searchQuery = val.trim();
       const banner = document.getElementById('search-status-banner');
@@ -993,11 +1000,11 @@ def build_index_html():
       renderAllCategories();
     }}
 
-    // Modal & Interactive Regression Chart Logic
     function openModalByKey(key) {{
       const card = findCardByKey(key);
       if (!card) return;
 
+      const meta = getUnitMeta(card);
       const histDB = window.DATASET.historical_db || {{}};
       const hist = histDB[key];
 
@@ -1024,11 +1031,12 @@ def build_index_html():
 
       modalState.key = key;
       modalState.card = card;
+      modalState.meta = meta;
       modalState.series = {{ dates, prices }};
       modalState.period = '2A';
       modalState.showRegression = true;
 
-      // Populate Header & Info
+      // Populate Header
       document.getElementById('modal-title').innerText = card.name;
       document.getElementById('modal-desc').innerText = card.desc;
       document.getElementById('modal-category-badge').innerText = card.category;
@@ -1036,8 +1044,9 @@ def build_index_html():
       document.getElementById('modal-source-badge').innerText = card.source;
       document.getElementById('modal-date-badge').innerText = `Último Dato: ${{card.latest_date}}`;
 
-      // Populate Stats
-      document.getElementById('modal-stat-latest').innerText = card.display_value;
+      // Populate Stats with 100% UNIFIED FORMATTING
+      const formattedLatest = formatValueWithMeta(card.value, meta);
+      document.getElementById('modal-stat-latest').innerText = formattedLatest;
       document.getElementById('modal-stat-date').innerText = `Publicación: ${{card.latest_date}}`;
 
       const isPos = String(card.display_change).includes('+');
@@ -1052,11 +1061,12 @@ def build_index_html():
 
       const pMin = Math.min(...prices);
       const pMax = Math.max(...prices);
+      const minStr = formatValueWithMeta(pMin, meta);
+      const maxStr = formatValueWithMeta(pMax, meta);
 
-      document.getElementById('modal-stat-range').innerText = `${{pMin.toLocaleString('es-AR')}} / ${{pMax.toLocaleString('es-AR')}}`;
+      document.getElementById('modal-stat-range').innerText = `${{minStr}} / ${{maxStr}}`;
       document.getElementById('modal-stat-pts').innerText = `${{prices.length}} registros históricos`;
 
-      // Open Modal DOM
       const modalEl = document.getElementById('indicator-modal');
       modalEl.classList.remove('hidden');
       modalEl.classList.add('flex');
@@ -1098,6 +1108,7 @@ def build_index_html():
     function updateModalChart() {{
       if (!modalState.series || !modalState.series.prices.length) return;
 
+      const meta = modalState.meta || getUnitMeta(modalState.card);
       const {{ dates, prices }} = modalState.series;
       let targetLen = prices.length;
 
@@ -1110,7 +1121,7 @@ def build_index_html():
       const filteredDates = dates.slice(-targetLen);
       const filteredPrices = prices.slice(-targetLen);
 
-      // Highlight Period Buttons
+      // Period buttons highlight
       ['1A', '2A', '3A', '5A', 'ALL'].forEach(p => {{
         const btn = document.getElementById(`btn-period-${{p}}`);
         if (btn) {{
@@ -1122,7 +1133,7 @@ def build_index_html():
         }}
       }});
 
-      // Update Regression Button State
+      // Regression button
       const regBtn = document.getElementById('btn-toggle-regression');
       const regBadge = document.getElementById('regression-badge');
       if (regBtn && regBadge) {{
@@ -1135,7 +1146,7 @@ def build_index_html():
         }}
       }}
 
-      // Calculate Linear Regression (y = mx + b)
+      // Calculate Linear Regression
       const n = filteredPrices.length;
       let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
       for (let i = 0; i < n; i++) {{
@@ -1149,7 +1160,7 @@ def build_index_html():
       const intercept = (sumY - slope * sumX) / (n || 1);
       const regressionPrices = filteredPrices.map((_, i) => slope * i + intercept);
 
-      // Trend label
+      // Trend label & Slope with unified unit
       const trendEl = document.getElementById('modal-stat-trend');
       const slopeEl = document.getElementById('modal-stat-slope');
       if (slope > 0.001) {{
@@ -1162,7 +1173,9 @@ def build_index_html():
         trendEl.innerText = "Estable \u2192";
         trendEl.className = "text-sm font-black font-mono mt-1 text-slate-800 dark:text-slate-300";
       }}
-      slopeEl.innerText = `Pendiente: ${{slope.toFixed(3)}}/per`;
+
+      const slopeUnit = meta.type === 'percent' ? 'p.p. / per' : (meta.suffix ? `${{meta.suffix.trim()}} / per` : (meta.prefix ? `${{meta.prefix.trim()}} / per` : '/ per'));
+      slopeEl.innerText = `Pendiente: ${{slope.toFixed(2)}} ${{slopeUnit}}`;
 
       // Render Chart.js
       const canvas = document.getElementById('modal-main-chart');
@@ -1240,7 +1253,8 @@ def build_index_html():
               callbacks: {{
                 label: function(context) {{
                   const val = context.raw || 0;
-                  return `${{context.dataset.label}}: ${{val.toLocaleString('es-AR')}}`;
+                  const formatted = formatValueWithMeta(val, meta);
+                  return `${{context.dataset.label}}: ${{formatted}}`;
                 }}
               }}
             }}
@@ -1260,7 +1274,7 @@ def build_index_html():
                 color: textColor,
                 font: {{ family: 'JetBrains Mono', size: 10, weight: '600' }},
                 callback: function(val) {{
-                  return val.toLocaleString('es-AR');
+                  return formatValueWithMeta(val, meta, true);
                 }}
               }}
             }}
@@ -1269,7 +1283,6 @@ def build_index_html():
       }});
     }}
 
-    // Export Modal Chart Image
     function exportModalChartPNG() {{
       const canvas = document.getElementById('modal-main-chart');
       if (!canvas || !modalState.card) return;
@@ -1280,13 +1293,14 @@ def build_index_html():
       link.click();
     }}
 
-    // Export Complete Dataset as CSV
     function exportAllCSV() {{
       if (!window.DATASET || !window.DATASET.categories) return;
 
       let csv = 'Categoria,Indicador,Clave,Frecuencia,Fuente,Fecha_Publicacion,Valor_Actual,Var_Periodo,Var_Interanual\\n';
       window.DATASET.categories.forEach(cat => {{
         (cat.cards || []).forEach(c => {{
+          const meta = getUnitMeta(c);
+          const formattedVal = formatValueWithMeta(c.value, meta);
           const row = [
             `"${{cat.name}}"`,
             `"${{c.name}}"`,
@@ -1294,7 +1308,7 @@ def build_index_html():
             `"${{c.freq}}"`,
             `"${{c.source}}"`,
             `"${{c.latest_date}}"`,
-            `"${{c.display_value}}"`,
+            `"${{formattedVal}}"`,
             `"${{c.display_change}}"`,
             `"${{c.var_ia}}"`
           ].join(',');
@@ -1312,7 +1326,6 @@ def build_index_html():
       document.body.removeChild(link);
     }}
 
-    // Helper: Find Card in Master Dataset
     function findCardByKey(key) {{
       if (!window.DATASET || !window.DATASET.categories) return null;
       for (const cat of window.DATASET.categories) {{
@@ -1323,7 +1336,6 @@ def build_index_html():
       return null;
     }}
 
-    // Keyboard Shortcuts
     function setupKeyboardShortcuts() {{
       document.addEventListener('keydown', (e) => {{
         if (e.key === 'Escape') {{
@@ -1346,7 +1358,7 @@ def build_index_html():
     with open(out_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-    print(f"[SUCCESS] Wrote index.html with visible date badges & verified series ({len(html_content)} bytes)!")
+    print(f"[SUCCESS] Wrote index.html with 100% unified formatting ({len(html_content)} bytes)!")
 
 if __name__ == "__main__":
     build_index_html()
