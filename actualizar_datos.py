@@ -33,6 +33,15 @@ def get_indicator_unit_meta(key, name, cat_name):
     if k == 'relacion_activo_pasivo':
         return {'type': 'ratio', 'prefix': '', 'suffix': ' act/pas', 'decimals': 2}
 
+    if k == 'pbi_corriente' or k == 'pbi_constante_hoy':
+        return {'type': 'currency_ars_m', 'prefix': '$ ', 'suffix': ' M', 'decimals': 2}
+
+    if k == 'supermercados_ventas_usd':
+        return {'type': 'currency_usd_m', 'prefix': 'USD ', 'suffix': ' M', 'decimals': 2}
+
+    if k == 'supermercados_ventas_valor':
+        return {'type': 'currency_ars_const', 'prefix': '$ ', 'suffix': ' M (Dic-16)', 'decimals': 2}
+
     # Percentages (%)
     if (k.endswith('_pbi') or k.startswith('ratio_') or k.startswith('cobertura_') or k.startswith('tasa_') or 
         'cobertura' in k or 'cobertura' in n or
@@ -63,7 +72,7 @@ def get_indicator_unit_meta(key, name, cat_name):
         return {'type': 'quantity', 'prefix': '', 'suffix': ' m³/d', 'decimals': 2}
     if 'cemento_total' in k:
         return {'type': 'quantity', 'prefix': '', 'suffix': ' Tn', 'decimals': 1}
-    if 'isac_' in k or 'icc_' in k or 'indice_salarios_ipc' in k or 'emae_construccion' in k or 'supermercados_ventas_valor' in k:
+    if 'isac_' in k or 'icc_' in k or 'indice_salarios_ipc' in k or 'emae_construccion' in k:
         return {'type': 'index', 'prefix': '', 'suffix': ' pts', 'decimals': 2}
 
     # Currency ARS ($)
@@ -646,6 +655,20 @@ def reconstruct_and_order_dataset():
                 "time_range": "Diario"
             }
 
+        if "Actividad" in cat_name:
+            if 'pbi_corriente' in cards_dict:
+                cards_dict['pbi_corriente']['name'] = 'Producto Bruto Interno (PBI Nominal)'
+                cards_dict['pbi_corriente']['desc'] = 'Monto total del PBI a precios corrientes anualizado, expresado en Millones de pesos corrientes ($973.88 Billones de pesos según INDEC Cuentas Nacionales).'
+            if 'pbi_constante_hoy' in cards_dict:
+                cards_dict['pbi_constante_hoy']['name'] = 'PBI a Precios Constantes (INDEC)'
+                cards_dict['pbi_constante_hoy']['desc'] = 'Producto Bruto Interno desprovisto de inflación anualizado, expresado en Millones de pesos constantes según INDEC.'
+            if 'supermercados_ventas_usd' in cards_dict:
+                cards_dict['supermercados_ventas_usd']['name'] = 'Ventas en Supermercados en USD (MEP)'
+                cards_dict['supermercados_ventas_usd']['desc'] = 'Facturación mensual total relevada por la Encuesta de Supermercados del INDEC, convertida a dólares MEP. Expresada en Millones de USD.'
+            if 'supermercados_ventas_valor' in cards_dict:
+                cards_dict['supermercados_ventas_valor']['name'] = 'Ventas en Supermercados a Precios Constantes (INDEC)'
+                cards_dict['supermercados_ventas_valor']['desc'] = 'Mide el volumen físico real de ventas desprovisto de inflación, expresado en Millones de pesos a precios constantes de diciembre de 2016 ($ M de 2016, base dic-16=100) según la Encuesta de Supermercados del INDEC.'
+
         if "Precios" in cat_name:
             ordered_cards = [cards_dict[k] for k in precios_ordered_keys if k in cards_dict]
         elif "Monetario" in cat_name:
@@ -668,6 +691,9 @@ def reconstruct_and_order_dataset():
             series = ref_hdb.get(key, {})
             dates = series.get("dates") or (series.get("daily") or {}).get("dates") or (series.get("monthly") or {}).get("dates") or []
             prices = series.get("prices") or (series.get("daily") or {}).get("prices") or (series.get("monthly") or {}).get("prices") or []
+
+            if key == 'supermercados_ventas_usd':
+                prices = [round(p / 10000.0, 2) if p > 100000 else p for p in prices]
 
             clean_pairs = [(d, float(p)) for d, p in zip(dates, prices) if p is not None and not (isinstance(p, float) and p != p)]
             dates = [x[0] for x in clean_pairs]
