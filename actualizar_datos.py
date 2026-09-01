@@ -40,7 +40,7 @@ def get_indicator_unit_meta(key, name, cat_name):
         'pbi_interanual' in k or 'emae_agro' in k or '%' in n):
         return {'type': 'percent', 'prefix': '', 'suffix': '%', 'decimals': 2}
 
-    # USD Deuda & Reservas
+    # Debt and Reserves in USD Millions
     if ('deuda_' in k and not k.endswith('_pbi')) or k == 'reservas_brutas' or k == 'reservas_bcra':
         return {'type': 'currency_usd', 'prefix': 'USD ', 'suffix': ' M', 'decimals': 2}
 
@@ -132,6 +132,18 @@ def build_ratio_series(num_series, den_dict, is_pct=True):
             r_dates.append(d)
             r_prices.append(r)
     return r_dates, r_prices
+
+def sample_sparkline_series(dates, prices, freq):
+    if not dates or not prices:
+        return []
+    if freq == "Diario" and len(prices) > 60:
+        # Sample last 60 business days or monthly endpoints
+        step = max(1, len(prices[-250:]) // 24)
+        sample = prices[-250:][::step]
+        if prices[-1] not in sample:
+            sample.append(prices[-1])
+        return sample[-24:]
+    return prices[-24:] if len(prices) >= 24 else prices
 
 def reconstruct_and_order_dataset():
     print("==========================================================================")
@@ -234,7 +246,6 @@ def reconstruct_and_order_dataset():
     pbi_usd_s = ref_hdb.get("pbi_usd_mep", {})
     pbi_usd_dict = {d[:7]: p for d, p in zip(pbi_usd_s.get("dates", []), pbi_usd_s.get("prices", []))}
     res_s = ref_hdb.get("reservas_brutas", {})
-    res_dict = {d[:7]: p for d, p in zip(res_s.get("dates", []), res_s.get("prices", []))}
     deuda_tot_s = ref_hdb.get("deuda_publica_total", {})
     deuda_ext_s = ref_hdb.get("deuda_externa", {})
     deuda_pub_ext_s = ref_hdb.get("deuda_publica_externa", {})
@@ -371,7 +382,6 @@ def reconstruct_and_order_dataset():
                     "time_range": r_freq
                 }
 
-            # Also add riesgo pais if not present
             cards_dict["riesgo_pais"] = {
                 "key": "riesgo_pais",
                 "name": "Riesgo País (EMBI+ Argentina)",
@@ -418,7 +428,7 @@ def reconstruct_and_order_dataset():
             latest_date_raw = dates[-1]
             latest_date_formatted = format_date_es(latest_date_raw)
 
-            spark_slice = prices[-24:] if len(prices) >= 24 else prices
+            spark_slice = sample_sparkline_series(dates, prices, freq)
             spark_dates = dates[-len(spark_slice):]
             final_spark_db[key] = {"dates": spark_dates, "prices": spark_slice}
 
@@ -443,7 +453,7 @@ def reconstruct_and_order_dataset():
             else:
                 display_change = card.get("display_change") or "0.00%"
 
-            yoy_step = 5 if (freq == "Trimestral" or key.endswith("_pbi")) else 13
+            yoy_step = 5 if (freq == "Trimestral" or key.endswith("_pbi")) else (252 if freq == "Diario" else 13)
             if len(prices) >= yoy_step:
                 p_curr = prices[-1]
                 p_yoy = prices[-yoy_step]
@@ -499,7 +509,7 @@ def reconstruct_and_order_dataset():
     master_output = {
         "metadata": {
             "title": "Tablero de Indicadores Económicos - La Segunda",
-            "version": "2.7.0",
+            "version": "2.8.0",
             "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "total_categories": len(enhanced_categories),
             "total_indicators": total_cards
