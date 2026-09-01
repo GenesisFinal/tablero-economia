@@ -19,7 +19,7 @@ def build_index_html():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tablero de Indicadores Económicos | La Segunda Seguros</title>
+  <title>Tablero de Indicadores Económicos | Economía</title>
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -177,9 +177,8 @@ def build_index_html():
           <i class="fas fa-chart-pie text-base"></i>
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-brand-red">LA SEGUNDA</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-brand-red/10 text-brand-red font-semibold border border-brand-red/20">ECONOMÍA</span>
+          <div class="flex items-center gap-2 mb-0.5">
+            <span class="text-xs font-bold uppercase tracking-wider text-brand-red">ECONOMÍA</span>
           </div>
           <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
             Tablero de Indicadores Económicos
@@ -1587,7 +1586,7 @@ def build_index_html():
       // Top Subheader
       ctx.fillStyle = brandRed;
       ctx.font = 'bold 12px "Sora", sans-serif';
-      ctx.fillText('LA SEGUNDA SEGUROS  •  TABLERO DE INDICADORES ECONÓMICOS', 44, 44);
+      ctx.fillText('ECONOMÍA  •  TABLERO DE INDICADORES ECONÓMICOS', 44, 44);
 
       // Indicator Title
       ctx.fillStyle = textColor;
