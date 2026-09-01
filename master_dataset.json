@@ -2,7 +2,7 @@
   "metadata": {
     "title": "Tablero de Indicadores Económicos - La Segunda",
     "version": "3.2.0",
-    "last_updated": "2026-09-01 20:22:46",
+    "last_updated": "2026-09-01 20:32:37",
     "total_categories": 12,
     "total_indicators": 130
   },
@@ -6028,9 +6028,9 @@
       "cards": [
         {
           "key": "cemento_total",
-          "name": "Despachos de Cemento (Total)",
+          "name": "Despachos de Cemento Portland (AFCP)",
           "category": "Construcción e Inmobiliario",
-          "desc": "Despachos de Cemento Portland al Mercado Interno (Miles de Toneladas).",
+          "desc": "Despachos totales de cemento portland al mercado interno en miles de toneladas (Asociación de Fabricantes de Cemento Portland).",
           "source": "INDEC",
           "freq": "Mensual",
           "value": 16129.147349428584,
@@ -6172,9 +6172,9 @@
         },
         {
           "key": "isac_asfalto",
-          "name": "Consumo de Asfalto",
+          "name": "Consumo de Asfalto Vial (Índice ISAC)",
           "category": "Construcción e Inmobiliario",
-          "desc": "Índice de consumo de asfalto para obras públicas.",
+          "desc": "Índice de consumo de asfalto vial para obras públicas y viales (Base 2004 = 100, INDEC).",
           "source": "INDEC",
           "freq": "Mensual",
           "value": 74.88489798218,
@@ -6220,9 +6220,9 @@
         },
         {
           "key": "isac_cemento",
-          "name": "Consumo de Cemento",
+          "name": "Consumo de Cemento (Índice ISAC)",
           "category": "Construcción e Inmobiliario",
-          "desc": "Índice de consumo de Cemento Portland para construcción.",
+          "desc": "Índice de consumo de Cemento Portland para obras públicas y privadas (Base 2004 = 100, INDEC).",
           "source": "INDEC",
           "freq": "Mensual",
           "value": 160.567586494565,
@@ -6268,9 +6268,9 @@
         },
         {
           "key": "isac_general",
-          "name": "ISAC Construcción",
+          "name": "ISAC Construcción (Variación Interanual)",
           "category": "Construcción e Inmobiliario",
-          "desc": "Indicador Sintético de la Actividad de la Construcción.",
+          "desc": "Indicador Sintético de la Actividad de la Construcción (ISAC) del INDEC. Mide la tasa de variación porcentual interanual del volumen físico del sector.",
           "source": "INDEC",
           "freq": "Mensual",
           "value": -0.9017423444493078,
