@@ -508,6 +508,7 @@ def build_index_html():
         k.includes('_interanual') ||
         k.includes('interanual') ||
         k === 'supermercados_ventas' ||
+        k === 'isac_general' ||
         n.includes('resultado fiscal') ||
         n.includes('resultado financiero') ||
         n.includes('resultado primario') ||
