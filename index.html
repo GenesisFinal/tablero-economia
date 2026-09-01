@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es" class="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
   <!-- Google Fonts: Sora & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -38,9 +38,9 @@
               redHover: '#B8002E',
               blue: '#0284C7',
               navy: '#0F172A',
-              card: '#1E293B',
+              cardDark: '#1E293B',
               cardLight: '#FFFFFF',
-              border: '#334155',
+              borderDark: '#334155',
               borderLight: '#E2E8F0',
               green: '#10B981',
               gold: '#F59E0B'
@@ -52,94 +52,106 @@
   </script>
 
   <style>
+    /* Base Theme Styles */
     body {
       font-family: 'Sora', sans-serif;
-      background-color: #0B1120;
-      color: #F1F5F9;
-      overflow-x: hidden;
-    }
-    html.light body {
       background-color: #F8FAFC;
       color: #0F172A;
+      overflow-x: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .dark body {
+      background-color: #0B1120;
+      color: #F1F5F9;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
+
+    /* High Contrast Glass Cards */
     .glass-card {
-      background: rgba(30, 41, 59, 0.7);
+      background-color: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .dark .glass-card {
+      background-color: rgba(30, 41, 59, 0.75);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(51, 65, 85, 0.6);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    html.light .glass-card {
-      background: #FFFFFF;
-      border: 1px solid #E2E8F0;
-      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.3);
     }
     .glass-card:hover {
       transform: translateY(-2px);
-      border-color: rgba(226, 0, 57, 0.5);
-      box-shadow: 0 12px 24px -6px rgba(226, 0, 57, 0.15);
+      border-color: rgba(226, 0, 57, 0.4);
+      box-shadow: 0 10px 20px -3px rgba(226, 0, 57, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-    html.light .glass-card:hover {
+    .dark .glass-card:hover {
       border-color: rgba(226, 0, 57, 0.5);
-      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 12px 24px -6px rgba(226, 0, 57, 0.2);
     }
+
+    /* Sidebar Active States */
     .sidebar-item.active {
-      background: linear-gradient(90deg, rgba(226, 0, 57, 0.2) 0%, rgba(226, 0, 57, 0.05) 100%);
-      border-left: 3px solid #E20039;
-      color: #FFFFFF;
+      background: linear-gradient(90deg, rgba(226, 0, 57, 0.12) 0%, rgba(226, 0, 57, 0.02) 100%);
+      border-left: 4px solid #E20039;
+      color: #E20039 !important;
       font-weight: 700;
     }
-    html.light .sidebar-item.active {
-      background: linear-gradient(90deg, rgba(226, 0, 57, 0.12) 0%, rgba(226, 0, 57, 0.02) 100%);
-      border-left: 3px solid #E20039;
-      color: #E20039;
+    .dark .sidebar-item.active {
+      background: linear-gradient(90deg, rgba(226, 0, 57, 0.25) 0%, rgba(226, 0, 57, 0.05) 100%);
+      border-left: 4px solid #E20039;
+      color: #FFFFFF !important;
+      font-weight: 700;
     }
+
     .top-tab-btn.active {
-      background-color: #E20039;
-      color: #FFFFFF;
-      box-shadow: 0 4px 14px rgba(226, 0, 57, 0.4);
+      background-color: #E20039 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 14px rgba(226, 0, 57, 0.35);
     }
+
+    /* Scrollbars */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #0F172A;
-    }
-    html.light ::-webkit-scrollbar-track {
       background: #F1F5F9;
     }
+    .dark ::-webkit-scrollbar-track {
+      background: #0F172A;
+    }
     ::-webkit-scrollbar-thumb {
-      background: #334155;
+      background: #CBD5E1;
       border-radius: 4px;
     }
-    html.light ::-webkit-scrollbar-thumb {
-      background: #CBD5E1;
+    .dark ::-webkit-scrollbar-thumb {
+      background: #334155;
     }
+
     .sparkline-canvas {
       width: 100% !important;
       height: 48px !important;
     }
     .modal-backdrop {
-      background-color: rgba(11, 17, 32, 0.85);
+      background-color: rgba(15, 23, 42, 0.65);
       backdrop-filter: blur(8px);
     }
-    html.light .modal-backdrop {
-      background-color: rgba(15, 23, 42, 0.6);
+    .dark .modal-backdrop {
+      background-color: rgba(11, 17, 32, 0.85);
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-brand-red selection:text-white">
 
   <!-- TOP HEADER -->
-  <header class="sticky top-0 z-40 bg-[#0F172A]/95 dark:bg-[#0F172A]/95 light:bg-white/95 backdrop-blur-md border-b border-[#334155]/60 light:border-slate-200 transition-colors">
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#334155]/60 transition-colors shadow-sm">
     <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       
       <!-- Left: Mobile Menu Toggle & Brand Logo -->
       <div class="flex items-center gap-3 shrink-0">
-        <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-[#1E293B] light:bg-slate-100 text-slate-300 light:text-slate-700 hover:text-white border border-[#334155] light:border-slate-300">
+        <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white border border-slate-300 dark:border-[#334155]">
           <i class="fas fa-bars text-sm"></i>
         </button>
 
@@ -151,7 +163,7 @@
             <span class="text-xs font-bold uppercase tracking-wider text-brand-red">LA SEGUNDA</span>
             <span class="text-[10px] px-1.5 py-0.5 rounded bg-brand-red/10 text-brand-red font-semibold border border-brand-red/20">ECONOMÍA</span>
           </div>
-          <h1 class="text-base sm:text-lg font-bold text-slate-100 light:text-slate-900 tracking-tight leading-tight">
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
             Tablero de Indicadores Económicos
           </h1>
         </div>
@@ -166,9 +178,9 @@
             id="global-search-input"
             placeholder="Buscar indicador (ej. IPC, Reservas, Salarios, Deuda, PBI)... (Ctrl + K)"
             oninput="handleSearch(this.value)"
-            class="w-full bg-[#1E293B]/80 light:bg-slate-100 text-xs text-slate-200 light:text-slate-800 rounded-xl pl-9 pr-8 py-2 border border-[#334155]/60 light:border-slate-300 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-all"
+            class="w-full bg-slate-100 dark:bg-[#1E293B]/80 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400 rounded-xl pl-9 pr-8 py-2 border border-slate-300 dark:border-[#334155]/60 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-all font-medium"
           >
-          <button id="search-clear-btn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs">
+          <button id="search-clear-btn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -178,7 +190,7 @@
       <div class="flex items-center gap-2">
         
         <!-- Navigation Layout Mode Toggle (Sidebar vs 2-Row Top Menu) -->
-        <div class="hidden sm:flex items-center p-1 rounded-xl bg-[#1E293B] light:bg-slate-100 border border-[#334155] light:border-slate-300 text-xs font-semibold">
+        <div class="hidden sm:flex items-center p-1 rounded-xl bg-slate-100 dark:bg-[#1E293B] border border-slate-300 dark:border-[#334155] text-xs font-semibold">
           <button 
             onclick="setNavLayout('sidebar')" 
             id="layout-btn-sidebar"
@@ -191,7 +203,7 @@
           <button 
             onclick="setNavLayout('topgrid')" 
             id="layout-btn-topgrid"
-            class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black"
+            class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white"
             title="Menú superior en 2 filas sin scroll"
           >
             <i class="fas fa-grip-lines"></i>
@@ -199,13 +211,13 @@
           </button>
         </div>
 
-        <button onclick="exportAllCSV()" title="Exportar indicadores a CSV" class="p-2 rounded-xl bg-[#1E293B] light:bg-slate-100 text-slate-300 light:text-slate-700 hover:text-white light:hover:text-black border border-[#334155] light:border-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+        <button onclick="exportAllCSV()" title="Exportar indicadores a CSV" class="p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white border border-slate-300 dark:border-[#334155] text-xs font-semibold flex items-center gap-1.5 transition-colors">
           <i class="fas fa-file-csv text-brand-red"></i>
           <span class="hidden xl:inline">Exportar CSV</span>
         </button>
 
-        <button onclick="toggleTheme()" id="theme-toggle-btn" title="Cambiar Tema (Oscuro / Claro)" class="p-2 w-9 h-9 rounded-xl bg-[#1E293B] light:bg-slate-100 text-slate-300 light:text-slate-700 hover:text-white light:hover:text-black border border-[#334155] light:border-slate-300 flex items-center justify-center text-sm transition-colors">
-          <i class="fas fa-moon dark:hidden"></i>
+        <button onclick="toggleTheme()" id="theme-toggle-btn" title="Cambiar Tema (Oscuro / Claro)" class="p-2 w-9 h-9 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white border border-slate-300 dark:border-[#334155] flex items-center justify-center text-sm transition-colors">
+          <i class="fas fa-moon dark:hidden text-slate-700"></i>
           <i class="fas fa-sun hidden dark:inline text-amber-400"></i>
         </button>
       </div>
@@ -214,7 +226,7 @@
   </header>
 
   <!-- TOP HIGHLIGHTS / KPIS BANNER -->
-  <section class="bg-[#0F172A]/60 light:bg-slate-100/80 border-b border-[#334155]/40 light:border-slate-200 py-3 transition-colors">
+  <section class="bg-slate-100/90 dark:bg-[#0F172A]/60 border-b border-slate-200 dark:border-[#334155]/40 py-3 transition-colors">
     <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="top-kpis-container">
         <!-- Rendered dynamically -->
@@ -223,14 +235,14 @@
   </section>
 
   <!-- TOP 2-ROW CATEGORY GRID (Shown when NavLayout is 'topgrid') -->
-  <nav id="top-categories-grid-nav" class="hidden bg-[#0B1120]/95 light:bg-[#F8FAFC]/95 border-b border-[#334155]/50 light:border-slate-200 py-3 transition-colors">
+  <nav id="top-categories-grid-nav" class="hidden bg-[#F8FAFC]/95 dark:bg-[#0B1120]/95 border-b border-slate-200 dark:border-[#334155]/50 py-3 transition-colors">
     <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 light:text-slate-500 mb-2 flex items-center justify-between">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2 flex items-center justify-between">
         <span>Categorías Macroeconómicas</span>
-        <span class="text-[10px] text-brand-red font-mono">12 Secciones</span>
+        <span class="text-[10px] text-brand-red font-mono font-bold">12 Secciones</span>
       </div>
       <div class="flex flex-wrap gap-2 text-xs font-semibold" id="top-grid-tabs-container">
-        <!-- Rendered dynamically (wraps in 2 neat rows without horizontal scroll) -->
+        <!-- Rendered dynamically -->
       </div>
     </div>
   </nav>
@@ -242,35 +254,35 @@
     <aside id="left-sidebar" class="w-64 xl:w-72 shrink-0 sticky top-20 flex flex-col gap-4 max-h-[calc(100vh-100px)] overflow-y-auto pr-1">
       
       <!-- Sidebar Box -->
-      <div class="glass-card rounded-2xl p-3 border border-[#334155]/60 light:border-slate-200">
+      <div class="glass-card rounded-2xl p-3 border border-slate-200 dark:border-[#334155]/60">
         
         <!-- Sidebar Header -->
-        <div class="px-3 py-2 border-b border-[#334155]/50 light:border-slate-200 flex items-center justify-between mb-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-300 light:text-slate-700 flex items-center gap-1.5">
+        <div class="px-3 py-2 border-b border-slate-200 dark:border-[#334155]/50 flex items-center justify-between mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 flex items-center gap-1.5">
             <i class="fas fa-layer-group text-brand-red"></i>
             <span>Categorías</span>
           </span>
-          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-800 light:bg-slate-200 text-slate-400 light:text-slate-600" id="sidebar-total-badge">88</span>
+          <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400" id="sidebar-total-badge">88</span>
         </div>
 
         <!-- Sidebar Category Links List -->
-        <div class="flex flex-col gap-1 text-xs" id="sidebar-category-list">
+        <div class="flex flex-col gap-1 text-xs font-medium" id="sidebar-category-list">
           <!-- Rendered dynamically -->
         </div>
 
       </div>
 
       <!-- Quick Info Box -->
-      <div class="glass-card rounded-2xl p-4 border border-[#334155]/50 light:border-slate-200 text-xs flex flex-col gap-2">
-        <div class="flex items-center gap-2 text-emerald-400 font-bold">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <div class="glass-card rounded-2xl p-4 border border-slate-200 dark:border-[#334155]/50 text-xs flex flex-col gap-2">
+        <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Verificación Automática</span>
         </div>
-        <p class="text-[11px] text-slate-400 light:text-slate-600 leading-relaxed">
+        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
           Series auditadas 2 veces al día desde BCRA, INDEC y ArgentinaDatos.
         </p>
-        <div class="text-[10px] text-slate-400 light:text-slate-500 font-mono mt-1 pt-2 border-t border-[#334155]/40 light:border-slate-200">
-          Act: <span id="sidebar-update-time" class="text-slate-300 light:text-slate-700">...</span>
+        <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-1 pt-2 border-t border-slate-200 dark:border-[#334155]/40">
+          Act: <span id="sidebar-update-time" class="text-slate-800 dark:text-slate-300 font-bold">...</span>
         </div>
       </div>
 
@@ -278,14 +290,14 @@
 
     <!-- MOBILE OFF-CANVAS SIDEBAR BACKDROP & DRAWER -->
     <div id="mobile-sidebar-backdrop" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200" onclick="toggleMobileSidebar()">
-      <div id="mobile-sidebar-drawer" class="w-72 max-w-[85vw] h-full bg-[#0F172A] light:bg-white p-4 shadow-2xl flex flex-col gap-4 overflow-y-auto transform -translate-x-full transition-transform duration-250 ease-out" onclick="event.stopPropagation()">
+      <div id="mobile-sidebar-drawer" class="w-72 max-w-[85vw] h-full bg-white dark:bg-[#0F172A] p-4 shadow-2xl flex flex-col gap-4 overflow-y-auto transform -translate-x-full transition-transform duration-250 ease-out" onclick="event.stopPropagation()">
         
-        <div class="flex items-center justify-between pb-3 border-b border-slate-700 light:border-slate-200">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-brand-red"></span>
-            <span class="font-bold text-sm text-white light:text-black">Categorías Económicas</span>
+            <span class="font-bold text-sm text-slate-900 dark:text-white">Categorías Económicas</span>
           </div>
-          <button onclick="toggleMobileSidebar()" class="p-1.5 rounded-lg text-slate-400 hover:text-white">
+          <button onclick="toggleMobileSidebar()" class="p-1.5 rounded-lg text-slate-500 hover:text-black dark:text-slate-400 dark:hover:text-white">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -302,12 +314,12 @@
       
       <!-- Search Results Status Banner (When searching) -->
       <div id="search-status-banner" class="hidden mb-6 p-4 rounded-2xl bg-brand-red/10 border border-brand-red/30 flex items-center justify-between">
-        <div class="flex items-center gap-2 text-sm text-slate-200 light:text-slate-800">
+        <div class="flex items-center gap-2 text-sm text-slate-800 dark:text-slate-200">
           <i class="fas fa-search text-brand-red"></i>
-          <span>Resultados para: <strong id="search-query-text" class="text-white light:text-black"></strong></span>
+          <span>Resultados para: <strong id="search-query-text" class="text-black dark:text-white font-bold"></strong></span>
           <span id="search-count-badge" class="px-2 py-0.5 rounded-full bg-brand-red text-white text-xs font-bold"></span>
         </div>
-        <button onclick="clearSearch()" class="text-xs text-brand-red hover:underline font-semibold">
+        <button onclick="clearSearch()" class="text-xs text-brand-red hover:underline font-bold">
           Mostrar todas las categorías
         </button>
       </div>
@@ -322,14 +334,14 @@
   </div>
 
   <!-- FOOTER -->
-  <footer class="bg-[#0F172A] light:bg-slate-100 border-t border-[#334155]/60 light:border-slate-200 py-6 mt-12 transition-colors">
-    <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 light:text-slate-600">
-      <div class="flex items-center gap-2">
+  <footer class="bg-slate-100 dark:bg-[#0F172A] border-t border-slate-200 dark:border-[#334155]/60 py-6 mt-12 transition-colors">
+    <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-slate-400">
+      <div class="flex items-center gap-2 font-medium">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span>Sistema de Monitoreo Macroeconómico • <strong>La Segunda Seguros</strong></span>
+        <span>Sistema de Monitoreo Macroeconómico • <strong class="text-slate-900 dark:text-slate-200">La Segunda Seguros</strong></span>
       </div>
       <div class="flex items-center gap-4">
-        <span>Última Actualización: <strong id="footer-update-time" class="text-slate-200 light:text-slate-800 font-mono"></strong></span>
+        <span>Última Actualización: <strong id="footer-update-time" class="text-slate-900 dark:text-slate-200 font-mono font-bold"></strong></span>
         <span>•</span>
         <span>Fuentes: INDEC, BCRA, Min. Economía, AFIP/ARCA, ArgentinaDatos</span>
       </div>
@@ -338,26 +350,26 @@
 
   <!-- DETAIL & REGRESSION MODAL -->
   <div id="indicator-modal" class="fixed inset-0 z-50 modal-backdrop hidden items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-250 ease-out" onclick="handleModalBackdropClick(event)">
-    <div class="glass-card rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-brand-red/30 relative animate-in fade-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+    <div class="glass-card rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-brand-red/30 relative animate-in fade-in zoom-in-95 duration-200 bg-white dark:bg-[#1E293B]" onclick="event.stopPropagation()">
       
       <!-- Modal Header -->
-      <div class="p-6 pb-4 border-b border-[#334155]/60 light:border-slate-200 flex items-start justify-between gap-4">
+      <div class="p-6 pb-4 border-b border-slate-200 dark:border-[#334155]/60 flex items-start justify-between gap-4">
         <div class="flex items-start gap-3">
           <div class="w-11 h-11 rounded-2xl bg-brand-red/10 border border-brand-red/30 flex items-center justify-center text-brand-red text-lg shrink-0 mt-0.5">
             <i class="fas fa-chart-line" id="modal-icon"></i>
           </div>
           <div>
             <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <span id="modal-category-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-slate-800 light:bg-slate-200 text-slate-300 light:text-slate-700"></span>
-              <span id="modal-freq-badge" class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-500/10 text-blue-400 light:text-blue-600 border border-blue-500/20"></span>
-              <span id="modal-source-badge" class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 light:text-emerald-600 border border-emerald-500/20"></span>
+              <span id="modal-category-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-300"></span>
+              <span id="modal-freq-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20"></span>
+              <span id="modal-source-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20"></span>
             </div>
-            <h2 id="modal-title" class="text-lg sm:text-xl font-bold text-slate-100 light:text-slate-900 tracking-tight"></h2>
-            <p id="modal-desc" class="text-xs text-slate-400 light:text-slate-600 mt-1 max-w-2xl leading-relaxed"></p>
+            <h2 id="modal-title" class="text-lg sm:text-xl font-bold text-slate-950 dark:text-slate-100 tracking-tight"></h2>
+            <p id="modal-desc" class="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed font-medium"></p>
           </div>
         </div>
 
-        <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-slate-800/80 light:bg-slate-200 text-slate-400 hover:text-white light:hover:text-black flex items-center justify-center transition-colors shrink-0">
+        <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800/80 text-slate-500 hover:text-black dark:text-slate-400 dark:hover:text-white flex items-center justify-center transition-colors shrink-0">
           <i class="fas fa-times text-sm"></i>
         </button>
       </div>
@@ -367,48 +379,48 @@
         
         <!-- Summary Stat Pills -->
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div class="p-3 rounded-2xl bg-[#0F172A]/70 light:bg-slate-100 border border-[#334155]/50 light:border-slate-200">
-            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 light:text-slate-500">Último Dato</div>
-            <div id="modal-stat-latest" class="text-base sm:text-lg font-bold font-mono text-slate-100 light:text-slate-900 mt-0.5"></div>
-            <div id="modal-stat-date" class="text-[10px] text-slate-400 light:text-slate-500"></div>
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-[#0F172A]/70 border border-slate-200 dark:border-[#334155]/50">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Último Dato</div>
+            <div id="modal-stat-latest" class="text-base sm:text-lg font-black font-mono text-slate-950 dark:text-slate-100 mt-0.5"></div>
+            <div id="modal-stat-date" class="text-[10px] text-slate-500 dark:text-slate-400 font-medium"></div>
           </div>
 
-          <div class="p-3 rounded-2xl bg-[#0F172A]/70 light:bg-slate-100 border border-[#334155]/50 light:border-slate-200">
-            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 light:text-slate-500">Var. Período</div>
-            <div id="modal-stat-mom" class="text-base sm:text-lg font-bold font-mono mt-0.5"></div>
-            <div class="text-[10px] text-slate-400 light:text-slate-500">Mes / Trimestre</div>
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-[#0F172A]/70 border border-slate-200 dark:border-[#334155]/50">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Var. Período</div>
+            <div id="modal-stat-mom" class="text-base sm:text-lg font-black font-mono mt-0.5"></div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Mes / Trimestre</div>
           </div>
 
-          <div class="p-3 rounded-2xl bg-[#0F172A]/70 light:bg-slate-100 border border-[#334155]/50 light:border-slate-200">
-            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 light:text-slate-500">Var. Interanual</div>
-            <div id="modal-stat-yoy" class="text-base sm:text-lg font-bold font-mono mt-0.5"></div>
-            <div class="text-[10px] text-slate-400 light:text-slate-500">Últimos 12 meses</div>
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-[#0F172A]/70 border border-slate-200 dark:border-[#334155]/50">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Var. Interanual</div>
+            <div id="modal-stat-yoy" class="text-base sm:text-lg font-black font-mono mt-0.5"></div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Últimos 12 meses</div>
           </div>
 
-          <div class="p-3 rounded-2xl bg-[#0F172A]/70 light:bg-slate-100 border border-[#334155]/50 light:border-slate-200">
-            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 light:text-slate-500">Mínimo / Máximo</div>
-            <div id="modal-stat-range" class="text-xs sm:text-sm font-bold font-mono text-slate-200 light:text-slate-800 mt-1"></div>
-            <div id="modal-stat-avg" class="text-[10px] text-slate-400 light:text-slate-500 font-mono"></div>
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-[#0F172A]/70 border border-slate-200 dark:border-[#334155]/50">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Mínimo / Máximo</div>
+            <div id="modal-stat-range" class="text-xs sm:text-sm font-bold font-mono text-slate-900 dark:text-slate-200 mt-1"></div>
+            <div id="modal-stat-avg" class="text-[10px] text-slate-500 dark:text-slate-400 font-mono font-medium"></div>
           </div>
 
-          <div class="p-3 rounded-2xl bg-[#0F172A]/70 light:bg-slate-100 border border-[#334155]/50 light:border-slate-200">
-            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 light:text-slate-500">Tendencia</div>
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-[#0F172A]/70 border border-slate-200 dark:border-[#334155]/50">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tendencia</div>
             <div id="modal-stat-trend" class="text-sm font-bold font-mono mt-1"></div>
-            <div id="modal-stat-slope" class="text-[10px] text-slate-400 light:text-slate-500 font-mono"></div>
+            <div id="modal-stat-slope" class="text-[10px] text-slate-500 dark:text-slate-400 font-mono font-medium"></div>
           </div>
         </div>
 
         <!-- Chart Controls (Time Range & Regression Line Switch) -->
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-[#0F172A]/40 light:bg-slate-100/60 p-2.5 rounded-2xl border border-[#334155]/40 light:border-slate-200">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-100/80 dark:bg-[#0F172A]/40 p-2.5 rounded-2xl border border-slate-200 dark:border-[#334155]/40">
           
           <!-- Period Selector -->
           <div class="flex items-center gap-1 text-xs font-semibold">
-            <span class="text-slate-400 mr-1 text-[11px]">Rango:</span>
-            <button onclick="setModalPeriod('1A')" id="btn-period-1A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-800 light:hover:bg-slate-200">1A</button>
-            <button onclick="setModalPeriod('2A')" id="btn-period-2A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-800 light:hover:bg-slate-200">2A</button>
-            <button onclick="setModalPeriod('3A')" id="btn-period-3A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-800 light:hover:bg-slate-200">3A</button>
-            <button onclick="setModalPeriod('5A')" id="btn-period-5A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-800 light:hover:bg-slate-200">5A</button>
-            <button onclick="setModalPeriod('ALL')" id="btn-period-ALL" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-800 light:hover:bg-slate-200">Histórico</button>
+            <span class="text-slate-600 dark:text-slate-400 mr-1 text-[11px] font-bold">Rango:</span>
+            <button onclick="setModalPeriod('1A')" id="btn-period-1A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">1A</button>
+            <button onclick="setModalPeriod('2A')" id="btn-period-2A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">2A</button>
+            <button onclick="setModalPeriod('3A')" id="btn-period-3A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">3A</button>
+            <button onclick="setModalPeriod('5A')" id="btn-period-5A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">5A</button>
+            <button onclick="setModalPeriod('ALL')" id="btn-period-ALL" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">Histórico</button>
           </div>
 
           <!-- Regression Line Toggle & Download PNG -->
@@ -416,14 +428,14 @@
             <button 
               onclick="toggleRegressionLine()" 
               id="btn-toggle-regression" 
-              class="px-3 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-slate-800/80 light:bg-slate-200 border-slate-700 light:border-slate-300 text-slate-300 light:text-slate-700 hover:border-brand-red"
+              class="px-3 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-slate-200 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 hover:border-brand-red"
             >
               <i class="fas fa-chart-line text-brand-red"></i>
               <span>Recta de Regresión</span>
               <span id="regression-badge" class="w-2 h-2 rounded-full bg-slate-500"></span>
             </button>
 
-            <button onclick="exportModalChartPNG()" title="Descargar Gráfico en PNG" class="p-1.5 px-2.5 rounded-xl bg-slate-800/80 light:bg-slate-200 text-slate-300 light:text-slate-700 hover:text-white border border-slate-700 light:border-slate-300 text-xs">
+            <button onclick="exportModalChartPNG()" title="Descargar Gráfico en PNG" class="p-1.5 px-2.5 rounded-xl bg-slate-200 dark:bg-slate-800/80 text-slate-800 dark:text-slate-300 hover:text-black dark:hover:text-white border border-slate-300 dark:border-slate-700 text-xs font-semibold">
               <i class="fas fa-camera"></i>
             </button>
           </div>
@@ -431,7 +443,7 @@
         </div>
 
         <!-- Main Interactive Chart Canvas -->
-        <div class="relative w-full h-[360px] min-h-[300px] bg-[#0F172A]/40 light:bg-white rounded-2xl p-3 border border-[#334155]/40 light:border-slate-200 flex items-center justify-center">
+        <div class="relative w-full h-[360px] min-h-[300px] bg-white dark:bg-[#0F172A]/40 rounded-2xl p-3 border border-slate-200 dark:border-[#334155]/40 flex items-center justify-center">
           <canvas id="modal-main-chart"></canvas>
         </div>
 
@@ -450,7 +462,7 @@
     // State Management
     let currentCategory = 'all';
     let searchQuery = '';
-    let isDarkMode = true;
+    let isDarkMode = false;
     let navLayout = localStorage.getItem('navLayout') || 'sidebar';
     let sparklineCharts = {};
     let modalChart = null;
@@ -505,7 +517,7 @@
           btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
         }
         if (btnSidebar) {
-          btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black";
+          btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white";
         }
       } else {
         // Sidebar Mode
@@ -516,7 +528,7 @@
           btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
         }
         if (btnTopGrid) {
-          btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black";
+          btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white";
         }
       }
     }
@@ -544,15 +556,15 @@
 
     // Theme Switcher
     function initTheme() {
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      if (savedTheme === 'light') {
-        document.documentElement.classList.remove('dark');
-        document.documentElement.classList.add('light');
-        isDarkMode = false;
-      } else {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      if (savedTheme === 'dark') {
         document.documentElement.classList.remove('light');
         document.documentElement.classList.add('dark');
         isDarkMode = true;
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        isDarkMode = false;
       }
     }
 
@@ -568,6 +580,8 @@
         localStorage.setItem('theme', 'dark');
         isDarkMode = true;
       }
+      // Re-render sparklines & modal chart
+      renderAllCategories();
       if (modalState.key) updateModalChart();
     }
 
@@ -577,12 +591,12 @@
       if (!container || !window.DATASET) return;
 
       const kpiKeys = [
-        { key: 'ipc_mensual', label: 'IPC Mensual', icon: 'fa-percentage', color: 'text-amber-400' },
-        { key: 'ipc_interanual', label: 'IPC Interanual', icon: 'fa-chart-simple', color: 'text-rose-400' },
-        { key: 'riesgo_pais', label: 'Riesgo País', icon: 'fa-arrow-trend-down', color: 'text-blue-400' },
-        { key: 'reservas_brutas', label: 'Reservas BCRA', icon: 'fa-vault', color: 'text-emerald-400' },
-        { key: 'base_monetaria', label: 'Base Monetaria', icon: 'fa-money-bill-wave', color: 'text-cyan-400' },
-        { key: 'salario_minimo', label: 'Salario Mínimo (SMVM)', icon: 'fa-wallet', color: 'text-purple-400' }
+        { key: 'ipc_mensual', label: 'IPC Mensual', icon: 'fa-percentage', color: 'text-amber-600 dark:text-amber-400' },
+        { key: 'ipc_interanual', label: 'IPC Interanual', icon: 'fa-chart-simple', color: 'text-rose-600 dark:text-rose-400' },
+        { key: 'riesgo_pais', label: 'Riesgo País', icon: 'fa-arrow-trend-down', color: 'text-blue-600 dark:text-blue-400' },
+        { key: 'reservas_brutas', label: 'Reservas BCRA', icon: 'fa-vault', color: 'text-emerald-600 dark:text-emerald-400' },
+        { key: 'base_monetaria', label: 'Base Monetaria', icon: 'fa-money-bill-wave', color: 'text-cyan-600 dark:text-cyan-400' },
+        { key: 'salario_minimo', label: 'Salario Mínimo (SMVM)', icon: 'fa-wallet', color: 'text-purple-600 dark:text-purple-400' }
       ];
 
       let html = '';
@@ -594,20 +608,20 @@
         if (cardData) {
           const isPos = String(cardData.display_change).includes('+');
           const isNeg = String(cardData.display_change).includes('-');
-          const colorClass = isPos ? 'text-emerald-400' : (isNeg ? 'text-rose-400' : 'text-slate-300');
+          const colorClass = isPos ? 'text-emerald-700 dark:text-emerald-400 font-bold' : (isNeg ? 'text-rose-700 dark:text-rose-400 font-bold' : 'text-slate-600 dark:text-slate-300');
 
           html += `
             <div onclick="openModalByKey('${cardData.key}')" class="glass-card p-3 rounded-2xl cursor-pointer hover:border-brand-red flex flex-col justify-between">
-              <div class="flex items-center justify-between text-[11px] text-slate-400 light:text-slate-500 font-semibold">
+              <div class="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 font-bold">
                 <span>${k.label}</span>
                 <i class="fas ${k.icon} ${k.color}"></i>
               </div>
-              <div class="text-sm sm:text-base font-bold font-mono text-slate-100 light:text-slate-900 mt-1">
+              <div class="text-base sm:text-lg font-black font-mono text-slate-950 dark:text-slate-100 mt-1 tracking-tight">
                 ${cardData.display_value}
               </div>
               <div class="flex items-center justify-between text-[10px] font-mono mt-0.5">
-                <span class="${colorClass} font-semibold">${cardData.display_change}</span>
-                <span class="text-slate-400 light:text-slate-500">${cardData.var_ia}</span>
+                <span class="${colorClass}">${cardData.display_change}</span>
+                <span class="text-slate-500 dark:text-slate-400 font-semibold">${cardData.var_ia}</span>
               </div>
             </div>
           `;
@@ -629,13 +643,13 @@
         <button 
           onclick="selectCategory('all')" 
           id="sidebar-item-all"
-          class="sidebar-item active w-full px-3 py-2 rounded-xl text-left transition-all flex items-center justify-between text-slate-300 light:text-slate-700 hover:bg-slate-800/60 light:hover:bg-slate-200/70"
+          class="sidebar-item active w-full px-3 py-2 rounded-xl text-left transition-all flex items-center justify-between text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60"
         >
-          <span class="flex items-center gap-2">
-            <i class="fas fa-layer-group text-slate-400"></i>
+          <span class="flex items-center gap-2 font-semibold">
+            <i class="fas fa-layer-group text-brand-red w-4 text-center"></i>
             <span>Todas las Categorías</span>
           </span>
-          <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 light:bg-slate-300 font-mono font-bold">${totalCount}</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 font-mono font-bold">${totalCount}</span>
         </button>
       `;
 
@@ -645,13 +659,13 @@
           <button 
             onclick="selectCategory('${cat.id}')" 
             id="sidebar-item-${cat.id}"
-            class="sidebar-item w-full px-3 py-2 rounded-xl text-left transition-all flex items-center justify-between text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black hover:bg-slate-800/60 light:hover:bg-slate-200/70"
+            class="sidebar-item w-full px-3 py-2 rounded-xl text-left transition-all flex items-center justify-between text-slate-700 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
           >
             <span class="flex items-center gap-2 truncate">
               <i class="fas ${cat.icon} text-brand-red w-4 text-center"></i>
-              <span class="truncate">${cat.name}</span>
+              <span class="truncate font-semibold">${cat.name}</span>
             </span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800/80 light:bg-slate-200 font-mono font-bold shrink-0">${count}</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800/80 font-mono font-bold shrink-0">${count}</span>
           </button>
         `;
       });
@@ -672,7 +686,7 @@
         <button 
           onclick="selectCategory('all')" 
           id="top-grid-item-all"
-          class="top-tab-btn active px-3 py-1.5 rounded-xl border border-transparent transition-all flex items-center gap-1.5 text-slate-300 light:text-slate-700"
+          class="top-tab-btn active px-3 py-1.5 rounded-xl border border-slate-300 dark:border-transparent transition-all flex items-center gap-1.5 text-slate-800 dark:text-slate-300 font-bold"
         >
           <i class="fas fa-layer-group"></i>
           <span>Todas (${totalCount})</span>
@@ -685,11 +699,11 @@
           <button 
             onclick="selectCategory('${cat.id}')" 
             id="top-grid-item-${cat.id}"
-            class="top-tab-btn px-3 py-1.5 rounded-xl border border-transparent transition-all flex items-center gap-1.5 text-slate-400 light:text-slate-600 hover:text-white light:hover:text-black bg-[#1E293B] light:bg-slate-200/80"
+            class="top-tab-btn px-3 py-1.5 rounded-xl border border-slate-300 dark:border-transparent transition-all flex items-center gap-1.5 text-slate-700 dark:text-slate-400 hover:text-black dark:hover:text-white bg-slate-100 dark:bg-[#1E293B] font-semibold"
           >
             <i class="fas ${cat.icon} text-brand-red"></i>
             <span>${cat.name}</span>
-            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 light:bg-slate-300 font-mono font-bold">${count}</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 dark:bg-slate-800 font-mono font-bold">${count}</span>
           </button>
         `;
       });
@@ -703,7 +717,7 @@
       // Update Sidebar Items
       document.querySelectorAll('.sidebar-item').forEach(btn => {
         btn.classList.remove('active');
-        btn.classList.add('text-slate-400', 'light:text-slate-600');
+        btn.classList.add('text-slate-700', 'dark:text-slate-400');
       });
       const activeSidebar = document.getElementById(`sidebar-item-${catId}`);
       if (activeSidebar) activeSidebar.classList.add('active');
@@ -711,12 +725,12 @@
       // Update Top Grid Items
       document.querySelectorAll('.top-tab-btn').forEach(btn => {
         btn.classList.remove('active', 'bg-brand-red', 'text-white');
-        btn.classList.add('bg-[#1E293B]', 'light:bg-slate-200/80', 'text-slate-400', 'light:text-slate-600');
+        btn.classList.add('bg-slate-100', 'dark:bg-[#1E293B]', 'text-slate-700', 'dark:text-slate-400');
       });
       const activeTop = document.getElementById(`top-grid-item-${catId}`);
       if (activeTop) {
         activeTop.classList.add('active', 'bg-brand-red', 'text-white');
-        activeTop.classList.remove('bg-[#1E293B]', 'light:bg-slate-200/80', 'text-slate-400', 'light:text-slate-600');
+        activeTop.classList.remove('bg-slate-100', 'dark:bg-[#1E293B]', 'text-slate-700', 'dark:text-slate-400');
       }
 
       // Close mobile drawer if open
@@ -759,19 +773,19 @@
         html += `
           <section id="sec-${cat.id}" class="flex flex-col gap-4 scroll-mt-24">
             
-            <!-- Category Header -->
-            <div class="flex items-center justify-between border-b border-[#334155]/60 light:border-slate-200 pb-3">
+            <!-- Category Header with High Contrast -->
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-[#334155]/60 pb-3">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-xl bg-brand-red/10 border border-brand-red/30 flex items-center justify-center text-brand-red text-sm">
                   <i class="fas ${cat.icon}"></i>
                 </div>
                 <div>
-                  <h2 class="text-base sm:text-lg font-bold text-slate-100 light:text-slate-900 tracking-tight">
+                  <h2 class="text-lg sm:text-xl font-extrabold text-slate-950 dark:text-slate-100 tracking-tight">
                     ${cat.name}
                   </h2>
                 </div>
               </div>
-              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-[#1E293B] light:bg-slate-200 text-slate-300 light:text-slate-700 font-mono">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-[#1E293B] text-slate-800 dark:text-slate-300 font-mono">
                 ${filteredCards.length} indicadores
               </span>
             </div>
@@ -788,9 +802,9 @@
       if (totalVisibleCards === 0) {
         html = `
           <div class="p-12 text-center flex flex-col items-center justify-center glass-card rounded-3xl">
-            <i class="fas fa-search text-4xl text-slate-500 mb-3"></i>
-            <h3 class="text-lg font-bold text-slate-200 light:text-slate-800">No se encontraron indicadores</h3>
-            <p class="text-xs text-slate-400 light:text-slate-500 mt-1">Intenta con otros términos de búsqueda como "IPC", "Reservas", "Salarios", o "PBI".</p>
+            <i class="fas fa-search text-4xl text-slate-400 dark:text-slate-500 mb-3"></i>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-200">No se encontraron indicadores</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">Intenta con otros términos de búsqueda como "IPC", "Reservas", "Salarios", o "PBI".</p>
             <button onclick="clearSearch()" class="mt-4 px-4 py-2 rounded-xl bg-brand-red text-white text-xs font-bold hover:bg-brand-redHover transition-all shadow-lg shadow-brand-red/30">
               Limpiar Búsqueda
             </button>
@@ -810,12 +824,22 @@
       }, 50);
     }
 
-    // Indicator Card Template
+    // Indicator Card Template with Crisp High Contrast
     function renderIndicatorCardHTML(card) {
       const isPos = String(card.display_change).includes('+');
       const isNeg = String(card.display_change).includes('-');
-      const momColor = isPos ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : (isNeg ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-slate-800 text-slate-400 border-slate-700');
-      const momIcon = isPos ? '<i class="fas fa-arrow-trend-up text-[10px] mr-1"></i>' : (isNeg ? '<i class="fas fa-arrow-trend-down text-[10px] mr-1"></i>' : '');
+      
+      const momBadgeColor = isPos 
+        ? 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' 
+        : (isNeg 
+            ? 'bg-rose-50 text-rose-800 border-rose-300 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20' 
+            : 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700');
+            
+      const momIcon = isPos 
+        ? '<i class="fas fa-arrow-trend-up text-[10px] mr-1 text-emerald-600 dark:text-emerald-400"></i>' 
+        : (isNeg 
+            ? '<i class="fas fa-arrow-trend-down text-[10px] mr-1 text-rose-600 dark:text-rose-400"></i>' 
+            : '');
 
       return `
         <div 
@@ -823,41 +847,42 @@
           class="glass-card rounded-2xl p-4 flex flex-col justify-between cursor-pointer group relative overflow-hidden"
           title="Click para ver gráfico interactivo y regresión"
         >
-          <!-- Top row: Name & Badges -->
+          <!-- Top row: Frequency & Source Badges -->
           <div>
             <div class="flex items-start justify-between gap-2 mb-2">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 light:text-slate-500 px-2 py-0.5 rounded bg-slate-800/80 light:bg-slate-200/80 border border-slate-700/60 light:border-slate-300">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/60 font-mono">
                 ${card.freq}
               </span>
-              <span class="text-[10px] text-slate-400 light:text-slate-500 font-semibold" title="Fuente oficial">
+              <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold" title="Fuente oficial">
                 ${card.source.split('/')[0]}
               </span>
             </div>
 
-            <h3 class="text-xs sm:text-sm font-bold text-slate-200 light:text-slate-800 group-hover:text-brand-red transition-colors line-clamp-2 leading-snug">
+            <!-- Indicator Title: High Contrast Text -->
+            <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-brand-red transition-colors line-clamp-2 leading-snug">
               ${card.name}
             </h3>
           </div>
 
-          <!-- Mid row: Value & Variations -->
+          <!-- Mid row: Big Bold Value & Dual Variation Badges -->
           <div class="my-3">
-            <div class="text-xl sm:text-2xl font-extrabold font-mono text-slate-100 light:text-slate-950 tracking-tight">
+            <div class="text-xl sm:text-2xl font-black font-mono text-slate-950 dark:text-slate-50 tracking-tight">
               ${card.display_value}
             </div>
 
             <div class="flex items-center gap-2 mt-2 flex-wrap">
-              <span class="px-2 py-0.5 rounded-lg border text-[11px] font-mono font-bold ${momColor} flex items-center" title="Variación de período">
+              <span class="px-2 py-0.5 rounded-lg border text-[11px] font-mono font-bold ${momBadgeColor} flex items-center" title="Variación de período">
                 ${momIcon} ${card.display_change}
               </span>
 
-              <span class="px-2 py-0.5 rounded-lg bg-slate-800/80 light:bg-slate-100 text-slate-300 light:text-slate-700 border border-slate-700/60 light:border-slate-300 text-[11px] font-mono font-semibold" title="Variación Interanual">
+              <span class="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/90 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700/60 text-[11px] font-mono font-bold" title="Variación Interanual">
                 ${card.var_ia}
               </span>
             </div>
           </div>
 
-          <!-- Bottom: Sparkline Canvas & Action Trigger -->
-          <div class="pt-2 border-t border-slate-700/40 light:border-slate-200/80 flex items-center justify-between gap-2">
+          <!-- Bottom: Sparkline Canvas & Action Trigger Button -->
+          <div class="pt-2 border-t border-slate-200 dark:border-slate-700/40 flex items-center justify-between gap-2">
             <div class="flex-1 h-10 relative">
               <canvas id="sparkline-${card.key}" class="sparkline-canvas"></canvas>
             </div>
@@ -877,8 +902,8 @@
 
       const ctx = canvas.getContext('2d');
       const isUp = prices[prices.length - 1] >= prices[0];
-      const strokeColor = isUp ? '#10B981' : '#E20039';
-      const fillColor = isUp ? 'rgba(16, 185, 129, 0.12)' : 'rgba(226, 0, 57, 0.12)';
+      const strokeColor = isUp ? '#059669' : '#E20039';
+      const fillColor = isUp ? 'rgba(5, 150, 105, 0.15)' : 'rgba(226, 0, 57, 0.15)';
 
       if (sparklineCharts[key]) {
         sparklineCharts[key].destroy();
@@ -891,7 +916,7 @@
           datasets: [{
             data: prices,
             borderColor: strokeColor,
-            borderWidth: 1.75,
+            borderWidth: 2,
             pointRadius: 0,
             pointHoverRadius: 0,
             tension: 0.35,
@@ -992,11 +1017,11 @@
       const isNeg = String(card.display_change).includes('-');
       const momEl = document.getElementById('modal-stat-mom');
       momEl.innerText = card.display_change;
-      momEl.className = `text-base sm:text-lg font-bold font-mono mt-0.5 ${isPos ? 'text-emerald-400' : (isNeg ? 'text-rose-400' : 'text-slate-300')}`;
+      momEl.className = `text-base sm:text-lg font-black font-mono mt-0.5 ${isPos ? 'text-emerald-700 dark:text-emerald-400' : (isNeg ? 'text-rose-700 dark:text-rose-400' : 'text-slate-800 dark:text-slate-300')}`;
 
       const yoyEl = document.getElementById('modal-stat-yoy');
       yoyEl.innerText = card.var_ia;
-      yoyEl.className = `text-base sm:text-lg font-bold font-mono mt-0.5 ${String(card.var_ia).includes('+') ? 'text-emerald-400' : (String(card.var_ia).includes('-') ? 'text-rose-400' : 'text-slate-300')}`;
+      yoyEl.className = `text-base sm:text-lg font-black font-mono mt-0.5 ${String(card.var_ia).includes('+') ? 'text-emerald-700 dark:text-emerald-400' : (String(card.var_ia).includes('-') ? 'text-rose-700 dark:text-rose-400' : 'text-slate-800 dark:text-slate-300')}`;
 
       const pMin = Math.min(...prices);
       const pMax = Math.max(...prices);
@@ -1066,7 +1091,7 @@
           if (p === modalState.period) {
             btn.className = "px-2.5 py-1 rounded-lg transition-colors border border-brand-red bg-brand-red text-white font-bold shadow-md shadow-brand-red/30";
           } else {
-            btn.className = "px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-800 light:hover:bg-slate-200 text-slate-300 light:text-slate-700";
+            btn.className = "px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold";
           }
         }
       });
@@ -1076,11 +1101,11 @@
       const regBadge = document.getElementById('regression-badge');
       if (regBtn && regBadge) {
         if (modalState.showRegression) {
-          regBtn.className = "px-3 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-brand-red/20 border-brand-red text-brand-red shadow-sm";
+          regBtn.className = "px-3 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-brand-red/10 dark:bg-brand-red/20 border-brand-red text-brand-red shadow-sm";
           regBadge.className = "w-2 h-2 rounded-full bg-brand-red animate-pulse";
         } else {
-          regBtn.className = "px-3 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-slate-800/80 light:bg-slate-200 border-slate-700 light:border-slate-300 text-slate-300 light:text-slate-700";
-          regBadge.className = "w-2 h-2 rounded-full bg-slate-500";
+          regBtn.className = "px-3 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-slate-200 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300";
+          regBadge.className = "w-2 h-2 rounded-full bg-slate-400";
         }
       }
 
@@ -1103,13 +1128,13 @@
       const slopeEl = document.getElementById('modal-stat-slope');
       if (slope > 0.001) {
         trendEl.innerText = "Alcista ↑";
-        trendEl.className = "text-sm font-bold font-mono mt-1 text-emerald-400";
+        trendEl.className = "text-sm font-black font-mono mt-1 text-emerald-700 dark:text-emerald-400";
       } else if (slope < -0.001) {
         trendEl.innerText = "Bajista ↓";
-        trendEl.className = "text-sm font-bold font-mono mt-1 text-rose-400";
+        trendEl.className = "text-sm font-black font-mono mt-1 text-rose-700 dark:text-rose-400";
       } else {
         trendEl.innerText = "Estable →";
-        trendEl.className = "text-sm font-bold font-mono mt-1 text-slate-300";
+        trendEl.className = "text-sm font-black font-mono mt-1 text-slate-800 dark:text-slate-300";
       }
       slopeEl.innerText = `Pendiente: ${slope.toFixed(3)}/per`;
 
@@ -1122,9 +1147,9 @@
         modalChart.destroy();
       }
 
-      const isLight = document.documentElement.classList.contains('light');
-      const textColor = isLight ? '#334155' : '#94A3B8';
-      const gridColor = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+      const isDark = document.documentElement.classList.contains('dark');
+      const textColor = isDark ? '#CBD5E1' : '#334155';
+      const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)';
 
       const datasets = [
         {
@@ -1138,7 +1163,7 @@
           pointRadius: targetLen > 40 ? 1 : 3,
           pointHoverRadius: 6,
           fill: true,
-          backgroundColor: isLight ? 'rgba(226, 0, 57, 0.08)' : 'rgba(226, 0, 57, 0.15)',
+          backgroundColor: isDark ? 'rgba(226, 0, 57, 0.15)' : 'rgba(226, 0, 57, 0.08)',
           tension: 0.25
         }
       ];
@@ -1175,15 +1200,15 @@
               position: 'top',
               labels: {
                 color: textColor,
-                font: { family: 'Sora', size: 11, weight: '600' }
+                font: { family: 'Sora', size: 11, weight: '700' }
               }
             },
             tooltip: {
-              backgroundColor: isLight ? '#FFFFFF' : '#0F172A',
-              titleColor: isLight ? '#0F172A' : '#F1F5F9',
-              bodyColor: isLight ? '#334155' : '#CBD5E1',
+              backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+              titleColor: isDark ? '#F1F5F9' : '#0F172A',
+              bodyColor: isDark ? '#CBD5E1' : '#1E293B',
               borderColor: '#E20039',
-              borderWidth: 1,
+              borderWidth: 1.5,
               padding: 10,
               displayColors: true,
               callbacks: {
@@ -1199,7 +1224,7 @@
               grid: { color: gridColor },
               ticks: {
                 color: textColor,
-                font: { family: 'JetBrains Mono', size: 10 },
+                font: { family: 'JetBrains Mono', size: 10, weight: '600' },
                 maxRotation: 45
               }
             },
@@ -1207,7 +1232,7 @@
               grid: { color: gridColor },
               ticks: {
                 color: textColor,
-                font: { family: 'JetBrains Mono', size: 10 },
+                font: { family: 'JetBrains Mono', size: 10, weight: '600' },
                 callback: function(val) {
                   return val.toLocaleString('es-AR');
                 }
