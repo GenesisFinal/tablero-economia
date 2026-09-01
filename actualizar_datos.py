@@ -52,8 +52,8 @@ def compute_aggregate_to_pbi(dates, prices, pbi_dict, mode='billones'):
             if pbi_val > 0:
                 if mode == 'billones':
                     agg_m = p * 1_000_000 # p in billones -> millions
-                elif mode == 'pesos_scaled':
-                    agg_m = (p / 1_000_000_000) * 1_000_000
+                elif mode == 'miles':
+                    agg_m = p / 1_000 # p in miles -> millions
                 else:
                     agg_m = p
                 r = round((agg_m / pbi_val) * 100, 2)
@@ -63,7 +63,7 @@ def compute_aggregate_to_pbi(dates, prices, pbi_dict, mode='billones'):
 
 def reconstruct_and_order_dataset():
     print("==========================================================================")
-    print("INCORPORANDO RELACIONES AGREGADOS MONETARIOS / PBI Y REORDENANDO...")
+    print("GENERANDO DATASET CON CANASTAS CONSTANTES Y AGREGADOS / PBI...")
     print("==========================================================================")
 
     ref_file = r'g:\Mi unidad\IA\Valores Financieros\master_dataset_PUNTO_RESTAURACION_BALANCES_UNIFICADOS_COMPLETO.json'
@@ -111,14 +111,13 @@ def reconstruct_and_order_dataset():
     except Exception as e:
         print("[WARN] UVA:", e)
 
-    # Build IPC dictionary
+    # 1. CANASTAS A PRECIOS CONSTANTES
     ipc_dict = {}
     ipc_series = ref_hdb.get("ipc_mensual", {})
     if ipc_series:
         for d, p in zip(ipc_series.get("dates", []), ipc_series.get("prices", [])):
             ipc_dict[d[:7]] = float(p)
 
-    # 1. CANASTAS A PRECIOS CONSTANTES
     canastas_to_adjust = [
         ("canasta_alimentaria_val", "canasta_alimentaria_constante", "Canasta Básica Alimentaria a Precios Constantes", "Mide el costo histórico de la CBA ajustado por inflación (IPC) a pesos del último dato disponible. Refleja la variación real de la línea de indigencia."),
         ("canasta_alimentaria_hogar2", "canasta_alimentaria_hogar2_constante", "CBA Familiar (Hogar 2) a Precios Constantes", "Costo histórico de la CBA para un hogar de 4 integrantes ajustado por inflación (IPC) a pesos del último dato disponible."),
@@ -147,7 +146,7 @@ def reconstruct_and_order_dataset():
         ("agregado_b2", "agregado_b2_pbi", "Agregado Monetario B2 (M2) / PBI", "Mide la relación entre el Agregado B2 (B1 + depósitos en cajas de ahorro en pesos y USD) y el PBI corriente.", "billones"),
         ("agregado_b3", "agregado_b3_pbi", "Agregado Monetario B3 (M3) / PBI", "Mide la relación entre el Agregado B3 (M3 amplio: B2 + plazos fijos en pesos y USD) y el PBI corriente. Indica el grado de profundidad financiera total.", "billones"),
         ("base_monetaria", "base_monetaria_pbi", "Base Monetaria / PBI", "Mide la relación entre la Base Monetaria (circulante + encajes) y el PBI corriente. Refleja la monetización básica de la economía.", "billones"),
-        ("billetes_circulacion", "billetes_circulacion_pbi", "Billetes en Circulación / PBI", "Mide la relación entre el dinero físico en poder del público y el PBI corriente.", "pesos_scaled")
+        ("billetes_circulacion", "billetes_circulacion_pbi", "Billetes en Circulación / PBI", "Mide la relación entre el dinero físico en poder del público y el PBI corriente.", "miles")
     ]
 
     for agg_key, pbi_key, pbi_name, pbi_desc, mode in monetary_pbi_specs:
@@ -159,9 +158,9 @@ def reconstruct_and_order_dataset():
                 rd, rp = compute_aggregate_to_pbi(dates, prices, pbi_dict, mode)
                 if rd and rp:
                     ref_hdb[pbi_key] = {"dates": rd, "prices": rp}
-                    print(f"  -> Calculada relación: {pbi_name} ({len(rp)} pts, último: {rp[-1]}% al {rd[-1]})")
+                    print(f"  -> {pbi_name}: {len(rp)} pts, último: {rp[-1]}% ({rd[-1]})")
 
-    # ORDER OF PRECIOS Y COSTO DE VIDA
+    # PRECIOS Y COSTO DE VIDA KEYS (19 cards)
     precios_ordered_keys = [
         "canasta_alimentaria_val", "canasta_alimentaria_constante", "canasta_alimentaria_usd",
         "canasta_alimentaria_hogar2", "canasta_alimentaria_hogar2_constante", "canasta_alimentaria_hogar2_usd",
@@ -171,12 +170,7 @@ def reconstruct_and_order_dataset():
         "ipc_mayorista_mensual", "ipc_mayorista_interanual", "uva_val"
     ]
 
-    # ORDER OF AGREGADOS MONETARIOS:
-    # 1. Agregado B1: Valor -> / PBI -> USD
-    # 2. Agregado B2: Valor -> / PBI -> USD
-    # 3. Agregado B3: Valor -> / PBI -> USD
-    # 4. Base Monetaria: Valor -> / PBI -> USD
-    # 5. Billetes en Circulacion: Valor -> / PBI -> USD
+    # AGREGADOS MONETARIOS KEYS (15 cards)
     monetario_ordered_keys = [
         "agregado_b1", "agregado_b1_pbi", "agregado_b1_usd",
         "agregado_b2", "agregado_b2_pbi", "agregado_b2_usd",
@@ -227,11 +221,14 @@ def reconstruct_and_order_dataset():
         cards_dict = {}
         for c in raw_cards:
             k = c.get("key") or c.get("id")
+            # Filter out any misplaced keys
+            if "Monetario" in cat_name and "canasta" in k:
+                continue
             cards_dict[k] = c
 
-        # Inject Canastas Constantes metadata
-        for nom_key, const_key, const_name, const_desc in canastas_to_adjust:
-            if const_key not in cards_dict:
+        # If Precios, populate constant canastas
+        if "Precios" in cat_name:
+            for nom_key, const_key, const_name, const_desc in canastas_to_adjust:
                 cards_dict[const_key] = {
                     "key": const_key,
                     "name": const_name,
@@ -241,9 +238,9 @@ def reconstruct_and_order_dataset():
                     "time_range": "Mensual"
                 }
 
-        # Inject Monetary / PBI metadata
-        for agg_key, pbi_key, pbi_name, pbi_desc, mode in monetary_pbi_specs:
-            if pbi_key not in cards_dict:
+        # If Monetario, populate PBI ratio cards
+        if "Monetario" in cat_name:
+            for agg_key, pbi_key, pbi_name, pbi_desc, mode in monetary_pbi_specs:
                 cards_dict[pbi_key] = {
                     "key": pbi_key,
                     "name": pbi_name,
@@ -255,23 +252,11 @@ def reconstruct_and_order_dataset():
 
         # Determine sorted list of cards
         if "Precios" in cat_name:
-            ordered_cards = []
-            for k in precios_ordered_keys:
-                if k in cards_dict:
-                    ordered_cards.append(cards_dict[k])
-            for k, c in cards_dict.items():
-                if k not in precios_ordered_keys:
-                    ordered_cards.append(c)
+            ordered_cards = [cards_dict[k] for k in precios_ordered_keys if k in cards_dict]
         elif "Monetario" in cat_name:
-            ordered_cards = []
-            for k in monetario_ordered_keys:
-                if k in cards_dict:
-                    ordered_cards.append(cards_dict[k])
-            for k, c in cards_dict.items():
-                if k not in monetario_ordered_keys:
-                    ordered_cards.append(c)
+            ordered_cards = [cards_dict[k] for k in monetario_ordered_keys if k in cards_dict]
         else:
-            ordered_cards = raw_cards
+            ordered_cards = list(cards_dict.values())
 
         enhanced_cards = []
         for card in ordered_cards:
@@ -336,7 +321,6 @@ def reconstruct_and_order_dataset():
             else:
                 display_change = card.get("display_change") or "0.00%"
 
-            # YoY variation (4 quarters for quarterly series, 12 months for monthly)
             yoy_step = 5 if (freq == "Trimestral" or key.endswith("_pbi")) else 13
             if len(prices) >= yoy_step:
                 p_curr = prices[-1]
@@ -389,7 +373,7 @@ def reconstruct_and_order_dataset():
     master_output = {
         "metadata": {
             "title": "Tablero de Indicadores Económicos - La Segunda",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "total_categories": len(enhanced_categories),
             "total_indicators": total_cards
@@ -407,13 +391,13 @@ def reconstruct_and_order_dataset():
     with open(master_path, "w", encoding="utf-8") as f:
         json.dump(master_output, f, ensure_ascii=False, indent=2)
 
-    print(f"\n[SUCCESS] master_dataset.json actualizado con {len(enhanced_categories)} categorías y {total_cards} indicadores.")
+    print(f"\n[SUCCESS] master_dataset.json guardado con {len(enhanced_categories)} categorías y {total_cards} indicadores.")
     
     for cat in enhanced_categories:
         if "Monetario" in cat["name"]:
             print(f"\nOrden verificado en {cat['name']} ({len(cat['cards'])} tarjetas):")
             for idx, c in enumerate(cat['cards']):
-                print(f"  {idx+1:02d}. {c['name']:<50} [{c['key']}] -> {c['display_value']}")
+                print(f"  {idx+1:02d}. {c['name']:<45} [{c['key']}] -> {c['display_value']}")
 
     return master_output
 
