@@ -4,31 +4,15 @@
       <stop offset="0%" stop-color="#E20039"/>
       <stop offset="100%" stop-color="#8B0020"/>
     </linearGradient>
-    <linearGradient id="sliceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#FFF5F7"/>
-    </linearGradient>
-    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFE4E9"/>
-      <stop offset="100%" stop-color="#FFCCD5"/>
-    </linearGradient>
   </defs>
-
-  <!-- Background Squircle with subtle gradient -->
-  <rect x="24" y="24" width="464" height="464" rx="120" fill="url(#bgGrad)"/>
-  <rect x="25" y="25" width="462" height="462" rx="119" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-opacity="0.25"/>
-
-  <!-- Main Chart Pie Graphics -->
-  <g transform="translate(48, 48) scale(0.8125)">
-    <!-- 3/4 Main Pie Chart -->
-    <path d="M 236 50 C 133.28 50 50 133.28 50 236 C 50 338.72 133.28 422 236 422 C 338.72 422 422 338.72 422 236 C 422 225 413.05 216 402 216 L 256 216 C 244.95 216 236 207.05 236 196 L 236 50 Z" fill="url(#sliceGrad)"/>
-
-    <!-- Top-Right Exploded Pie Slice -->
-    <path d="M 288 38 C 276.95 38 268 46.95 268 58 L 268 174 C 268 185.05 276.95 194 288 194 L 404 194 C 415.05 194 424 185.05 424 174 C 422.3 98.6 363.4 39.7 288 38 Z" fill="url(#accentGrad)"/>
-
-    <!-- Ascending Economic Trend Bar Indicators in Center -->
-    <rect x="110" y="290" width="28" height="50" rx="10" fill="#E20039" fill-opacity="0.85"/>
-    <rect x="156" y="250" width="28" height="90" rx="10" fill="#E20039" fill-opacity="0.95"/>
-    <rect x="202" y="210" width="28" height="130" rx="10" fill="#E20039"/>
+  <rect x="24" y="24" width="464" height="464" rx="112" fill="url(#bgGrad)"/>
+  <rect x="25" y="25" width="462" height="462" rx="111" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-opacity="0.25"/>
+  <g fill="#FFFFFF">
+    <rect x="96" y="280" width="48" height="136" rx="24" opacity="0.9"/>
+    <rect x="168" y="210" width="48" height="206" rx="24"/>
+    <rect x="240" y="140" width="48" height="276" rx="24"/>
+    <path d="M 370 230 A 60 60 0 1 1 310 290 L 370 290 Z" opacity="0.9"/>
   </g>
+  <path d="M 100 240 L 190 170 L 260 200 L 410 84" fill="none" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 340 84 L 416 80 L 412 156" fill="none" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
