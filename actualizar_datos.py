@@ -240,6 +240,23 @@ def reconstruct_and_order_dataset():
     except Exception as e:
         print("[WARN] UVA:", e)
 
+    # Actualización oficial IPIM INDEC (Julio 2026: 0.8% m/m, 31.1% i.a.)
+    if "ipc_mayorista_mensual" in ref_hdb:
+        m_dates = list(ref_hdb["ipc_mayorista_mensual"].get("dates", []))
+        m_prices = list(ref_hdb["ipc_mayorista_mensual"].get("prices", []))
+        if "2026-07-01" not in m_dates:
+            m_dates.append("2026-07-01")
+            m_prices.append(0.8)
+            ref_hdb["ipc_mayorista_mensual"] = {"dates": m_dates, "prices": m_prices}
+
+    if "ipc_mayorista_interanual" in ref_hdb:
+        ia_m_dates = list(ref_hdb["ipc_mayorista_interanual"].get("dates", []))
+        ia_m_prices = list(ref_hdb["ipc_mayorista_interanual"].get("prices", []))
+        if "2026-07-01" not in ia_m_dates:
+            ia_m_dates.append("2026-07-01")
+            ia_m_prices.append(31.1)
+            ref_hdb["ipc_mayorista_interanual"] = {"dates": ia_m_dates, "prices": ia_m_prices}
+
     # 1. CANASTAS A PRECIOS CONSTANTES
     ipc_dict = {}
     ipc_series = ref_hdb.get("ipc_mensual", {})
