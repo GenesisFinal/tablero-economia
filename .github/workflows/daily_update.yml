@@ -1,9 +1,10 @@
-name: Actualización Diaria de Indicadores Económicos
+name: Actualización Automática de Indicadores Económicos
 
 on:
   schedule:
-    # Runs twice a day: 09:00 UTC (06:00 ART) and 21:00 UTC (18:00 ART)
-    - cron: '0 9,21 * * *'
+    # Barrido 4 veces al día (06:00, 10:00, 14:00 y 18:00 ART)
+    # 09:00, 13:00, 17:00, 21:00 UTC
+    - cron: '0 9,13,17,21 * * *'
   workflow_dispatch:
 
 permissions:
@@ -32,22 +33,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests pandas beautifulsoup4 urllib3
 
-      - name: Verificar y Actualizar Datos Macroeconómicos
+      - name: Barrido y Actualización de Fuentes Oficiales (INDEC, BCRA, Min. Economía, ANSES, SAGyP, CIARA)
         run: |
           python actualizar_datos.py
 
-      - name: Compilar Tablero Web
+      - name: Compilación del Tablero Web
         run: |
           python build_html.py
 
-      - name: Commit y Push de Actualizaciones
+      - name: Commit y Publicación Automática
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add master_dataset.json index.html
+          git add master_dataset.json index.html actualizar_datos.py build_html.py
           if git diff --staged --quiet; then
-            echo "No se detectaron cambios en los datos del día."
+            echo "Todos los datos se encuentran al día. Sin cambios pendientes."
           else
-            git commit -m "Auto-update: Verificación diaria de indicadores económicos $(date -u +'%Y-%m-%d %H:%M:%S UTC') [skip ci]"
+            git commit -m "Auto-update: Sincronización oficial de indicadores $(date -u +'%Y-%m-%d %H:%M:%S UTC') [skip ci]"
             git push
           fi
