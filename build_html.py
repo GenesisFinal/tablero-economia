@@ -44,6 +44,8 @@ def build_index_html():
   
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -414,31 +416,65 @@ def build_index_html():
           </div>
         </div>
 
-        <!-- Controls -->
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-100/80 dark:bg-[#0F172A]/40 p-2.5 rounded-2xl border border-slate-200 dark:border-[#334155]/40">
-          <div class="flex items-center gap-1 text-xs font-semibold">
+        <!-- Controls & Zoom Bar -->
+        <div class="flex flex-col lg:flex-row flex-wrap items-stretch lg:items-center justify-between gap-3 bg-slate-100/80 dark:bg-[#0F172A]/40 p-2.5 rounded-2xl border border-slate-200 dark:border-[#334155]/40">
+          <!-- Range Presets -->
+          <div class="flex items-center flex-wrap gap-1 text-xs font-semibold">
             <span class="text-slate-600 dark:text-slate-400 mr-1 text-[11px] font-bold">Rango:</span>
-            <button onclick="setModalPeriod('1A')" id="btn-period-1A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">1A</button>
-            <button onclick="setModalPeriod('2A')" id="btn-period-2A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">2A</button>
-            <button onclick="setModalPeriod('3A')" id="btn-period-3A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">3A</button>
-            <button onclick="setModalPeriod('5A')" id="btn-period-5A" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">5A</button>
-            <button onclick="setModalPeriod('ALL')" id="btn-period-ALL" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800">Histórico</button>
+            <button onclick="setModalPeriod('1A')" id="btn-period-1A" class="px-2 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-[11px]">1A</button>
+            <button onclick="setModalPeriod('2A')" id="btn-period-2A" class="px-2 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-[11px]">2A</button>
+            <button onclick="setModalPeriod('3A')" id="btn-period-3A" class="px-2 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-[11px]">3A</button>
+            <button onclick="setModalPeriod('5A')" id="btn-period-5A" class="px-2 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-[11px]">5A</button>
+            <button onclick="setModalPeriod('10A')" id="btn-period-10A" class="px-2 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-[11px]">10A</button>
+            <button onclick="setModalPeriod('20A')" id="btn-period-20A" class="px-2 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-[11px]">20A</button>
+            <button onclick="setModalPeriod('ALL')" id="btn-period-ALL" class="px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-[11px]">Histórico</button>
           </div>
 
-          <div class="flex items-center gap-2">
+          <!-- Date Pickers & Actions -->
+          <div class="flex items-center flex-wrap gap-2 text-xs">
+            <!-- Custom Date Filter -->
+            <div class="flex items-center gap-1.5 bg-white dark:bg-[#1E293B] px-2 py-1 rounded-xl border border-slate-300 dark:border-slate-700 shadow-sm">
+              <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400">Desde:</span>
+              <input type="text" id="modal-date-from" placeholder="AAAA-MM" class="w-16 sm:w-20 text-[11px] font-mono font-bold bg-transparent border-0 outline-none text-slate-800 dark:text-slate-200 text-center" onkeydown="if(event.key==='Enter') applyCustomDateRange()">
+              <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400">Hasta:</span>
+              <input type="text" id="modal-date-to" placeholder="AAAA-MM" class="w-16 sm:w-20 text-[11px] font-mono font-bold bg-transparent border-0 outline-none text-slate-800 dark:text-slate-200 text-center" onkeydown="if(event.key==='Enter') applyCustomDateRange()">
+              <button onclick="applyCustomDateRange()" class="px-2 py-0.5 rounded-lg bg-brand-red text-white text-[10px] font-bold hover:bg-brand-redHover transition-colors shadow-sm">Filtrar</button>
+            </div>
+
+            <!-- Reset Zoom Button -->
+            <button 
+              onclick="resetModalZoom()" 
+              id="btn-reset-zoom" 
+              class="hidden px-2.5 py-1 text-xs font-bold rounded-xl border border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all flex items-center gap-1.5 shadow-sm animate-pulse"
+              title="Restablecer el zoom a la vista completa"
+            >
+              <i class="fas fa-arrows-rotate"></i>
+              <span>Restablecer Zoom</span>
+            </button>
+
+            <!-- Regression Line Button -->
             <button 
               onclick="toggleRegressionLine()" 
               id="btn-toggle-regression" 
-              class="px-3 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-slate-200 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 hover:border-brand-red"
+              class="px-2.5 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-slate-200 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 hover:border-brand-red shadow-sm"
             >
               <i class="fas fa-chart-line text-brand-red"></i>
-              <span>Recta de Regresión</span>
+              <span class="hidden sm:inline">Tendencia</span>
               <span id="regression-badge" class="w-2 h-2 rounded-full bg-slate-500"></span>
             </button>
 
-            <button onclick="exportModalChartPNG()" title="Descargar Gráfico en PNG" class="p-1.5 px-2.5 rounded-xl bg-slate-200 dark:bg-slate-800/80 text-slate-800 dark:text-slate-300 hover:text-black dark:hover:text-white border border-slate-300 dark:border-slate-700 text-xs font-semibold">
+            <!-- Export PNG Button -->
+            <button onclick="exportModalChartPNG()" title="Descargar Gráfico en PNG" class="p-1.5 px-2.5 rounded-xl bg-slate-200 dark:bg-slate-800/80 text-slate-800 dark:text-slate-300 hover:text-black dark:hover:text-white border border-slate-300 dark:border-slate-700 text-xs font-semibold shadow-sm">
               <i class="fas fa-camera"></i>
             </button>
+          </div>
+        </div>
+
+        <!-- Zoom Guidance Hint Bar -->
+        <div class="flex items-center justify-between px-2 py-1 rounded-xl bg-slate-50 dark:bg-[#0F172A]/30 border border-slate-200/60 dark:border-[#334155]/30 text-[11px] text-slate-600 dark:text-slate-400">
+          <div class="flex items-center gap-1.5">
+            <i class="fas fa-crop-simple text-brand-red"></i>
+            <span><strong>Selección interactiva:</strong> Haz <strong>clic y arrastra</strong> sobre el gráfico para seleccionar un recuadro de fechas y hacer zoom. Rueda del ratón para acercar/alejar. <em>Shift + Arrastrar</em> para desplazar.</span>
           </div>
         </div>
 
@@ -662,6 +698,21 @@ def build_index_html():
         return {{ dates, prices }};
       }}
 
+      if (period === 'CUSTOM' && (modalState.customFrom || modalState.customTo)) {{
+        const from = modalState.customFrom || '1800-01-01';
+        const to = modalState.customTo ? (modalState.customTo.length <= 7 ? modalState.customTo + '-31' : modalState.customTo) : '2099-12-31';
+        const filtered = [];
+        for (let i = 0; i < dates.length; i++) {{
+          const d = dates[i];
+          if (d >= from && d <= to) {{
+            filtered.push({{ d: dates[i], p: prices[i] }});
+          }}
+        }}
+        if (filtered.length >= 2) {{
+          return {{ dates: filtered.map(x => x.d), prices: filtered.map(x => x.p) }};
+        }}
+      }}
+
       const lastDateStr = dates[dates.length - 1];
       let cutoffStr = '';
 
@@ -671,13 +722,13 @@ def build_index_html():
         const m = parts[1] || '01';
         const d = parts[2] || '01';
 
-        const yearsBack = {{ '1A': 1, '2A': 2, '3A': 3, '5A': 5 }}[period] || 2;
+        const yearsBack = {{ '1A': 1, '2A': 2, '3A': 3, '5A': 5, '10A': 10, '20A': 20 }}[period] || 2;
         const targetYear = y - yearsBack;
 
         cutoffStr = `${{targetYear}}-${{m}}-${{d}}`;
         if (parts.length === 2) cutoffStr = `${{targetYear}}-${{m}}`;
       }} catch (e) {{
-        const count = {{ '1A': 12, '2A': 24, '3A': 36, '5A': 60 }}[period] || 24;
+        const count = {{ '1A': 12, '2A': 24, '3A': 36, '5A': 60, '10A': 120, '20A': 240 }}[period] || 24;
         return {{ dates: dates.slice(-count), prices: prices.slice(-count) }};
       }}
 
@@ -1299,6 +1350,14 @@ def build_index_html():
       document.getElementById('modal-stat-range').innerText = `${{minStr}} / ${{maxStr}}`;
       document.getElementById('modal-stat-pts').innerText = `${{prices.length}} registros históricos`;
 
+      // Reset inputs & zoom state
+      const fromInput = document.getElementById('modal-date-from');
+      const toInput = document.getElementById('modal-date-to');
+      if (fromInput) fromInput.value = '';
+      if (toInput) toInput.value = '';
+      const resetBtn = document.getElementById('btn-reset-zoom');
+      if (resetBtn) resetBtn.classList.add('hidden');
+
       const modalEl = document.getElementById('indicator-modal');
       modalEl.classList.remove('hidden');
       modalEl.classList.add('flex');
@@ -1329,7 +1388,50 @@ def build_index_html():
 
     function setModalPeriod(p) {{
       modalState.period = p;
+      modalState.customFrom = null;
+      modalState.customTo = null;
+      const fromInput = document.getElementById('modal-date-from');
+      const toInput = document.getElementById('modal-date-to');
+      if (fromInput) fromInput.value = '';
+      if (toInput) toInput.value = '';
+      const resetBtn = document.getElementById('btn-reset-zoom');
+      if (resetBtn) resetBtn.classList.add('hidden');
       updateModalChart();
+    }}
+
+    function applyCustomDateRange() {{
+      let fromVal = (document.getElementById('modal-date-from').value || '').trim();
+      let toVal = (document.getElementById('modal-date-to').value || '').trim();
+      if (!fromVal && !toVal) return;
+
+      if (fromVal && fromVal.length === 4) fromVal = `${{fromVal}}-01`;
+      if (toVal && toVal.length === 4) toVal = `${{toVal}}-12`;
+
+      modalState.customFrom = fromVal;
+      modalState.customTo = toVal;
+      modalState.period = 'CUSTOM';
+      const resetBtn = document.getElementById('btn-reset-zoom');
+      if (resetBtn) resetBtn.classList.remove('hidden');
+      updateModalChart();
+    }}
+
+    function resetModalZoom() {{
+      if (modalChart && typeof modalChart.resetZoom === 'function') {{
+        modalChart.resetZoom();
+      }}
+      if (modalState.period === 'CUSTOM') {{
+        modalState.period = '2A';
+        modalState.customFrom = null;
+        modalState.customTo = null;
+        const fromInput = document.getElementById('modal-date-from');
+        const toInput = document.getElementById('modal-date-to');
+        if (fromInput) fromInput.value = '';
+        if (toInput) toInput.value = '';
+        updateModalChart();
+        return;
+      }}
+      const resetBtn = document.getElementById('btn-reset-zoom');
+      if (resetBtn) resetBtn.classList.add('hidden');
     }}
 
     function toggleRegressionLine() {{
@@ -1352,13 +1454,13 @@ def build_index_html():
       const scaleBounds = computeScaleBounds(filteredPrices);
 
       // Period buttons highlight
-      ['1A', '2A', '3A', '5A', 'ALL'].forEach(p => {{
+      ['1A', '2A', '3A', '5A', '10A', '20A', 'ALL'].forEach(p => {{
         const btn = document.getElementById(`btn-period-${{p}}`);
         if (btn) {{
           if (p === modalState.period) {{
-            btn.className = "px-2.5 py-1 rounded-lg transition-colors border border-brand-red bg-brand-red text-white font-bold shadow-md shadow-brand-red/30";
+            btn.className = "px-2 py-1 rounded-lg transition-colors border border-brand-red bg-brand-red text-white font-bold shadow-md shadow-brand-red/30 text-[11px]";
           }} else {{
-            btn.className = "px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold";
+            btn.className = "px-2 py-1 rounded-lg transition-colors border border-transparent hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-300 font-semibold text-[11px]";
           }}
         }}
       }});
@@ -1368,10 +1470,10 @@ def build_index_html():
       const regBadge = document.getElementById('regression-badge');
       if (regBtn && regBadge) {{
         if (modalState.showRegression) {{
-          regBtn.className = "px-3 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-brand-red/10 dark:bg-brand-red/20 border-brand-red text-brand-red shadow-sm";
+          regBtn.className = "px-2.5 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-brand-red/10 dark:bg-brand-red/20 border-brand-red text-brand-red shadow-sm";
           regBadge.className = "w-2 h-2 rounded-full bg-brand-red animate-pulse";
         }} else {{
-          regBtn.className = "px-3 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-slate-200 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300";
+          regBtn.className = "px-2.5 py-1 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 bg-slate-200 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300";
           regBadge.className = "w-2 h-2 rounded-full bg-slate-400";
         }}
       }}
@@ -1512,6 +1614,38 @@ def build_index_html():
                     return `${{prefixState}}${{formatted}}`;
                   }}
                   return `${{context.dataset.label}}: ${{formatted}}`;
+                }}
+              }}
+            }},
+            zoom: {{
+              pan: {{
+                enabled: true,
+                mode: 'x',
+                modifierKey: 'shift',
+                onPanComplete: function() {{
+                  const resetBtn = document.getElementById('btn-reset-zoom');
+                  if (resetBtn) resetBtn.classList.remove('hidden');
+                }}
+              }},
+              zoom: {{
+                drag: {{
+                  enabled: true,
+                  backgroundColor: 'rgba(226, 0, 57, 0.18)',
+                  borderColor: 'rgba(226, 0, 57, 0.85)',
+                  borderWidth: 1.5,
+                  threshold: 5
+                }},
+                wheel: {{
+                  enabled: true,
+                  speed: 0.08
+                }},
+                pinch: {{
+                  enabled: true
+                }},
+                mode: 'x',
+                onZoomComplete: function() {{
+                  const resetBtn = document.getElementById('btn-reset-zoom');
+                  if (resetBtn) resetBtn.classList.remove('hidden');
                 }}
               }}
             }}
