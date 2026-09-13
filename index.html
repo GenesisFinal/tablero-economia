@@ -1399,9 +1399,71 @@
       updateModalChart();
     }
 
+    function autoscaleModalY(chart) {
+      if (!chart || !chart.scales || !chart.scales.x || !chart.scales.y) return;
+      const x = chart.scales.x;
+      const labels = chart.data.labels;
+      if (!labels || !labels.length) return;
+
+      const minIndex = Math.max(0, Math.floor(x.min !== undefined ? x.min : 0));
+      const maxIndex = Math.min(labels.length - 1, Math.ceil(x.max !== undefined ? x.max : labels.length - 1));
+
+      // Extract visible prices from main dataset
+      let mainDataset = chart.data.datasets.find(d => modalState.card && d.label === modalState.card.name) || chart.data.datasets[0];
+      let visiblePrices = [];
+      if (mainDataset && mainDataset.data) {
+        visiblePrices = mainDataset.data.slice(minIndex, maxIndex + 1).filter(v => v !== null && v !== undefined && !isNaN(v));
+      }
+
+      if (visiblePrices.length === 0) return;
+
+      const newBounds = computeScaleBounds(visiblePrices);
+      chart.options.scales.y.min = newBounds.min;
+      chart.options.scales.y.max = newBounds.max;
+      chart.scales.y.options.min = newBounds.min;
+      chart.scales.y.options.max = newBounds.max;
+
+      // Dynamically update modal stats badges for the selected visible slice
+      const meta = modalState.meta || getUnitMeta(modalState.card);
+      const vMin = Math.min(...visiblePrices);
+      const vMax = Math.max(...visiblePrices);
+      const minStr = formatValueWithMeta(vMin, meta);
+      const maxStr = formatValueWithMeta(vMax, meta);
+
+      const rangeEl = document.getElementById('modal-stat-range');
+      const ptsEl = document.getElementById('modal-stat-pts');
+      if (rangeEl) rangeEl.innerText = `${minStr} / ${maxStr}`;
+      if (ptsEl) {
+        if (visiblePrices.length < labels.length) {
+          ptsEl.innerText = `${visiblePrices.length} de ${labels.length} visibles (Zoom)`;
+        } else {
+          ptsEl.innerText = `${labels.length} registros históricos`;
+        }
+      }
+    }
+
     function resetModalZoom() {
       if (modalChart && typeof modalChart.resetZoom === 'function') {
         modalChart.resetZoom();
+        if (modalState.series && modalState.series.prices) {
+          const { prices: filteredPrices } = filterSeriesByCalendar(modalState.series.dates, modalState.series.prices, modalState.period);
+          const newBounds = computeScaleBounds(filteredPrices);
+          modalChart.options.scales.y.min = newBounds.min;
+          modalChart.options.scales.y.max = newBounds.max;
+          modalChart.scales.y.options.min = newBounds.min;
+          modalChart.scales.y.options.max = newBounds.max;
+          modalChart.update('none');
+
+          const meta = modalState.meta || getUnitMeta(modalState.card);
+          const pMin = Math.min(...filteredPrices);
+          const pMax = Math.max(...filteredPrices);
+          const minStr = formatValueWithMeta(pMin, meta);
+          const maxStr = formatValueWithMeta(pMax, meta);
+          const rangeEl = document.getElementById('modal-stat-range');
+          const ptsEl = document.getElementById('modal-stat-pts');
+          if (rangeEl) rangeEl.innerText = `${minStr} / ${maxStr}`;
+          if (ptsEl) ptsEl.innerText = `${filteredPrices.length} registros históricos`;
+        }
       }
       if (modalState.period === 'CUSTOM') {
         modalState.period = '2A';
@@ -1606,7 +1668,14 @@
                 enabled: true,
                 mode: 'x',
                 modifierKey: 'shift',
-                onPanComplete: function() {
+                onPan: function({chart}) {
+                  autoscaleModalY(chart);
+                  const resetBtn = document.getElementById('btn-reset-zoom');
+                  if (resetBtn) resetBtn.classList.remove('hidden');
+                },
+                onPanComplete: function({chart}) {
+                  autoscaleModalY(chart);
+                  chart.update('none');
                   const resetBtn = document.getElementById('btn-reset-zoom');
                   if (resetBtn) resetBtn.classList.remove('hidden');
                 }
@@ -1627,7 +1696,14 @@
                   enabled: true
                 },
                 mode: 'x',
-                onZoomComplete: function() {
+                onZoom: function({chart}) {
+                  autoscaleModalY(chart);
+                  const resetBtn = document.getElementById('btn-reset-zoom');
+                  if (resetBtn) resetBtn.classList.remove('hidden');
+                },
+                onZoomComplete: function({chart}) {
+                  autoscaleModalY(chart);
+                  chart.update('none');
                   const resetBtn = document.getElementById('btn-reset-zoom');
                   if (resetBtn) resetBtn.classList.remove('hidden');
                 }
