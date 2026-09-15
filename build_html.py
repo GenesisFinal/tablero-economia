@@ -666,7 +666,12 @@ def build_index_html():
     function formatValueWithMeta(val, meta, compact = false) {{
       if (val === null || val === undefined || isNaN(val)) return 'N/D';
       const num = Number(val);
-      const dec = meta.decimals !== undefined ? meta.decimals : 2;
+      let dec = meta.decimals !== undefined ? meta.decimals : 2;
+
+      // Regla: Siempre que el valor absoluto sea mayor a 9.999 unidades de medida, no usar decimales
+      if (Math.abs(num) > 9999) {{
+        dec = 0;
+      }}
 
       let formattedNumber = '';
       if (compact && Math.abs(num) >= 1_000_000_000) {{
