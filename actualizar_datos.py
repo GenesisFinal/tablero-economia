@@ -94,7 +94,8 @@ def get_indicator_unit_meta(key, name, cat_name):
         return {'type': 'currency_usd_millions', 'prefix': 'USD ', 'suffix': '', 'badge': 'Millones de USD', 'decimals': 0}
 
     # ARS Millions (Millones de Pesos)
-    if k in ['recaudacion_iva', 'recaudacion_iva_constante', 'recaudacion_seg_social', 'recaudacion_seg_social_constante', 'resultado_financiero', 'resultado_fiscal_primario']:
+    if k in ['recaudacion_iva', 'recaudacion_iva_constante', 'recaudacion_seg_social', 'recaudacion_seg_social_constante',
+             'resultado_financiero', 'resultado_financiero_constante', 'resultado_fiscal_primario', 'resultado_fiscal_primario_constante']:
         return {'type': 'currency_ars_millions', 'prefix': '$ ', 'suffix': '', 'badge': 'Millones de Pesos ($)', 'decimals': 0}
 
     if k == 'pbi_per_capita_usd_mep':
@@ -545,6 +546,22 @@ def reconstruct_and_order_dataset():
             ss_const = adjust_series_to_constant(ss_d, ss_p, ipc_dict)
             ref_hdb['recaudacion_seg_social_constante'] = {'dates': list(ss_d), 'prices': ss_const}
 
+    if 'resultado_financiero' in ref_hdb:
+        rf_s = ref_hdb['resultado_financiero']
+        rf_d = rf_s.get('dates', [])
+        rf_p = rf_s.get('prices', [])
+        if rf_d and rf_p:
+            rf_const = adjust_series_to_constant(rf_d, rf_p, ipc_dict)
+            ref_hdb['resultado_financiero_constante'] = {'dates': list(rf_d), 'prices': rf_const}
+
+    if 'resultado_fiscal_primario' in ref_hdb:
+        rp_s = ref_hdb['resultado_fiscal_primario']
+        rp_d = rp_s.get('dates', [])
+        rp_p = rp_s.get('prices', [])
+        if rp_d and rp_p:
+            rp_const = adjust_series_to_constant(rp_d, rp_p, ipc_dict)
+            ref_hdb['resultado_fiscal_primario_constante'] = {'dates': list(rp_d), 'prices': rp_const}
+
     # 2.5 SALARIOS EN USD Y A PRECIOS CONSTANTES (SINCRONIZACIÓN MATEMÁTICA AUTOMÁTICA)
     if 'ripte_val' in ref_hdb:
         ripte_s = ref_hdb['ripte_val']
@@ -810,8 +827,10 @@ def reconstruct_and_order_dataset():
         "recaudacion_seg_social_usd",
         "recaudacion_total",
         "resultado_financiero",
+        "resultado_financiero_constante",
         "resultado_financiero_usd",
         "resultado_fiscal_primario",
+        "resultado_fiscal_primario_constante",
         "resultado_fiscal_primario_usd"
     ]
 
@@ -893,6 +912,22 @@ def reconstruct_and_order_dataset():
                 "name": "Recaudación Seguridad Social a Precios Constantes",
                 "desc": "Recaudación tributaria de la Seguridad Social deflactada por el IPC oficial del INDEC a valores del último mes disponible.",
                 "source": "AFIP / ARCA / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["resultado_financiero_constante"] = {
+                "key": "resultado_financiero_constante",
+                "name": "Resultado Financiero a Precios Constantes",
+                "desc": "Superávit o déficit financiero del Sector Público Nacional (después del pago de intereses) deflactado por el IPC oficial a valores del último mes disponible.",
+                "source": "Secretaría de Hacienda / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["resultado_fiscal_primario_constante"] = {
+                "key": "resultado_fiscal_primario_constante",
+                "name": "Resultado Fiscal Primario a Precios Constantes",
+                "desc": "Superávit o déficit primario del Sector Público Nacional (ingresos menos gastos primarios antes del pago de intereses) deflactado por el IPC oficial a valores del último mes disponible.",
+                "source": "Secretaría de Hacienda / INDEC",
                 "freq": "Mensual",
                 "time_range": "Mensual"
             }
