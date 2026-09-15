@@ -94,7 +94,7 @@ def get_indicator_unit_meta(key, name, cat_name):
         return {'type': 'currency_usd_millions', 'prefix': 'USD ', 'suffix': '', 'badge': 'Millones de USD', 'decimals': 0}
 
     # ARS Millions (Millones de Pesos)
-    if k in ['recaudacion_iva', 'recaudacion_seg_social', 'resultado_financiero', 'resultado_financiero_mep', 'resultado_fiscal_primario', 'resultado_primario_mep']:
+    if k in ['recaudacion_iva', 'recaudacion_iva_constante', 'recaudacion_seg_social', 'recaudacion_seg_social_constante', 'resultado_financiero', 'resultado_fiscal_primario']:
         return {'type': 'currency_ars_millions', 'prefix': '$ ', 'suffix': '', 'badge': 'Millones de Pesos ($)', 'decimals': 0}
 
     if k == 'pbi_per_capita_usd_mep':
@@ -528,6 +528,23 @@ def reconstruct_and_order_dataset():
                 usd_prices = [round(p / fx_mep.get(d[:7], 1530.0), 2) for d, p in zip(dates, prices)]
                 ref_hdb[usd_key] = {"dates": dates, "prices": usd_prices}
 
+    # 2.45 RECAUDACIÓN A PRECIOS CONSTANTES (IVA Y SEGURIDAD SOCIAL AJUSTADOS POR IPC)
+    if 'recaudacion_iva' in ref_hdb:
+        iva_s = ref_hdb['recaudacion_iva']
+        iva_d = iva_s.get('dates', [])
+        iva_p = iva_s.get('prices', [])
+        if iva_d and iva_p:
+            iva_const = adjust_series_to_constant(iva_d, iva_p, ipc_dict)
+            ref_hdb['recaudacion_iva_constante'] = {'dates': list(iva_d), 'prices': iva_const}
+
+    if 'recaudacion_seg_social' in ref_hdb:
+        ss_s = ref_hdb['recaudacion_seg_social']
+        ss_d = ss_s.get('dates', [])
+        ss_p = ss_s.get('prices', [])
+        if ss_d and ss_p:
+            ss_const = adjust_series_to_constant(ss_d, ss_p, ipc_dict)
+            ref_hdb['recaudacion_seg_social_constante'] = {'dates': list(ss_d), 'prices': ss_const}
+
     # 2.5 SALARIOS EN USD Y A PRECIOS CONSTANTES (SINCRONIZACIÓN MATEMÁTICA AUTOMÁTICA)
     if 'ripte_val' in ref_hdb:
         ripte_s = ref_hdb['ripte_val']
@@ -784,6 +801,20 @@ def reconstruct_and_order_dataset():
         "cosecha_granos_total"
     ]
 
+    fiscal_ordered_keys = [
+        "recaudacion_iva",
+        "recaudacion_iva_constante",
+        "recaudacion_iva_usd",
+        "recaudacion_seg_social",
+        "recaudacion_seg_social_constante",
+        "recaudacion_seg_social_usd",
+        "recaudacion_total",
+        "resultado_financiero",
+        "resultado_financiero_usd",
+        "resultado_fiscal_primario",
+        "resultado_fiscal_primario_usd"
+    ]
+
     empleo_ordered_keys = [
         "ripte_val", "ripte_usd",
         "smvm_val", "smvm_usd",
@@ -848,6 +879,24 @@ def reconstruct_and_order_dataset():
                     "time_range": "Mensual"
                 }
 
+        if "Fiscal" in cat_name:
+            cards_dict["recaudacion_iva_constante"] = {
+                "key": "recaudacion_iva_constante",
+                "name": "Recaudación IVA a Precios Constantes",
+                "desc": "Recaudación del Impuesto al Valor Agregado (IVA) deflactada por el IPC oficial del INDEC a valores del último mes disponible.",
+                "source": "AFIP / ARCA / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["recaudacion_seg_social_constante"] = {
+                "key": "recaudacion_seg_social_constante",
+                "name": "Recaudación Seguridad Social a Precios Constantes",
+                "desc": "Recaudación tributaria de la Seguridad Social deflactada por el IPC oficial del INDEC a valores del último mes disponible.",
+                "source": "AFIP / ARCA / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+
         if "Empleo" in cat_name or "Salarios" in cat_name:
             if "salarios_indice" in cards_dict:
                 cards_dict["salarios_indice"]["name"] = "Índice de Salarios - Nivel General"
@@ -860,6 +909,8 @@ def reconstruct_and_order_dataset():
             ordered_cards = [cards_dict[k] for k in precios_ordered_keys if k in cards_dict]
         elif "Monetario" in cat_name:
             ordered_cards = [cards_dict[k] for k in monetario_ordered_keys if k in cards_dict]
+        elif "Fiscal" in cat_name:
+            ordered_cards = [cards_dict[k] for k in fiscal_ordered_keys if k in cards_dict]
         elif "Reservas" in cat_name:
             ordered_cards = [cards_dict[k] for k in reservas_deuda_ordered_keys if k in cards_dict]
         elif "Jubilaciones" in cat_name:
