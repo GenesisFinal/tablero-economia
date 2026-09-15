@@ -97,26 +97,78 @@ def get_indicator_unit_meta(key, name, cat_name):
     # Currency ARS ($)
     return {'type': 'currency_ars', 'prefix': '$', 'suffix': '', 'decimals': 2}
 
+def format_es_number(val, dec=2):
+    if dec == 0:
+        return f"{int(round(val)):,}".replace(',', '.')
+    s = f"{val:,.{dec}f}"
+    parts = s.split('.')
+    int_part = parts[0].replace(',', '.')
+    dec_part = parts[1] if len(parts) > 1 else ''
+    return f"{int_part},{dec_part}" if dec_part else int_part
+
 def format_value_with_meta(val, meta, compact=False):
     if val is None or (isinstance(val, float) and val != val):
         return 'N/D'
     num = float(val)
-    dec = meta.get('decimals', 2)
-    # Regla: Si el valor absoluto es mayor a 9.999 unidades, no usar decimales
-    if abs(num) > 9999:
-        dec = 0
+    abs_num = abs(num)
+    unit_type = meta.get('type', '')
+    prefix = meta.get('prefix', '')
+    suffix_raw = meta.get('suffix', '')
 
-    if compact and abs(num) >= 1_000_000_000:
-        formatted = f"{num / 1_000_000_000:,.1f} B"
-    elif compact and abs(num) >= 1_000_000:
-        formatted = f"{num / 1_000_000:,.1f} M"
+    # Percentages, indices, bps, ratios are NOT scaled to thousands/millions
+    if unit_type in ['percent', 'index', 'bps', 'ratio'] or '%' in suffix_raw:
+        dec = meta.get('decimals', 2)
+        if abs_num > 9999:
+            dec = 0
+        formatted = format_es_number(num, dec)
+        return f"{prefix}{formatted}{suffix_raw}"
+
+    clean_suffix = suffix_raw.strip()
+    is_already_millions = clean_suffix in ['M', 'M (Dic-16)', 'MM m³/mes', 'MM Tn']
+    is_already_thousands = clean_suffix in ['miles m³/mes', 'mil cab./mes', 'mil Tn/mes', 'mil']
+
+    if is_already_millions:
+        base_val = num * 1_000_000.0
+    elif is_already_thousands:
+        base_val = num * 1_000.0
     else:
-        if dec == 0:
-            formatted = f"{int(round(num)):,}"
-        else:
-            formatted = f"{num:,.{dec}f}"
+        base_val = num
 
-    return f"{meta.get('prefix', '')}{formatted}{meta.get('suffix', '')}"
+    abs_base = abs(base_val)
+
+    if abs_base < 100_000:
+        scaled_num = base_val
+        tier_suffix = ""
+    elif abs_base < 100_000_000:
+        scaled_num = base_val / 1_000.0
+        tier_suffix = " mil"
+    elif abs_base < 100_000_000_000:
+        scaled_num = base_val / 1_000_000.0
+        tier_suffix = " M"
+    elif abs_base < 100_000_000_000_000:
+        scaled_num = base_val / 1_000_000_000.0
+        tier_suffix = " MM"
+    else:
+        scaled_num = base_val / 1_000_000_000_000.0
+        tier_suffix = " B"
+
+    custom_tag = ""
+    if clean_suffix in ['hab.', 'unid./mes', 'GWh/mes', 'Tn']:
+        custom_tag = f" {clean_suffix}"
+
+    abs_scaled = abs(scaled_num)
+    if abs_scaled > 9999:
+        formatted_num = format_es_number(scaled_num, 0)
+    else:
+        is_round_integer = (round(scaled_num, 2) == round(scaled_num, 0)) and abs_base >= 100_000 and (int(round(scaled_num)) == round(scaled_num, 2))
+        if is_round_integer:
+            formatted_num = format_es_number(scaled_num, 0)
+        else:
+            formatted_num = format_es_number(scaled_num, 2)
+            if formatted_num.endswith(',00') and abs_base >= 100_000:
+                formatted_num = formatted_num[:-3]
+
+    return f"{prefix}{formatted_num}{tier_suffix}{custom_tag}"
 
 def adjust_series_to_constant(dates, nominal_prices, ipc_dict):
     n = len(dates)
