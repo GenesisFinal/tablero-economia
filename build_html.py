@@ -135,6 +135,14 @@ def build_index_html():
       box-shadow: 0 4px 14px rgba(226, 0, 57, 0.35);
     }}
 
+    .no-scrollbar::-webkit-scrollbar {{
+      display: none;
+    }}
+    .no-scrollbar {{
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }}
+
     ::-webkit-scrollbar {{
       width: 6px;
       height: 6px;
@@ -209,25 +217,25 @@ def build_index_html():
       </div>
 
       <!-- Right: Controls -->
-      <div class="flex items-center gap-2">
-        <div class="hidden sm:flex items-center p-1 rounded-xl bg-slate-100 dark:bg-[#1E293B] border border-slate-300 dark:border-[#334155] text-xs font-semibold">
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <div class="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-[#1E293B] border border-slate-300 dark:border-[#334155] text-xs font-semibold">
           <button 
-            onclick="setNavLayout('sidebar')" 
-            id="layout-btn-sidebar"
-            class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold"
-            title="Menú lateral izquierdo fijo"
+            onclick="setNavLayout('topgrid', true)" 
+            id="layout-btn-topgrid"
+            class="px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 bg-brand-red text-white shadow-sm font-bold text-xs"
+            title="Categorías arriba"
           >
-            <i class="fas fa-table-columns"></i>
-            <span>Menú Lateral</span>
+            <i class="fas fa-grip-lines text-xs"></i>
+            <span class="hidden sm:inline">Arriba</span>
           </button>
           <button 
-            onclick="setNavLayout('topgrid')" 
-            id="layout-btn-topgrid"
-            class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white"
-            title="Menú superior en 2 filas sin scroll"
+            onclick="setNavLayout('sidebar', true)" 
+            id="layout-btn-sidebar"
+            class="px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white text-xs"
+            title="Menú lateral izquierdo"
           >
-            <i class="fas fa-grip-lines"></i>
-            <span>Menú 2 Filas</span>
+            <i class="fas fa-table-columns text-xs"></i>
+            <span class="hidden sm:inline">Lateral</span>
           </button>
         </div>
 
@@ -254,14 +262,17 @@ def build_index_html():
     </div>
   </section>
 
-  <!-- TOP 2-ROW CATEGORY GRID -->
-  <nav id="top-categories-grid-nav" class="hidden bg-[#F8FAFC]/95 dark:bg-[#0B1120]/95 border-b border-slate-200 dark:border-[#334155]/50 py-3 transition-colors">
+  <!-- TOP CATEGORY GRID / PILLS -->
+  <nav id="top-categories-grid-nav" class="hidden bg-[#F8FAFC]/95 dark:bg-[#0B1120]/95 border-b border-slate-200 dark:border-[#334155]/50 py-2.5 sm:py-3 transition-colors sticky top-16 z-30 backdrop-blur-md">
     <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2 flex items-center justify-between">
-        <span>Categorías Macroeconómicas</span>
+      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5 flex items-center justify-between">
+        <span class="flex items-center gap-1.5">
+          <i class="fas fa-layer-group text-brand-red"></i>
+          <span>Categorías</span>
+        </span>
         <span class="text-[10px] text-brand-red font-mono font-bold">12 Secciones</span>
       </div>
-      <div class="flex flex-wrap gap-2 text-xs font-semibold" id="top-grid-tabs-container">
+      <div class="flex overflow-x-auto no-scrollbar sm:flex-wrap gap-1.5 sm:gap-2 text-xs font-semibold pb-1 sm:pb-0" id="top-grid-tabs-container">
         <!-- Rendered dynamically -->
       </div>
     </div>
@@ -271,7 +282,7 @@ def build_index_html():
   <div class="max-w-[1900px] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow flex items-start gap-6">
     
     <!-- LEFT SIDEBAR -->
-    <aside id="left-sidebar" class="w-64 xl:w-72 shrink-0 sticky top-20 flex flex-col gap-4 max-h-[calc(100vh-100px)] overflow-y-auto pr-1">
+    <aside id="left-sidebar" class="hidden lg:flex w-64 xl:w-72 shrink-0 sticky top-20 flex-col gap-4 max-h-[calc(100vh-100px)] overflow-y-auto pr-1">
       <div class="glass-card rounded-2xl p-3 border border-slate-200 dark:border-[#334155]/60">
         <div class="px-3 py-2 border-b border-slate-200 dark:border-[#334155]/50 flex items-center justify-between mb-2">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 flex items-center gap-1.5">
@@ -773,12 +784,23 @@ def build_index_html():
     }});
 
     function initNavLayout() {{
-      setNavLayout(navLayout);
+      const isMobile = window.innerWidth < 1024;
+      const saved = localStorage.getItem('navLayout');
+      if (isMobile) {{
+        // En móviles, por defecto la navegación SIEMPRE es con categorías arriba (topgrid)
+        navLayout = (saved === 'sidebar') ? 'sidebar' : 'topgrid';
+        if (!saved) navLayout = 'topgrid';
+      }} else {{
+        navLayout = saved || 'sidebar';
+      }}
+      setNavLayout(navLayout, false);
     }}
 
-    function setNavLayout(mode) {{
+    function setNavLayout(mode, isUserAction = false) {{
       navLayout = mode;
-      localStorage.setItem('navLayout', mode);
+      if (isUserAction) {{
+        localStorage.setItem('navLayout', mode);
+      }}
 
       const sidebarEl = document.getElementById('left-sidebar');
       const topGridEl = document.getElementById('top-categories-grid-nav');
@@ -786,15 +808,23 @@ def build_index_html():
       const btnTopGrid = document.getElementById('layout-btn-topgrid');
 
       if (mode === 'topgrid') {{
-        if (sidebarEl) sidebarEl.classList.add('hidden');
-        if (topGridEl) topGridEl.classList.remove('hidden');
-        if (btnTopGrid) btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
-        if (btnSidebar) btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white";
+        if (sidebarEl) {{
+          sidebarEl.className = "hidden";
+        }}
+        if (topGridEl) {{
+          topGridEl.classList.remove('hidden');
+        }}
+        if (btnTopGrid) btnTopGrid.className = "px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 bg-brand-red text-white shadow-sm font-bold text-xs";
+        if (btnSidebar) btnSidebar.className = "px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white text-xs";
       }} else {{
-        if (sidebarEl) sidebarEl.classList.remove('hidden');
-        if (topGridEl) topGridEl.classList.add('hidden');
-        if (btnSidebar) btnSidebar.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-brand-red text-white shadow-sm font-bold";
-        if (btnTopGrid) btnTopGrid.className = "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white";
+        if (sidebarEl) {{
+          sidebarEl.className = "hidden lg:flex w-64 xl:w-72 shrink-0 sticky top-20 flex-col gap-4 max-h-[calc(100vh-100px)] overflow-y-auto pr-1";
+        }}
+        if (topGridEl) {{
+          topGridEl.classList.add('hidden');
+        }}
+        if (btnSidebar) btnSidebar.className = "px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 bg-brand-red text-white shadow-sm font-bold text-xs";
+        if (btnTopGrid) btnTopGrid.className = "px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white text-xs";
       }}
     }}
 
@@ -947,7 +977,7 @@ def build_index_html():
         <button 
           onclick="selectCategory('all')" 
           id="top-grid-item-all"
-          class="top-tab-btn active px-3 py-1.5 rounded-xl border border-slate-300 dark:border-transparent transition-all flex items-center gap-1.5 text-slate-800 dark:text-slate-300 font-bold"
+          class="top-tab-btn active shrink-0 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-transparent transition-all flex items-center gap-1.5 text-slate-800 dark:text-slate-300 font-bold whitespace-nowrap"
         >
           <i class="fas fa-layer-group"></i>
           <span>Todas (${{totalCount}})</span>
@@ -960,7 +990,7 @@ def build_index_html():
           <button 
             onclick="selectCategory('${{cat.id}}')" 
             id="top-grid-item-${{cat.id}}"
-            class="top-tab-btn px-3 py-1.5 rounded-xl border border-slate-300 dark:border-transparent transition-all flex items-center gap-1.5 text-slate-700 dark:text-slate-400 hover:text-black dark:hover:text-white bg-slate-100 dark:bg-[#1E293B] font-semibold"
+            class="top-tab-btn shrink-0 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-transparent transition-all flex items-center gap-1.5 text-slate-700 dark:text-slate-400 hover:text-black dark:hover:text-white bg-slate-100 dark:bg-[#1E293B] font-semibold whitespace-nowrap"
           >
             <i class="fas ${{cat.icon}} text-brand-red"></i>
             <span>${{cat.name}}</span>
