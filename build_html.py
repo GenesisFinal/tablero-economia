@@ -656,7 +656,8 @@ def build_index_html():
       }}
 
       // ARS Millions (Millones de Pesos)
-      if (['recaudacion_iva', 'recaudacion_iva_constante', 'recaudacion_seg_social', 'recaudacion_seg_social_constante', 'resultado_financiero', 'resultado_fiscal_primario'].includes(k)) {{
+      if (['recaudacion_iva', 'recaudacion_iva_constante', 'recaudacion_seg_social', 'recaudacion_seg_social_constante',
+           'resultado_financiero', 'resultado_financiero_constante', 'resultado_fiscal_primario', 'resultado_fiscal_primario_constante'].includes(k)) {{
         return {{ type: 'currency_ars_millions', prefix: '$ ', suffix: '', badge: 'Millones de Pesos ($)', decimals: 0 }};
       }}
 
