@@ -376,7 +376,8 @@ def build_index_html():
           <div>
             <div class="flex items-center gap-2 mb-1 flex-wrap">
               <span id="modal-category-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-300"></span>
-              <span id="modal-freq-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20"></span>
+              <span id="modal-unit-badge" class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30"></span>
+              <span id="modal-freq-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 font-mono"></span>
               <span id="modal-source-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20"></span>
               <span id="modal-ratio-badge" class="hidden px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30"></span>
               <span id="modal-date-badge" class="px-2.5 py-0.5 rounded-md text-[11px] font-black bg-rose-50 dark:bg-brand-red/20 text-brand-red border border-rose-200 dark:border-brand-red/30 font-mono"></span>
@@ -572,95 +573,108 @@ def build_index_html():
       const k = (card.key || '').toLowerCase();
       const n = (card.name || '').toLowerCase();
 
-      if (k === 'riesgo_pais') {{
-        return {{ type: 'bps', prefix: '', suffix: ' bps', decimals: 0 }};
-      }}
-
-      if (k === 'relacion_activo_pasivo') {{
-        return {{ type: 'ratio', prefix: '', suffix: ' act/pas', decimals: 2 }};
-      }}
-
-      if (k === 'salarios_indice') {{
-        return {{ type: 'index', prefix: '', suffix: ' pts', decimals: 2 }};
-      }}
-
-      if (k === 'pbi_corriente' || k === 'pbi_constante_hoy') {{
-        return {{ type: 'currency_ars_m', prefix: '$ ', suffix: ' M', decimals: 2 }};
-      }}
-
-      if (k === 'supermercados_ventas_usd') {{
-        return {{ type: 'currency_usd_m', prefix: 'USD ', suffix: ' M', decimals: 2 }};
-      }}
-
-      if (k === 'supermercados_ventas_valor') {{
-        return {{ type: 'currency_ars_const', prefix: '$ ', suffix: ' M (Dic-16)', decimals: 2 }};
-      }}
-
       // Check Percentage & Ratios
       if (k.endsWith('_pbi') || k.startsWith('ratio_') || k.startsWith('cobertura_') || k.startsWith('tasa_') || 
-          k === 'capacidad_instalada_industria' ||
+          k === 'capacidad_instalada_industria' || k === 'isac_general' ||
           k.includes('cobertura') || n.includes('cobertura') ||
           k.includes('interanual') || n.includes('interanual') || 
           n.includes('tasa') || n.includes('variación') || n.includes('variacion') || n.includes('porcentaje') || 
           k.includes('desocupacion') || k.includes('actividad') || k.includes('indigencia') || k.includes('pobreza') || 
-          k.includes('empleo_val') || k.includes('indice_salarios_ipc') || k.includes('isac_general') || 
-          k.includes('ipc') || k.includes('ipi') || k.includes('emae_interanual') || k === 'supermercados_ventas' || 
+          k.includes('empleo_val') || k.includes('indice_salarios_ipc') || 
+          k.startsWith('ipc_') || k === 'ipc' || k === 'ipi_interanual' || k === 'supermercados_ventas' || 
           k.includes('pbi_interanual') || k.includes('emae_agro') || n.includes('%')) {{
-        return {{ type: 'percent', prefix: '', suffix: '%', decimals: 2 }};
+        return {{ type: 'percent', prefix: '', suffix: '%', badge: 'Porcentaje (%)', decimals: 2 }};
       }}
 
-      // Debt, Reserves, FGS, CIARA, MOA, PP in USD Millions
+      if (k === 'riesgo_pais') {{
+        return {{ type: 'bps', prefix: '', suffix: ' bps', badge: 'Puntos Básicos (bps)', decimals: 0 }};
+      }}
+
+      if (k.includes('relacion_activo_pasivo')) {{
+        return {{ type: 'ratio', prefix: '', suffix: ' act/pas', badge: 'Activos / Pasivos', decimals: 2 }};
+      }}
+
+      if (k.includes('poblacion') || k.includes('beneficios_sipa')) {{
+        return {{ type: 'quantity', prefix: '', suffix: ' hab.', badge: 'Habitantes', decimals: 0 }};
+      }}
+
+      if (k.includes('isac_') || k.includes('icc_') || k.includes('salarios_indice') || k.includes('emae_construccion') || k === 'ipi_manufacturero_nivel') {{
+        return {{ type: 'index', prefix: '', suffix: ' pts', badge: 'Puntos (Índice)', decimals: 2 }};
+      }}
+
+      if (k === 'produccion_automotriz') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' unid./mes', badge: 'Unidades / mes', decimals: 0 }};
+      }}
+
+      if (k === 'generacion_electrica_total') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' GWh/mes', badge: 'GWh / mes', decimals: 0 }};
+      }}
+
+      if (k === 'gas_produccion') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' MM m³/mes', badge: 'Millones m³ / mes', decimals: 2 }};
+      }}
+
+      if (k === 'petroleo_produccion') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' miles m³/mes', badge: 'Miles m³ / mes', decimals: 2 }};
+      }}
+
+      if (k === 'molienda_oleaginosas') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' mil Tn/mes', badge: 'Miles de Tn / mes', decimals: 0 }};
+      }}
+
+      if (k === 'faena_bovina') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' mil cab./mes', badge: 'Miles de Cabezas / mes', decimals: 0 }};
+      }}
+
+      if (k === 'cosecha_granos_total') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' MM Tn', badge: 'Millones de Tn', decimals: 2 }};
+      }}
+
+      if (k === 'cemento_total') {{
+        return {{ type: 'quantity', prefix: '', suffix: ' mil Tn', badge: 'Miles de Toneladas', decimals: 0 }};
+      }}
+
+      if (k.includes('empleo_privado') || k.includes('empleo_total')) {{
+        return {{ type: 'quantity', prefix: '', suffix: ' mil', badge: 'Miles de Puestos', decimals: 0 }};
+      }}
+
+      // ARS Billions (Billones de pesos $ 10^12)
+      if (['base_monetaria', 'agregado_b1', 'agregado_b2', 'agregado_b3', 'billetes_circulacion', 'pbi_corriente', 'pbi_constante_hoy'].includes(k)) {{
+        return {{ type: 'currency_ars_billions', prefix: '$ ', suffix: ' Billones', badge: 'Billones de Pesos ($)', decimals: 2 }};
+      }}
+
+      // USD Millions (Millones de USD)
       if ((k.includes('deuda_') && !k.endsWith('_pbi')) || k === 'reservas_brutas' || k === 'reservas_bcra' || 
           k === 'fgs_total_usd' || k === 'liquidacion_divisas_ciara' || k === 'exportaciones_moa' || 
           k === 'exportaciones_pp' || k === 'exportaciones_totales' || k === 'importaciones_totales' ||
-          k === 'moa_exportaciones') {{
-        return {{ type: 'currency_usd', prefix: 'USD ', suffix: ' M', decimals: 2 }};
+          k === 'moa_exportaciones' || k === 'exportaciones_val' || k === 'exportaciones_moi' ||
+          k === 'importaciones_total' || k === 'saldo_comercial' || k === 'supermercados_ventas_usd' ||
+          ['agregado_b1_usd', 'agregado_b2_usd', 'agregado_b3_usd', 'base_monetaria_usd', 'billetes_circulacion_usd',
+           'recaudacion_iva_usd', 'recaudacion_seg_social_usd', 'resultado_financiero_usd', 'resultado_fiscal_primario_usd',
+           'pbi_usd_mep'].includes(k)) {{
+        return {{ type: 'currency_usd_millions', prefix: 'USD ', suffix: ' Millones', badge: 'Millones de USD', decimals: 0 }};
+      }}
+
+      // ARS Millions (Millones de Pesos)
+      if (['recaudacion_iva', 'recaudacion_seg_social', 'resultado_financiero', 'resultado_financiero_mep', 'resultado_fiscal_primario', 'resultado_primario_mep'].includes(k)) {{
+        return {{ type: 'currency_ars_millions', prefix: '$ ', suffix: ' Millones', badge: 'Millones de Pesos ($)', decimals: 0 }};
+      }}
+
+      if (k === 'pbi_per_capita_usd_mep') {{
+        return {{ type: 'currency_usd', prefix: 'USD ', suffix: '', badge: 'USD / Habitante', decimals: 0 }};
+      }}
+
+      if (k === 'supermercados_ventas_valor') {{
+        return {{ type: 'currency_ars_const', prefix: '$ ', suffix: ' M (Dic-16)', badge: 'Millones de $ (Dic-16)', decimals: 2 }};
       }}
 
       // Check General USD
       if (k.endsWith('_usd') || k.includes('usd') || n.includes('usd') || n.includes('dólares') || n.includes('dolares')) {{
-        return {{ type: 'currency_usd', prefix: 'USD ', suffix: '', decimals: 2 }};
-      }}
-
-      // Quantities & Specific Units
-      if (k === 'gas_produccion') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' MM m³/mes', decimals: 2 }};
-      }}
-      if (k === 'petroleo_produccion') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' miles m³/mes', decimals: 2 }};
-      }}
-      if (k === 'produccion_automotriz') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' unid./mes', decimals: 0 }};
-      }}
-      if (k === 'generacion_electrica_total') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' GWh/mes', decimals: 1 }};
-      }}
-      if (k === 'faena_bovina') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' mil cab./mes', decimals: 1 }};
-      }}
-      if (k === 'molienda_oleaginosas') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' mil Tn/mes', decimals: 1 }};
-      }}
-      if (k === 'cosecha_granos_total') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' MM Tn', decimals: 1 }};
-      }}
-
-      // Quantities & Indices
-      if (k.includes('poblacion') || k.includes('beneficios_sipa')) {{
-        return {{ type: 'quantity', prefix: '', suffix: ' hab.', decimals: 0 }};
-      }}
-      if (k.includes('empleo_privado') || k.includes('empleo_total')) {{
-        return {{ type: 'quantity', prefix: '', suffix: ' mil', decimals: 1 }};
-      }}
-      if (k.includes('cemento_total')) {{
-        return {{ type: 'quantity', prefix: '', suffix: ' Tn', decimals: 1 }};
-      }}
-      if (k.includes('isac_') || k.includes('icc_') || k.includes('salarios_indice') || k.includes('emae_construccion') || k === 'ipi_manufacturero_nivel') {{
-        return {{ type: 'index', prefix: '', suffix: ' pts', decimals: 2 }};
+        return {{ type: 'currency_usd', prefix: 'USD ', suffix: '', badge: 'En Dólares (USD)', decimals: 2 }};
       }}
 
       // Currency ARS
-      return {{ type: 'currency_ars', prefix: '$', suffix: '', decimals: 2 }};
+      return {{ type: 'currency_ars', prefix: '$ ', suffix: '', badge: 'En Pesos ($)', decimals: 0 }};
     }}
 
     function formatValueWithMeta(val, meta, compact = false) {{
@@ -669,80 +683,67 @@ def build_index_html():
       const absNum = Math.abs(num);
       const unitType = meta.type || '';
       const prefix = meta.prefix || '';
-      const suffixRaw = meta.suffix || '';
-      const cleanSuffix = suffixRaw.trim();
+      const suffix = meta.suffix || '';
+      let dec = meta.decimals !== undefined ? meta.decimals : 2;
 
-      // Percentages, indices, bps, ratios are NOT scaled to thousands/millions
-      if (unitType === 'percent' || unitType === 'index' || unitType === 'bps' || unitType === 'ratio' || suffixRaw.includes('%')) {{
-        let dec = meta.decimals !== undefined ? meta.decimals : 2;
+      if (unitType === 'currency_ars_billions') {{
+        let valB = num;
+        if (absNum >= 100000000) {{
+          valB = num / 1000000;
+        }} else if (absNum >= 1000000000) {{
+          valB = num / 1000000000000;
+        }}
+        const formatted = valB.toLocaleString('es-AR', {{ minimumFractionDigits: 2, maximumFractionDigits: 2 }});
+        return `${{prefix}}${{formatted}}${{suffix}}`;
+      }}
+
+      if (unitType === 'currency_usd_millions') {{
+        let valM = num;
+        if (absNum >= 1000000000) {{
+          valM = num / 1000000;
+        }} else if (absNum >= 1000000) {{
+          valM = num / 1000000;
+        }}
+        const decCount = (Math.abs(valM) > 9999 || Math.abs(valM) >= 100) ? 0 : 2;
+        let formatted = valM.toLocaleString('es-AR', {{ minimumFractionDigits: decCount, maximumFractionDigits: decCount }});
+        if (formatted.endsWith(',00')) formatted = formatted.slice(0, -3);
+        return `${{prefix}}${{formatted}}${{suffix}}`;
+      }}
+
+      if (unitType === 'currency_ars_millions') {{
+        let valM = num;
+        if (absNum >= 1000000000000) {{
+          valM = num / 1000000;
+        }}
+        const formatted = valM.toLocaleString('es-AR', {{ minimumFractionDigits: 0, maximumFractionDigits: 0 }});
+        return `${{prefix}}${{formatted}}${{suffix}}`;
+      }}
+
+      if (unitType === 'percent' || unitType === 'index' || unitType === 'bps' || unitType === 'ratio' || suffix.includes('%')) {{
         if (absNum > 9999) dec = 0;
         const formatted = num.toLocaleString('es-AR', {{ minimumFractionDigits: dec, maximumFractionDigits: dec }});
-        return `${{prefix}}${{formatted}}${{suffixRaw}}`;
+        return `${{prefix}}${{formatted}}${{suffix}}`;
       }}
 
-      // Determine base magnitude if indicator is already in Millions/Thousands
-      const isAlreadyMillions = ['M', 'M (Dic-16)', 'MM m³/mes', 'MM Tn'].includes(cleanSuffix);
-      const isAlreadyThousands = ['miles m³/mes', 'mil cab./mes', 'mil Tn/mes', 'mil'].includes(cleanSuffix);
-
-      let baseVal = num;
-      if (isAlreadyMillions) {{
-        baseVal = num * 1000000;
-      }} else if (isAlreadyThousands) {{
-        baseVal = num * 1000;
-      }}
-
-      const absBase = Math.abs(baseVal);
-
-      // Scale tiers:
-      // Tier 0: < 100,000 (Base units)
-      // Tier 1: 100,000 to < 100,000,000 (mil)
-      // Tier 2: 100,000,000 to < 100,000,000,000 (M)
-      // Tier 3: 100,000,000,000 to < 100,000,000,000,000 (MM)
-      // Tier 4: >= 100,000,000,000,000 (B)
-      let scaledNum = baseVal;
-      let tierSuffix = '';
-
-      if (absBase < 100000) {{
-        scaledNum = baseVal;
-        tierSuffix = '';
-      }} else if (absBase < 100000000) {{
-        scaledNum = baseVal / 1000;
-        tierSuffix = ' mil';
-      }} else if (absBase < 100000000000) {{
-        scaledNum = baseVal / 1000000;
-        tierSuffix = ' M';
-      }} else if (absBase < 100000000000000) {{
-        scaledNum = baseVal / 1000000000;
-        tierSuffix = ' MM';
-      }} else {{
-        scaledNum = baseVal / 1000000000000;
-        tierSuffix = ' B';
-      }}
-
-      // Retain custom unit tag if present
-      let customTag = '';
-      if (['hab.', 'unid./mes', 'GWh/mes', 'Tn'].includes(cleanSuffix)) {{
-        customTag = ` ${{cleanSuffix}}`;
-      }}
-
-      const absScaled = Math.abs(scaledNum);
-      let formattedNum = '';
-
-      if (absScaled > 9999) {{
-        formattedNum = scaledNum.toLocaleString('es-AR', {{ minimumFractionDigits: 0, maximumFractionDigits: 0 }});
-      }} else {{
-        const isRoundInteger = Math.round(scaledNum * 100) / 100 === Math.round(scaledNum);
-        if (isRoundInteger && absBase >= 100000 && Number.isInteger(scaledNum)) {{
-          formattedNum = scaledNum.toLocaleString('es-AR', {{ minimumFractionDigits: 0, maximumFractionDigits: 0 }});
+      if (unitType === 'currency_ars') {{
+        if (absNum > 9999) {{
+          dec = 0;
         }} else {{
-          formattedNum = scaledNum.toLocaleString('es-AR', {{ minimumFractionDigits: 2, maximumFractionDigits: 2 }});
-          if (formattedNum.endsWith(',00') && absBase >= 100000) {{
-            formattedNum = formattedNum.slice(0, -3);
-          }}
+          dec = (num % 1 !== 0) ? 2 : 0;
         }}
+        const formatted = num.toLocaleString('es-AR', {{ minimumFractionDigits: dec, maximumFractionDigits: dec }});
+        return `${{prefix}}${{formatted}}`.trim();
       }}
 
-      return `${{prefix}}${{formattedNum}}${{tierSuffix}}${{customTag}}`;
+      if (unitType === 'currency_usd') {{
+        if (absNum > 9999) dec = 0;
+        const formatted = num.toLocaleString('es-AR', {{ minimumFractionDigits: dec, maximumFractionDigits: dec }});
+        return `${{prefix}}${{formatted}}${{suffix}}`.trim();
+      }}
+
+      if (absNum > 9999) dec = 0;
+      const formatted = num.toLocaleString('es-AR', {{ minimumFractionDigits: dec, maximumFractionDigits: dec }});
+      return `${{prefix}}${{formatted}}${{suffix}}`.trim();
     }}
 
     // Clean Spanish Date Formatter for Chart X-Axis and Tooltips
@@ -1197,6 +1198,13 @@ def build_index_html():
         </span>
       ` : '';
 
+      const unitBadgeText = meta.badge || card.unit_badge || '';
+      const unitBadgeHTML = unitBadgeText ? `
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30" title="Unidad de medida">
+          ${{unitBadgeText}}
+        </span>
+      ` : '';
+
       return `
         <div 
           onclick="openModalByKey('${{card.key}}')"
@@ -1205,13 +1213,15 @@ def build_index_html():
         >
           <div>
             <div class="flex items-center justify-between gap-1 mb-2.5 flex-wrap">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/60 font-mono">
-                ${{card.freq}}
-              </span>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/60 font-mono">
+                  ${{card.freq}}
+                </span>
+                ${{unitBadgeHTML}}
+                ${{ratioBadgeHTML}}
+              </div>
 
-              ${{ratioBadgeHTML}}
-
-              <span class="text-[10px] font-black font-mono px-2 py-0.5 rounded-md bg-rose-50 dark:bg-brand-red/15 text-brand-red border border-rose-200 dark:border-brand-red/30 flex items-center gap-1 shadow-2xs" title="Fecha del último dato oficial publicado">
+              <span class="text-[10px] font-black font-mono px-2 py-0.5 rounded-md bg-rose-50 dark:bg-brand-red/15 text-brand-red border border-rose-200 dark:border-brand-red/30 flex items-center gap-1 shadow-2xs shrink-0" title="Fecha del último dato oficial publicado">
                 <i class="far fa-calendar-check text-[9px]"></i>
                 <span>${{card.latest_date}}</span>
               </span>
@@ -1406,6 +1416,7 @@ def build_index_html():
       document.getElementById('modal-title').innerText = card.name;
       document.getElementById('modal-desc').innerText = card.desc;
       document.getElementById('modal-category-badge').innerText = card.category;
+      document.getElementById('modal-unit-badge').innerText = meta.badge || card.unit_badge || 'Unidad';
       document.getElementById('modal-freq-badge').innerText = card.freq;
       document.getElementById('modal-source-badge').innerText = card.source;
       document.getElementById('modal-date-badge').innerText = `Último Dato: ${{card.latest_date}}`;
