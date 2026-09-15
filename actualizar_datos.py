@@ -354,11 +354,6 @@ def auto_fetch_live_data(ref_hdb):
             "2026-05-01": 9175.62,
             "2026-06-01": 9441.71
         },
-        'indice_salarios_ipc': {
-            "2026-04-01": 100.00,
-            "2026-05-01": 99.70,
-            "2026-06-01": 101.45
-        },
         'empleo_privado': {
             "2026-04-01": 6140.58,
             "2026-05-01": 6131.52,
@@ -476,6 +471,23 @@ def reconstruct_and_order_dataset():
         if s_dates and s_prices:
             s_usd = [round(p / fx_mep.get(d[:7], 1539.9), 2) for d, p in zip(s_dates, s_prices)]
             ref_hdb['smvm_usd'] = {'dates': list(s_dates), 'prices': s_usd}
+
+    # PODER ADQUISITIVO SALARIAL (Índice de Salarios deflactado por IPC, base último dato disponible = 100.0)
+    if 'salarios_indice' in ref_hdb:
+        sal_s = ref_hdb['salarios_indice']
+        sal_dates = sal_s.get('dates', [])
+        sal_prices = sal_s.get('prices', [])
+        if sal_dates and sal_prices:
+            n_sal = len(sal_dates)
+            indices = [1.0] * n_sal
+            for i in range(1, n_sal):
+                ym = sal_dates[i][:7]
+                m_rate = ipc_dict.get(ym, 0.0)
+                indices[i] = indices[i-1] * (1.0 + m_rate / 100.0)
+            real_wages = [sal_prices[i] / indices[i] if indices[i] > 0 else sal_prices[i] for i in range(n_sal)]
+            final_real = real_wages[-1] if real_wages else 1.0
+            sal_ipc_prices = [round((r / final_real) * 100.0, 2) for r in real_wages]
+            ref_hdb['indice_salarios_ipc'] = {'dates': list(sal_dates), 'prices': sal_ipc_prices}
 
     # 3. REAL OFFICIAL ANSES PENSION SERIES (HASTA SEPTIEMBRE 2026)
     anses_min_table = {
@@ -765,6 +777,9 @@ def reconstruct_and_order_dataset():
             if "salarios_indice" in cards_dict:
                 cards_dict["salarios_indice"]["name"] = "Índice de Salarios - Nivel General"
                 cards_dict["salarios_indice"]["desc"] = "Mide la evolución de las remuneraciones brutas devengadas de los trabajadores registrados y no registrados (INDEC, Base Dic-2016 = 100)."
+            if "indice_salarios_ipc" in cards_dict:
+                cards_dict["indice_salarios_ipc"]["name"] = "Poder Adquisitivo Salarial"
+                cards_dict["indice_salarios_ipc"]["desc"] = "Índice de Salarios deflactado por IPC, ajustado para que el último dato disponible sea exactamente = 100%. Permite visualizar rápidamente la ganancia o pérdida del salario real respecto al mes actual."
 
         if "Precios" in cat_name:
             ordered_cards = [cards_dict[k] for k in precios_ordered_keys if k in cards_dict]
