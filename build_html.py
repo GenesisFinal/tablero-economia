@@ -569,6 +569,10 @@ def build_index_html():
         return {{ type: 'ratio', prefix: '', suffix: ' act/pas', decimals: 2 }};
       }}
 
+      if (k === 'salarios_indice') {{
+        return {{ type: 'index', prefix: '', suffix: ' pts', decimals: 2 }};
+      }}
+
       if (k === 'pbi_corriente' || k === 'pbi_constante_hoy') {{
         return {{ type: 'currency_ars_m', prefix: '$ ', suffix: ' M', decimals: 2 }};
       }}
@@ -588,7 +592,7 @@ def build_index_html():
           k.includes('interanual') || n.includes('interanual') || 
           n.includes('tasa') || n.includes('variación') || n.includes('variacion') || n.includes('porcentaje') || 
           k.includes('desocupacion') || k.includes('actividad') || k.includes('indigencia') || k.includes('pobreza') || 
-          k.includes('empleo_val') || k.includes('salarios_indice') || k.includes('isac_general') || 
+          k.includes('empleo_val') || k.includes('indice_salarios_ipc') || k.includes('isac_general') || 
           k.includes('ipc') || k.includes('ipi') || k.includes('emae_interanual') || k === 'supermercados_ventas' || 
           k.includes('pbi_interanual') || k.includes('emae_agro') || n.includes('%')) {{
         return {{ type: 'percent', prefix: '', suffix: '%', decimals: 2 }};
@@ -640,7 +644,7 @@ def build_index_html():
       if (k.includes('cemento_total')) {{
         return {{ type: 'quantity', prefix: '', suffix: ' Tn', decimals: 1 }};
       }}
-      if (k.includes('isac_') || k.includes('icc_') || k.includes('indice_salarios_ipc') || k.includes('emae_construccion') || k === 'ipi_manufacturero_nivel') {{
+      if (k.includes('isac_') || k.includes('icc_') || k.includes('salarios_indice') || k.includes('emae_construccion') || k === 'ipi_manufacturero_nivel') {{
         return {{ type: 'index', prefix: '', suffix: ' pts', decimals: 2 }};
       }}
 
