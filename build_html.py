@@ -591,56 +591,56 @@ def build_index_html():
       }}
 
       if (k.includes('relacion_activo_pasivo')) {{
-        return {{ type: 'ratio', prefix: '', suffix: ' act/pas', badge: 'Activos / Pasivos', decimals: 2 }};
+        return {{ type: 'ratio', prefix: '', suffix: '', badge: 'Activos / Pasivos', decimals: 2 }};
       }}
 
       if (k.includes('poblacion') || k.includes('beneficios_sipa')) {{
-        return {{ type: 'quantity', prefix: '', suffix: ' hab.', badge: 'Habitantes', decimals: 0 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Habitantes', decimals: 0 }};
       }}
 
       if (k.includes('isac_') || k.includes('icc_') || k.includes('salarios_indice') || k.includes('emae_construccion') || k === 'ipi_manufacturero_nivel') {{
-        return {{ type: 'index', prefix: '', suffix: ' pts', badge: 'Puntos (Índice)', decimals: 2 }};
+        return {{ type: 'index', prefix: '', suffix: '', badge: 'Puntos (Índice)', decimals: 2 }};
       }}
 
       if (k === 'produccion_automotriz') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' unid./mes', badge: 'Unidades / mes', decimals: 0 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Unidades / mes', decimals: 0 }};
       }}
 
       if (k === 'generacion_electrica_total') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' GWh/mes', badge: 'GWh / mes', decimals: 0 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'GWh / mes', decimals: 0 }};
       }}
 
       if (k === 'gas_produccion') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' MM m³/mes', badge: 'Millones m³ / mes', decimals: 2 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Millones m³ / mes', decimals: 2 }};
       }}
 
       if (k === 'petroleo_produccion') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' miles m³/mes', badge: 'Miles m³ / mes', decimals: 2 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Miles m³ / mes', decimals: 2 }};
       }}
 
       if (k === 'molienda_oleaginosas') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' mil Tn/mes', badge: 'Miles de Tn / mes', decimals: 0 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Miles de Tn / mes', decimals: 0 }};
       }}
 
       if (k === 'faena_bovina') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' mil cab./mes', badge: 'Miles de Cabezas / mes', decimals: 0 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Miles de Cabezas / mes', decimals: 0 }};
       }}
 
       if (k === 'cosecha_granos_total') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' MM Tn', badge: 'Millones de Tn', decimals: 2 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Millones de Tn', decimals: 2 }};
       }}
 
       if (k === 'cemento_total') {{
-        return {{ type: 'quantity', prefix: '', suffix: ' mil Tn', badge: 'Miles de Toneladas', decimals: 0 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Miles de Toneladas', decimals: 0 }};
       }}
 
       if (k.includes('empleo_privado') || k.includes('empleo_total')) {{
-        return {{ type: 'quantity', prefix: '', suffix: ' mil', badge: 'Miles de Puestos', decimals: 0 }};
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Miles de Puestos', decimals: 0 }};
       }}
 
       // ARS Billions (Billones de pesos $ 10^12)
       if (['base_monetaria', 'agregado_b1', 'agregado_b2', 'agregado_b3', 'billetes_circulacion', 'pbi_corriente', 'pbi_constante_hoy'].includes(k)) {{
-        return {{ type: 'currency_ars_billions', prefix: '$ ', suffix: ' Billones', badge: 'Billones de Pesos ($)', decimals: 2 }};
+        return {{ type: 'currency_ars_billions', prefix: '$ ', suffix: '', badge: 'Billones de Pesos ($)', decimals: 2 }};
       }}
 
       // USD Millions (Millones de USD)
@@ -652,12 +652,12 @@ def build_index_html():
           ['agregado_b1_usd', 'agregado_b2_usd', 'agregado_b3_usd', 'base_monetaria_usd', 'billetes_circulacion_usd',
            'recaudacion_iva_usd', 'recaudacion_seg_social_usd', 'resultado_financiero_usd', 'resultado_fiscal_primario_usd',
            'pbi_usd_mep'].includes(k)) {{
-        return {{ type: 'currency_usd_millions', prefix: 'USD ', suffix: ' Millones', badge: 'Millones de USD', decimals: 0 }};
+        return {{ type: 'currency_usd_millions', prefix: 'USD ', suffix: '', badge: 'Millones de USD', decimals: 0 }};
       }}
 
       // ARS Millions (Millones de Pesos)
       if (['recaudacion_iva', 'recaudacion_seg_social', 'resultado_financiero', 'resultado_financiero_mep', 'resultado_fiscal_primario', 'resultado_primario_mep'].includes(k)) {{
-        return {{ type: 'currency_ars_millions', prefix: '$ ', suffix: ' Millones', badge: 'Millones de Pesos ($)', decimals: 0 }};
+        return {{ type: 'currency_ars_millions', prefix: '$ ', suffix: '', badge: 'Millones de Pesos ($)', decimals: 0 }};
       }}
 
       if (k === 'pbi_per_capita_usd_mep') {{
@@ -665,7 +665,7 @@ def build_index_html():
       }}
 
       if (k === 'supermercados_ventas_valor') {{
-        return {{ type: 'currency_ars_const', prefix: '$ ', suffix: ' M (Dic-16)', badge: 'Millones de $ (Dic-16)', decimals: 2 }};
+        return {{ type: 'currency_ars_const', prefix: '$ ', suffix: '', badge: 'Millones de $ (Dic-16)', decimals: 2 }};
       }}
 
       // Check General USD
@@ -694,7 +694,7 @@ def build_index_html():
           valB = num / 1000000000000;
         }}
         const formatted = valB.toLocaleString('es-AR', {{ minimumFractionDigits: 2, maximumFractionDigits: 2 }});
-        return `${{prefix}}${{formatted}}${{suffix}}`;
+        return `${{prefix}}${{formatted}}${{suffix}}`.trim();
       }}
 
       if (unitType === 'currency_usd_millions') {{
@@ -707,7 +707,7 @@ def build_index_html():
         const decCount = (Math.abs(valM) > 9999 || Math.abs(valM) >= 100) ? 0 : 2;
         let formatted = valM.toLocaleString('es-AR', {{ minimumFractionDigits: decCount, maximumFractionDigits: decCount }});
         if (formatted.endsWith(',00')) formatted = formatted.slice(0, -3);
-        return `${{prefix}}${{formatted}}${{suffix}}`;
+        return `${{prefix}}${{formatted}}${{suffix}}`.trim();
       }}
 
       if (unitType === 'currency_ars_millions') {{
@@ -716,13 +716,13 @@ def build_index_html():
           valM = num / 1000000;
         }}
         const formatted = valM.toLocaleString('es-AR', {{ minimumFractionDigits: 0, maximumFractionDigits: 0 }});
-        return `${{prefix}}${{formatted}}${{suffix}}`;
+        return `${{prefix}}${{formatted}}${{suffix}}`.trim();
       }}
 
       if (unitType === 'percent' || unitType === 'index' || unitType === 'bps' || unitType === 'ratio' || suffix.includes('%')) {{
         if (absNum > 9999) dec = 0;
         const formatted = num.toLocaleString('es-AR', {{ minimumFractionDigits: dec, maximumFractionDigits: dec }});
-        return `${{prefix}}${{formatted}}${{suffix}}`;
+        return `${{prefix}}${{formatted}}${{suffix}}`.trim();
       }}
 
       if (unitType === 'currency_ars') {{
