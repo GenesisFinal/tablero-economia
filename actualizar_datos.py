@@ -27,25 +27,7 @@ def get_indicator_unit_meta(key, name, cat_name):
     k = key.lower()
     n = name.lower()
 
-    if k == 'riesgo_pais':
-        return {'type': 'bps', 'prefix': '', 'suffix': ' bps', 'decimals': 0}
-
-    if k == 'relacion_activo_pasivo':
-        return {'type': 'ratio', 'prefix': '', 'suffix': ' act/pas', 'decimals': 2}
-
-    if k == 'salarios_indice':
-        return {'type': 'index', 'prefix': '', 'suffix': ' pts', 'decimals': 2}
-
-    if k == 'pbi_corriente' or k == 'pbi_constante_hoy':
-        return {'type': 'currency_ars_m', 'prefix': '$ ', 'suffix': ' M', 'decimals': 2}
-
-    if k == 'supermercados_ventas_usd':
-        return {'type': 'currency_usd_m', 'prefix': 'USD ', 'suffix': ' M', 'decimals': 2}
-
-    if k == 'supermercados_ventas_valor':
-        return {'type': 'currency_ars_const', 'prefix': '$ ', 'suffix': ' M (Dic-16)', 'decimals': 2}
-
-    # Percentages (%)
+    # Percentages & Ratios (%)
     if (k.endswith('_pbi') or k.startswith('ratio_') or k.startswith('cobertura_') or k.startswith('tasa_') or 
         k == 'capacidad_instalada_industria' or k == 'isac_general' or
         'cobertura' in k or 'cobertura' in n or
@@ -53,49 +35,80 @@ def get_indicator_unit_meta(key, name, cat_name):
         'tasa' in n or 'variación' in n or 'variacion' in n or 'porcentaje' in n or 
         'desocupacion' in k or 'actividad' in k or 'indigencia' in k or 'pobreza' in k or 
         'empleo_val' in k or 'indice_salarios_ipc' in k or 
-        'ipc' in k or 'ipi' in k or 'emae_interanual' in k or k == 'supermercados_ventas' or 
+        k.startswith('ipc_') or k == 'ipc' or k == 'ipi_interanual' or k == 'supermercados_ventas' or 
         'pbi_interanual' in k or 'emae_agro' in k or '%' in n):
-        return {'type': 'percent', 'prefix': '', 'suffix': '%', 'decimals': 2}
+        return {'type': 'percent', 'prefix': '', 'suffix': '%', 'badge': 'Porcentaje (%)', 'decimals': 2}
 
-    # Debt, Reserves, FGS, CIARA, MOA, PP in USD Millions
+    if k == 'riesgo_pais':
+        return {'type': 'bps', 'prefix': '', 'suffix': ' bps', 'badge': 'Puntos Básicos (bps)', 'decimals': 0}
+
+    if 'relacion_activo_pasivo' in k:
+        return {'type': 'ratio', 'prefix': '', 'suffix': ' act/pas', 'badge': 'Activos / Pasivos', 'decimals': 2}
+
+    if 'poblacion' in k or 'beneficios_sipa' in k:
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' hab.', 'badge': 'Habitantes', 'decimals': 0}
+
+    if 'isac_' in k or 'icc_' in k or 'salarios_indice' in k or 'emae_construccion' in k or k == 'ipi_manufacturero_nivel':
+        return {'type': 'index', 'prefix': '', 'suffix': ' pts', 'badge': 'Puntos (Índice)', 'decimals': 2}
+
+    if k == 'produccion_automotriz':
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' unid./mes', 'badge': 'Unidades / mes', 'decimals': 0}
+
+    if k == 'generacion_electrica_total':
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' GWh/mes', 'badge': 'GWh / mes', 'decimals': 0}
+
+    if k == 'gas_produccion':
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' MM m³/mes', 'badge': 'Millones m³ / mes', 'decimals': 2}
+
+    if k == 'petroleo_produccion':
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' miles m³/mes', 'badge': 'Miles m³ / mes', 'decimals': 2}
+
+    if k == 'molienda_oleaginosas':
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' mil Tn/mes', 'badge': 'Miles de Tn / mes', 'decimals': 0}
+
+    if k == 'faena_bovina':
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' mil cab./mes', 'badge': 'Miles de Cabezas / mes', 'decimals': 0}
+
+    if k == 'cosecha_granos_total':
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' MM Tn', 'badge': 'Millones de Tn', 'decimals': 2}
+
+    if k == 'cemento_total':
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' mil Tn', 'badge': 'Miles de Toneladas', 'decimals': 0}
+
+    if 'empleo_privado' in k or 'empleo_total' in k:
+        return {'type': 'quantity', 'prefix': '', 'suffix': ' mil', 'badge': 'Miles de Puestos', 'decimals': 0}
+
+    # ARS Billions (Billones de pesos $ 10^12)
+    if k in ['base_monetaria', 'agregado_b1', 'agregado_b2', 'agregado_b3', 'billetes_circulacion', 'pbi_corriente', 'pbi_constante_hoy']:
+        return {'type': 'currency_ars_billions', 'prefix': '$ ', 'suffix': ' Billones', 'badge': 'Billones de Pesos ($)', 'decimals': 2}
+
+    # USD Millions (Millones de USD)
     if (('deuda_' in k and not k.endswith('_pbi')) or k == 'reservas_brutas' or k == 'reservas_bcra' or 
         k == 'fgs_total_usd' or k == 'liquidacion_divisas_ciara' or k == 'exportaciones_moa' or 
         k == 'exportaciones_pp' or k == 'exportaciones_totales' or k == 'importaciones_totales' or
         k == 'moa_exportaciones' or k == 'exportaciones_val' or k == 'exportaciones_moi' or
-        k == 'importaciones_total' or k == 'saldo_comercial'):
-        return {'type': 'currency_usd', 'prefix': 'USD ', 'suffix': ' M', 'decimals': 2}
+        k == 'importaciones_total' or k == 'saldo_comercial' or k == 'supermercados_ventas_usd' or
+        k in ['agregado_b1_usd', 'agregado_b2_usd', 'agregado_b3_usd', 'base_monetaria_usd', 'billetes_circulacion_usd',
+              'recaudacion_iva_usd', 'recaudacion_seg_social_usd', 'resultado_financiero_usd', 'resultado_fiscal_primario_usd',
+              'pbi_usd_mep']):
+        return {'type': 'currency_usd_millions', 'prefix': 'USD ', 'suffix': ' Millones', 'badge': 'Millones de USD', 'decimals': 0}
+
+    # ARS Millions (Millones de Pesos)
+    if k in ['recaudacion_iva', 'recaudacion_seg_social', 'resultado_financiero', 'resultado_financiero_mep', 'resultado_fiscal_primario', 'resultado_primario_mep']:
+        return {'type': 'currency_ars_millions', 'prefix': '$ ', 'suffix': ' Millones', 'badge': 'Millones de Pesos ($)', 'decimals': 0}
+
+    if k == 'pbi_per_capita_usd_mep':
+        return {'type': 'currency_usd', 'prefix': 'USD ', 'suffix': '', 'badge': 'USD / Habitante', 'decimals': 0}
+
+    if k == 'supermercados_ventas_valor':
+        return {'type': 'currency_ars_const', 'prefix': '$ ', 'suffix': ' M (Dic-16)', 'badge': 'Millones de $ (Dic-16)', 'decimals': 2}
 
     # Standard USD
     if k.endswith('_usd') or 'usd' in k or 'en usd' in n or 'en dólares' in n or 'en dolares' in n:
-        return {'type': 'currency_usd', 'prefix': 'USD ', 'suffix': '', 'decimals': 2}
-
-    # Quantities & Specific Units
-    if k == 'gas_produccion':
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' MM m³/mes', 'decimals': 2}
-    if k == 'petroleo_produccion':
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' miles m³/mes', 'decimals': 2}
-    if k == 'produccion_automotriz':
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' unid./mes', 'decimals': 0}
-    if k == 'generacion_electrica_total':
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' GWh/mes', 'decimals': 1}
-    if k == 'faena_bovina':
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' mil cab./mes', 'decimals': 1}
-    if k == 'molienda_oleaginosas':
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' mil Tn/mes', 'decimals': 1}
-    if k == 'cosecha_granos_total':
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' MM Tn', 'decimals': 1}
-
-    if 'poblacion' in k or 'beneficios_sipa' in k:
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' hab.', 'decimals': 0}
-    if 'empleo_privado' in k or 'empleo_total' in k:
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' mil', 'decimals': 1}
-    if 'cemento_total' in k:
-        return {'type': 'quantity', 'prefix': '', 'suffix': ' Tn', 'decimals': 1}
-    if 'isac_' in k or 'icc_' in k or 'salarios_indice' in k or 'emae_construccion' in k or k == 'ipi_manufacturero_nivel':
-        return {'type': 'index', 'prefix': '', 'suffix': ' pts', 'decimals': 2}
+        return {'type': 'currency_usd', 'prefix': 'USD ', 'suffix': '', 'badge': 'En Dólares (USD)', 'decimals': 2}
 
     # Currency ARS ($)
-    return {'type': 'currency_ars', 'prefix': '$', 'suffix': '', 'decimals': 2}
+    return {'type': 'currency_ars', 'prefix': '$ ', 'suffix': '', 'badge': 'En Pesos ($)', 'decimals': 0}
 
 def format_es_number(val, dec=2):
     if dec == 0:
@@ -113,62 +126,64 @@ def format_value_with_meta(val, meta, compact=False):
     abs_num = abs(num)
     unit_type = meta.get('type', '')
     prefix = meta.get('prefix', '')
-    suffix_raw = meta.get('suffix', '')
+    suffix = meta.get('suffix', '')
+    dec = meta.get('decimals', 2)
 
-    # Percentages, indices, bps, ratios are NOT scaled to thousands/millions
-    if unit_type in ['percent', 'index', 'bps', 'ratio'] or '%' in suffix_raw:
-        dec = meta.get('decimals', 2)
+    if unit_type == 'currency_ars_billions':
+        val_b = num
+        if abs_num >= 100_000_000:
+            val_b = num / 1_000_000.0
+        elif abs_num >= 1_000_000_000:
+            val_b = num / 1_000_000_000_000.0
+        formatted = format_es_number(val_b, 2)
+        return f"{prefix}{formatted}{suffix}"
+
+    if unit_type == 'currency_usd_millions':
+        val_m = num
+        if abs_num >= 1_000_000_000:
+            val_m = num / 1_000_000.0
+        elif abs_num >= 1_000_000:
+            val_m = num / 1_000_000.0
+        
+        if abs(val_m) > 9999 or abs(val_m) >= 100:
+            formatted = format_es_number(val_m, 0)
+        else:
+            formatted = format_es_number(val_m, 2)
+            if formatted.endswith(',00'):
+                formatted = formatted[:-3]
+        return f"{prefix}{formatted}{suffix}"
+
+    if unit_type == 'currency_ars_millions':
+        val_m = num
+        if abs_num >= 1_000_000_000_000:
+            val_m = num / 1_000_000.0
+        formatted = format_es_number(val_m, 0)
+        return f"{prefix}{formatted}{suffix}"
+
+    if unit_type in ['percent', 'index', 'bps', 'ratio'] or '%' in suffix:
         if abs_num > 9999:
             dec = 0
         formatted = format_es_number(num, dec)
-        return f"{prefix}{formatted}{suffix_raw}"
+        return f"{prefix}{formatted}{suffix}"
 
-    clean_suffix = suffix_raw.strip()
-    is_already_millions = clean_suffix in ['M', 'M (Dic-16)', 'MM m³/mes', 'MM Tn']
-    is_already_thousands = clean_suffix in ['miles m³/mes', 'mil cab./mes', 'mil Tn/mes', 'mil']
-
-    if is_already_millions:
-        base_val = num * 1_000_000.0
-    elif is_already_thousands:
-        base_val = num * 1_000.0
-    else:
-        base_val = num
-
-    abs_base = abs(base_val)
-
-    if abs_base < 100_000:
-        scaled_num = base_val
-        tier_suffix = ""
-    elif abs_base < 100_000_000:
-        scaled_num = base_val / 1_000.0
-        tier_suffix = " mil"
-    elif abs_base < 100_000_000_000:
-        scaled_num = base_val / 1_000_000.0
-        tier_suffix = " M"
-    elif abs_base < 100_000_000_000_000:
-        scaled_num = base_val / 1_000_000_000.0
-        tier_suffix = " MM"
-    else:
-        scaled_num = base_val / 1_000_000_000_000.0
-        tier_suffix = " B"
-
-    custom_tag = ""
-    if clean_suffix in ['hab.', 'unid./mes', 'GWh/mes', 'Tn']:
-        custom_tag = f" {clean_suffix}"
-
-    abs_scaled = abs(scaled_num)
-    if abs_scaled > 9999:
-        formatted_num = format_es_number(scaled_num, 0)
-    else:
-        is_round_integer = (round(scaled_num, 2) == round(scaled_num, 0)) and abs_base >= 100_000 and (int(round(scaled_num)) == round(scaled_num, 2))
-        if is_round_integer:
-            formatted_num = format_es_number(scaled_num, 0)
+    if unit_type == 'currency_ars':
+        if abs_num > 9999:
+            dec = 0
         else:
-            formatted_num = format_es_number(scaled_num, 2)
-            if formatted_num.endswith(',00') and abs_base >= 100_000:
-                formatted_num = formatted_num[:-3]
+            dec = 2 if num % 1 != 0 else 0
+        formatted = format_es_number(num, dec)
+        return f"{prefix}{formatted}".strip()
 
-    return f"{prefix}{formatted_num}{tier_suffix}{custom_tag}"
+    if unit_type == 'currency_usd':
+        if abs_num > 9999:
+            dec = 0
+        formatted = format_es_number(num, dec)
+        return f"{prefix}{formatted}{suffix}".strip()
+
+    if abs_num > 9999:
+        dec = 0
+    formatted = format_es_number(num, dec)
+    return f"{prefix}{formatted}{suffix}".strip()
 
 def adjust_series_to_constant(dates, nominal_prices, ipc_dict):
     n = len(dates)
@@ -692,17 +707,19 @@ def reconstruct_and_order_dataset():
     b_s = ref_hdb.get('billetes_circulacion', {})
     b_d = b_s.get('dates', [])
     b_p = b_s.get('prices', [])
+    b_p_norm = [round(p / 1_000_000_000.0, 2) if p > 1000 else p for p in b_p]
+    ref_hdb['billetes_circulacion'] = {'dates': list(b_d), 'prices': b_p_norm}
     b_usd = []
     b_pbi_d = []
     b_pbi_p = []
-    for d, p in zip(b_d, b_p):
+    for d, p in zip(b_d, b_p_norm):
         ym = d[:7]
         rate = fx_mep.get(ym, 1530.0)
-        b_usd.append(round(p / rate, 2))
+        b_usd.append(round((p * 1_000_000_000_000.0) / rate, 2))
         if ym in pbi_dict and pbi_dict[ym] > 0:
-            pbi_raw = pbi_dict[ym]
+            pbi_b = pbi_dict[ym] / 1_000_000.0
             b_pbi_d.append(d)
-            b_pbi_p.append(round((p / (pbi_raw * 1000.0)) * 100.0, 2))
+            b_pbi_p.append(round((p / pbi_b) * 100.0, 2))
 
     ref_hdb['billetes_circulacion_usd'] = {'dates': list(b_d), 'prices': b_usd}
     if b_pbi_d:
@@ -952,6 +969,7 @@ def reconstruct_and_order_dataset():
                 "unit_type": meta['type'],
                 "unit_prefix": meta['prefix'],
                 "unit_suffix": meta['suffix'],
+                "unit_badge": meta['badge'],
                 "decimals": card_dec,
                 "latest_date_raw": latest_date_raw,
                 "latest_date": latest_date_formatted,
