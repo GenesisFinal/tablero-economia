@@ -102,13 +102,19 @@ def format_value_with_meta(val, meta, compact=False):
         return 'N/D'
     num = float(val)
     dec = meta.get('decimals', 2)
+    # Regla: Si el valor absoluto es mayor a 9.999 unidades, no usar decimales
+    if abs(num) > 9999:
+        dec = 0
 
     if compact and abs(num) >= 1_000_000_000:
         formatted = f"{num / 1_000_000_000:,.1f} B"
     elif compact and abs(num) >= 1_000_000:
         formatted = f"{num / 1_000_000:,.1f} M"
     else:
-        formatted = f"{num:,.{dec}f}"
+        if dec == 0:
+            formatted = f"{int(round(num)):,}"
+        else:
+            formatted = f"{num:,.{dec}f}"
 
     return f"{meta.get('prefix', '')}{formatted}{meta.get('suffix', '')}"
 
@@ -876,6 +882,10 @@ def reconstruct_and_order_dataset():
 
             ratio_badge = get_ratio_badge_text(key)
 
+            card_dec = meta['decimals']
+            if latest_val is not None and abs(latest_val) > 9999:
+                card_dec = 0
+
             enhanced_card = {
                 "key": key,
                 "name": name,
@@ -890,7 +900,7 @@ def reconstruct_and_order_dataset():
                 "unit_type": meta['type'],
                 "unit_prefix": meta['prefix'],
                 "unit_suffix": meta['suffix'],
-                "decimals": meta['decimals'],
+                "decimals": card_dec,
                 "latest_date_raw": latest_date_raw,
                 "latest_date": latest_date_formatted,
                 "range_min": min(prices),
