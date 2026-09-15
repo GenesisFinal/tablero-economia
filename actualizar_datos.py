@@ -33,6 +33,9 @@ def get_indicator_unit_meta(key, name, cat_name):
     if k == 'relacion_activo_pasivo':
         return {'type': 'ratio', 'prefix': '', 'suffix': ' act/pas', 'decimals': 2}
 
+    if k == 'salarios_indice':
+        return {'type': 'index', 'prefix': '', 'suffix': ' pts', 'decimals': 2}
+
     if k == 'pbi_corriente' or k == 'pbi_constante_hoy':
         return {'type': 'currency_ars_m', 'prefix': '$ ', 'suffix': ' M', 'decimals': 2}
 
@@ -49,7 +52,7 @@ def get_indicator_unit_meta(key, name, cat_name):
         'interanual' in k or 'interanual' in n or 
         'tasa' in n or 'variación' in n or 'variacion' in n or 'porcentaje' in n or 
         'desocupacion' in k or 'actividad' in k or 'indigencia' in k or 'pobreza' in k or 
-        'empleo_val' in k or 'salarios_indice' in k or 
+        'empleo_val' in k or 'indice_salarios_ipc' in k or 
         'ipc' in k or 'ipi' in k or 'emae_interanual' in k or k == 'supermercados_ventas' or 
         'pbi_interanual' in k or 'emae_agro' in k or '%' in n):
         return {'type': 'percent', 'prefix': '', 'suffix': '%', 'decimals': 2}
@@ -88,7 +91,7 @@ def get_indicator_unit_meta(key, name, cat_name):
         return {'type': 'quantity', 'prefix': '', 'suffix': ' mil', 'decimals': 1}
     if 'cemento_total' in k:
         return {'type': 'quantity', 'prefix': '', 'suffix': ' Tn', 'decimals': 1}
-    if 'isac_' in k or 'icc_' in k or 'indice_salarios_ipc' in k or 'emae_construccion' in k or k == 'ipi_manufacturero_nivel':
+    if 'isac_' in k or 'icc_' in k or 'salarios_indice' in k or 'emae_construccion' in k or k == 'ipi_manufacturero_nivel':
         return {'type': 'index', 'prefix': '', 'suffix': ' pts', 'decimals': 2}
 
     # Currency ARS ($)
@@ -333,13 +336,43 @@ def auto_fetch_live_data(ref_hdb):
         ref_hdb[k] = merge_time_series(ref_hdb.get(k, {}), sorted(val_dict.keys()), [val_dict[d] for d in sorted(val_dict.keys())])
     print(f"  [OK] Agregados Monetarios BCRA: Sincronizados hasta Agosto 2026")
 
-    # 12. SALARIOS Y MOVILIDAD
+    # 12. SALARIOS Y EMPLEO (INDEC, SIPA, Secretaría de Trabajo)
     salarios_sync = {
-        'smvm_val': {"2026-08-01": 376600.00, "2026-09-01": 385000.00},
-        'ripte_val': {"2026-06-01": 1915878.76, "2026-07-01": 1965400.00}
+        'smvm_val': {
+            "2026-06-01": 367800.00,
+            "2026-07-01": 372400.00,
+            "2026-08-01": 376600.00,
+            "2026-09-01": 385000.00
+        },
+        'ripte_val': {
+            "2026-05-01": 1849727.96,
+            "2026-06-01": 1915878.76,
+            "2026-07-01": 1965400.00
+        },
+        'salarios_indice': {
+            "2026-04-01": 8978.10,
+            "2026-05-01": 9175.62,
+            "2026-06-01": 9441.71
+        },
+        'indice_salarios_ipc': {
+            "2026-04-01": 100.00,
+            "2026-05-01": 99.70,
+            "2026-06-01": 101.45
+        },
+        'empleo_privado': {
+            "2026-04-01": 6140.58,
+            "2026-05-01": 6131.52,
+            "2026-06-01": 6090.00
+        },
+        'empleo_total': {
+            "2026-04-01": 12797.58,
+            "2026-05-01": 12785.60,
+            "2026-06-01": 12757.00
+        }
     }
     for k, val_dict in salarios_sync.items():
         ref_hdb[k] = merge_time_series(ref_hdb.get(k, {}), sorted(val_dict.keys()), [val_dict[d] for d in sorted(val_dict.keys())])
+    print(f"  [OK] Empleo y Salarios: Sincronizados con INDEC, SIPA y Sec. de Trabajo hasta Junio/Julio/Septiembre 2026")
 
     # 13. COMERCIO EXTERIOR (ICA INDEC)
     ica_sync = {
@@ -426,6 +459,23 @@ def reconstruct_and_order_dataset():
                 ref_hdb[const_key] = {"dates": dates, "prices": const_prices}
                 usd_prices = [round(p / fx_mep.get(d[:7], 1530.0), 2) for d, p in zip(dates, prices)]
                 ref_hdb[usd_key] = {"dates": dates, "prices": usd_prices}
+
+    # 2.5 SALARIOS EN USD Y A PRECIOS CONSTANTES (SINCRONIZACIÓN MATEMÁTICA AUTOMÁTICA)
+    if 'ripte_val' in ref_hdb:
+        ripte_s = ref_hdb['ripte_val']
+        r_dates = ripte_s.get('dates', [])
+        r_prices = ripte_s.get('prices', [])
+        if r_dates and r_prices:
+            r_usd = [round(p / fx_mep.get(d[:7], 1539.9), 2) for d, p in zip(r_dates, r_prices)]
+            ref_hdb['ripte_usd'] = {'dates': list(r_dates), 'prices': r_usd}
+
+    if 'smvm_val' in ref_hdb:
+        smvm_s = ref_hdb['smvm_val']
+        s_dates = smvm_s.get('dates', [])
+        s_prices = smvm_s.get('prices', [])
+        if s_dates and s_prices:
+            s_usd = [round(p / fx_mep.get(d[:7], 1539.9), 2) for d, p in zip(s_dates, s_prices)]
+            ref_hdb['smvm_usd'] = {'dates': list(s_dates), 'prices': s_usd}
 
     # 3. REAL OFFICIAL ANSES PENSION SERIES (HASTA SEPTIEMBRE 2026)
     anses_min_table = {
@@ -647,6 +697,13 @@ def reconstruct_and_order_dataset():
         "cosecha_granos_total"
     ]
 
+    empleo_ordered_keys = [
+        "ripte_val", "ripte_usd",
+        "smvm_val", "smvm_usd",
+        "salarios_indice", "indice_salarios_ipc",
+        "empleo_privado", "empleo_total"
+    ]
+
     category_icons = {
         "Precios y Costo de Vida": "fa-tags",
         "Agregados Monetarios": "fa-money-bill-wave",
@@ -704,6 +761,11 @@ def reconstruct_and_order_dataset():
                     "time_range": "Mensual"
                 }
 
+        if "Empleo" in cat_name or "Salarios" in cat_name:
+            if "salarios_indice" in cards_dict:
+                cards_dict["salarios_indice"]["name"] = "Índice de Salarios - Nivel General"
+                cards_dict["salarios_indice"]["desc"] = "Mide la evolución de las remuneraciones brutas devengadas de los trabajadores registrados y no registrados (INDEC, Base Dic-2016 = 100)."
+
         if "Precios" in cat_name:
             ordered_cards = [cards_dict[k] for k in precios_ordered_keys if k in cards_dict]
         elif "Monetario" in cat_name:
@@ -716,6 +778,8 @@ def reconstruct_and_order_dataset():
             ordered_cards = [cards_dict[k] for k in industria_ordered_keys if k in cards_dict]
         elif "Campo" in cat_name or "Agro" in cat_name:
             ordered_cards = [cards_dict[k] for k in agro_ordered_keys if k in cards_dict]
+        elif "Empleo" in cat_name or "Salarios" in cat_name:
+            ordered_cards = [cards_dict[k] for k in empleo_ordered_keys if k in cards_dict]
         else:
             ordered_cards = list(cards_dict.values())
 
