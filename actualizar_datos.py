@@ -245,7 +245,11 @@ def get_ratio_badge_text(key):
         'agregado_b2_pbi': 'M2 / PBI',
         'agregado_b3_pbi': 'M3 / PBI',
         'base_monetaria_pbi': 'Base Mon. / PBI',
-        'billetes_circulacion_pbi': 'Billetes / PBI'
+        'billetes_circulacion_pbi': 'Billetes / PBI',
+        'ratio_empleo_privado_poblacion': 'Privados / Población',
+        'ratio_empleo_privado_pea': 'Privados / PEA',
+        'ratio_empleo_total_poblacion': 'Registrados / Población',
+        'ratio_empleo_total_pea': 'Registrados / PEA'
     }
     return badges.get(key, '')
 
@@ -570,6 +574,8 @@ def reconstruct_and_order_dataset():
         if r_dates and r_prices:
             r_usd = [round(p / fx_mep.get(d[:7], 1539.9), 2) for d, p in zip(r_dates, r_prices)]
             ref_hdb['ripte_usd'] = {'dates': list(r_dates), 'prices': r_usd}
+            r_const = adjust_series_to_constant(r_dates, r_prices, ipc_dict)
+            ref_hdb['ripte_constante'] = {'dates': list(r_dates), 'prices': r_const}
 
     if 'smvm_val' in ref_hdb:
         smvm_s = ref_hdb['smvm_val']
@@ -578,6 +584,8 @@ def reconstruct_and_order_dataset():
         if s_dates and s_prices:
             s_usd = [round(p / fx_mep.get(d[:7], 1539.9), 2) for d, p in zip(s_dates, s_prices)]
             ref_hdb['smvm_usd'] = {'dates': list(s_dates), 'prices': s_usd}
+            s_const = adjust_series_to_constant(s_dates, s_prices, ipc_dict)
+            ref_hdb['smvm_constante'] = {'dates': list(s_dates), 'prices': s_const}
 
     # PODER ADQUISITIVO SALARIAL (Índice de Salarios deflactado por IPC, base último dato disponible = 100.0)
     if 'salarios_indice' in ref_hdb:
@@ -585,6 +593,8 @@ def reconstruct_and_order_dataset():
         sal_dates = sal_s.get('dates', [])
         sal_prices = sal_s.get('prices', [])
         if sal_dates and sal_prices:
+            sal_const = adjust_series_to_constant(sal_dates, sal_prices, ipc_dict)
+            ref_hdb['salarios_indice_constante'] = {'dates': list(sal_dates), 'prices': sal_const}
             n_sal = len(sal_dates)
             indices = [1.0] * n_sal
             for i in range(1, n_sal):
@@ -595,6 +605,83 @@ def reconstruct_and_order_dataset():
             final_real = real_wages[-1] if real_wages else 1.0
             sal_ipc_prices = [round((r / final_real) * 100.0, 2) for r in real_wages]
             ref_hdb['indice_salarios_ipc'] = {'dates': list(sal_dates), 'prices': sal_ipc_prices}
+
+    # 2.6 EMPLEO / POBLACIÓN / PEA
+    pop_s = ref_hdb.get('poblacion', {})
+    pop_map = {d[:7]: float(p) for d, p in zip(pop_s.get('dates', []), pop_s.get('prices', []))}
+    pop_dates_sorted = sorted(pop_map.keys())
+
+    act_s = ref_hdb.get('actividad_val', {})
+    act_map = {d[:7]: float(p) for d, p in zip(act_s.get('dates', []), act_s.get('prices', []))}
+    act_dates_sorted = sorted(act_map.keys())
+
+    def get_pop_at(ym):
+        if ym in pop_map:
+            return pop_map[ym]
+        for d in reversed(pop_dates_sorted):
+            if d <= ym:
+                return pop_map[d]
+        return pop_map[pop_dates_sorted[0]] if pop_dates_sorted else 46426876.0
+
+    def get_act_at(ym):
+        if ym in act_map:
+            return act_map[ym]
+        for d in reversed(act_dates_sorted):
+            if d <= ym:
+                return act_map[d]
+        return act_map[act_dates_sorted[0]] if act_dates_sorted else 48.6
+
+    emp_priv_s = ref_hdb.get('empleo_privado', {})
+    emp_priv_d = emp_priv_s.get('dates', [])
+    emp_priv_p = emp_priv_s.get('prices', [])
+
+    emp_tot_s = ref_hdb.get('empleo_total', {})
+    emp_tot_d = emp_tot_s.get('dates', [])
+    emp_tot_p = emp_tot_s.get('prices', [])
+
+    pea_dates = []
+    pea_prices = []
+    priv_pop_dates = []
+    priv_pop_prices = []
+    priv_pea_dates = []
+    priv_pea_prices = []
+    tot_pop_dates = []
+    tot_pop_prices = []
+    tot_pea_dates = []
+    tot_pea_prices = []
+
+    for d, p in zip(emp_priv_d, emp_priv_p):
+        ym = d[:7]
+        pop = get_pop_at(ym)
+        act = get_act_at(ym)
+        pea = pop * (act / 100.0)
+        
+        pea_dates.append(d)
+        pea_prices.append(round(pea))
+        
+        priv_pop_dates.append(d)
+        priv_pop_prices.append(round(((p * 1000.0) / pop) * 100.0, 2))
+        
+        priv_pea_dates.append(d)
+        priv_pea_prices.append(round(((p * 1000.0) / pea) * 100.0, 2))
+
+    for d, p in zip(emp_tot_d, emp_tot_p):
+        ym = d[:7]
+        pop = get_pop_at(ym)
+        act = get_act_at(ym)
+        pea = pop * (act / 100.0)
+        
+        tot_pop_dates.append(d)
+        tot_pop_prices.append(round(((p * 1000.0) / pop) * 100.0, 2))
+        
+        tot_pea_dates.append(d)
+        tot_pea_prices.append(round(((p * 1000.0) / pea) * 100.0, 2))
+
+    ref_hdb['poblacion_economicamente_activa'] = {'dates': list(pea_dates), 'prices': pea_prices}
+    ref_hdb['ratio_empleo_privado_poblacion'] = {'dates': list(priv_pop_dates), 'prices': priv_pop_prices}
+    ref_hdb['ratio_empleo_privado_pea'] = {'dates': list(priv_pea_dates), 'prices': priv_pea_prices}
+    ref_hdb['ratio_empleo_total_poblacion'] = {'dates': list(tot_pop_dates), 'prices': tot_pop_prices}
+    ref_hdb['ratio_empleo_total_pea'] = {'dates': list(tot_pea_dates), 'prices': tot_pea_prices}
 
     # 3. REAL OFFICIAL ANSES PENSION SERIES (HASTA SEPTIEMBRE 2026)
     anses_min_table = {
@@ -835,10 +922,22 @@ def reconstruct_and_order_dataset():
     ]
 
     empleo_ordered_keys = [
-        "ripte_val", "ripte_usd",
-        "smvm_val", "smvm_usd",
-        "salarios_indice", "indice_salarios_ipc",
-        "empleo_privado", "empleo_total"
+        "ripte_val",
+        "ripte_constante",
+        "ripte_usd",
+        "smvm_val",
+        "smvm_constante",
+        "smvm_usd",
+        "salarios_indice",
+        "salarios_indice_constante",
+        "indice_salarios_ipc",
+        "empleo_privado",
+        "ratio_empleo_privado_poblacion",
+        "ratio_empleo_privado_pea",
+        "poblacion_economicamente_activa",
+        "empleo_total",
+        "ratio_empleo_total_poblacion",
+        "ratio_empleo_total_pea"
     ]
 
     category_icons = {
@@ -933,6 +1032,70 @@ def reconstruct_and_order_dataset():
             }
 
         if "Empleo" in cat_name or "Salarios" in cat_name:
+            cards_dict["ripte_constante"] = {
+                "key": "ripte_constante",
+                "name": "RIPTE - Salario Promedio a Precios Constantes",
+                "desc": "Remuneración Imponible Promedio de los Trabajadores Estables (RIPTE) deflactada por el IPC oficial a valores del último dato disponible.",
+                "source": "Secretaría de Trabajo / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["smvm_constante"] = {
+                "key": "smvm_constante",
+                "name": "Salario Mínimo Vital y Móvil a Precios Constantes",
+                "desc": "Salario Mínimo, Vital y Móvil (SMVM) deflactado por el IPC oficial a valores del último dato disponible.",
+                "source": "Consejo del Salario / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["salarios_indice_constante"] = {
+                "key": "salarios_indice_constante",
+                "name": "Índice de Salarios a Precios Constantes",
+                "desc": "Índice de Salarios del INDEC deflactado por inflación acumulada a valores del último mes disponible.",
+                "source": "INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["ratio_empleo_privado_poblacion"] = {
+                "key": "ratio_empleo_privado_poblacion",
+                "name": "Trabajadores Registrados Privados / Población",
+                "desc": "Porcentaje de asalariados registrados en el sector privado respecto al total de la población estimada.",
+                "source": "SIPA / Secretaría de Trabajo / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["ratio_empleo_privado_pea"] = {
+                "key": "ratio_empleo_privado_pea",
+                "name": "Trabajadores Registrados Privados / PEA",
+                "desc": "Porcentaje de trabajadores registrados en el sector privado sobre la Población Económicamente Activa (PEA).",
+                "source": "SIPA / Secretaría de Trabajo / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["poblacion_economicamente_activa"] = {
+                "key": "poblacion_economicamente_activa",
+                "name": "Población Económicamente Activa (PEA)",
+                "desc": "Estimación de la fuerza laboral total de Argentina (personas ocupadas o en búsqueda activa de trabajo) calculada como Población × Tasa de Actividad.",
+                "source": "EPH INDEC / Estimaciones Oficiales",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["ratio_empleo_total_poblacion"] = {
+                "key": "ratio_empleo_total_poblacion",
+                "name": "Total de Trabajadores Registrados / Población",
+                "desc": "Porcentaje del total de trabajadores registrados (privados, públicos, monotributo, autónomos y casas particulares) sobre la población total.",
+                "source": "SIPA / Secretaría de Trabajo / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["ratio_empleo_total_pea"] = {
+                "key": "ratio_empleo_total_pea",
+                "name": "Total de Trabajadores Registrados / PEA",
+                "desc": "Porcentaje del total de trabajadores registrados en el sistema de seguridad social sobre la Población Económicamente Activa (PEA).",
+                "source": "SIPA / Secretaría de Trabajo / INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
             if "salarios_indice" in cards_dict:
                 cards_dict["salarios_indice"]["name"] = "Índice de Salarios - Nivel General"
                 cards_dict["salarios_indice"]["desc"] = "Mide la evolución de las remuneraciones brutas devengadas de los trabajadores registrados y no registrados (INDEC, Base Dic-2016 = 100)."
