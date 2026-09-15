@@ -666,23 +666,83 @@ def build_index_html():
     function formatValueWithMeta(val, meta, compact = false) {{
       if (val === null || val === undefined || isNaN(val)) return 'N/D';
       const num = Number(val);
-      let dec = meta.decimals !== undefined ? meta.decimals : 2;
+      const absNum = Math.abs(num);
+      const unitType = meta.type || '';
+      const prefix = meta.prefix || '';
+      const suffixRaw = meta.suffix || '';
+      const cleanSuffix = suffixRaw.trim();
 
-      // Regla: Siempre que el valor absoluto sea mayor a 9.999 unidades de medida, no usar decimales
-      if (Math.abs(num) > 9999) {{
-        dec = 0;
+      // Percentages, indices, bps, ratios are NOT scaled to thousands/millions
+      if (unitType === 'percent' || unitType === 'index' || unitType === 'bps' || unitType === 'ratio' || suffixRaw.includes('%')) {{
+        let dec = meta.decimals !== undefined ? meta.decimals : 2;
+        if (absNum > 9999) dec = 0;
+        const formatted = num.toLocaleString('es-AR', {{ minimumFractionDigits: dec, maximumFractionDigits: dec }});
+        return `${{prefix}}${{formatted}}${{suffixRaw}}`;
       }}
 
-      let formattedNumber = '';
-      if (compact && Math.abs(num) >= 1_000_000_000) {{
-        formattedNumber = (num / 1_000_000_000).toLocaleString('es-AR', {{ minimumFractionDigits: 1, maximumFractionDigits: 2 }}) + ' B';
-      }} else if (compact && Math.abs(num) >= 1_000_000) {{
-        formattedNumber = (num / 1_000_000).toLocaleString('es-AR', {{ minimumFractionDigits: 1, maximumFractionDigits: 2 }}) + ' M';
+      // Determine base magnitude if indicator is already in Millions/Thousands
+      const isAlreadyMillions = ['M', 'M (Dic-16)', 'MM m³/mes', 'MM Tn'].includes(cleanSuffix);
+      const isAlreadyThousands = ['miles m³/mes', 'mil cab./mes', 'mil Tn/mes', 'mil'].includes(cleanSuffix);
+
+      let baseVal = num;
+      if (isAlreadyMillions) {{
+        baseVal = num * 1000000;
+      }} else if (isAlreadyThousands) {{
+        baseVal = num * 1000;
+      }}
+
+      const absBase = Math.abs(baseVal);
+
+      // Scale tiers:
+      // Tier 0: < 100,000 (Base units)
+      // Tier 1: 100,000 to < 100,000,000 (mil)
+      // Tier 2: 100,000,000 to < 100,000,000,000 (M)
+      // Tier 3: 100,000,000,000 to < 100,000,000,000,000 (MM)
+      // Tier 4: >= 100,000,000,000,000 (B)
+      let scaledNum = baseVal;
+      let tierSuffix = '';
+
+      if (absBase < 100000) {{
+        scaledNum = baseVal;
+        tierSuffix = '';
+      }} else if (absBase < 100000000) {{
+        scaledNum = baseVal / 1000;
+        tierSuffix = ' mil';
+      }} else if (absBase < 100000000000) {{
+        scaledNum = baseVal / 1000000;
+        tierSuffix = ' M';
+      }} else if (absBase < 100000000000000) {{
+        scaledNum = baseVal / 1000000000;
+        tierSuffix = ' MM';
       }} else {{
-        formattedNumber = num.toLocaleString('es-AR', {{ minimumFractionDigits: dec, maximumFractionDigits: dec }});
+        scaledNum = baseVal / 1000000000000;
+        tierSuffix = ' B';
       }}
 
-      return `${{meta.prefix}}${{formattedNumber}}${{meta.suffix}}`;
+      // Retain custom unit tag if present
+      let customTag = '';
+      if (['hab.', 'unid./mes', 'GWh/mes', 'Tn'].includes(cleanSuffix)) {{
+        customTag = ` ${{cleanSuffix}}`;
+      }}
+
+      const absScaled = Math.abs(scaledNum);
+      let formattedNum = '';
+
+      if (absScaled > 9999) {{
+        formattedNum = scaledNum.toLocaleString('es-AR', {{ minimumFractionDigits: 0, maximumFractionDigits: 0 }});
+      }} else {{
+        const isRoundInteger = Math.round(scaledNum * 100) / 100 === Math.round(scaledNum);
+        if (isRoundInteger && absBase >= 100000 && Number.isInteger(scaledNum)) {{
+          formattedNum = scaledNum.toLocaleString('es-AR', {{ minimumFractionDigits: 0, maximumFractionDigits: 0 }});
+        }} else {{
+          formattedNum = scaledNum.toLocaleString('es-AR', {{ minimumFractionDigits: 2, maximumFractionDigits: 2 }});
+          if (formattedNum.endsWith(',00') && absBase >= 100000) {{
+            formattedNum = formattedNum.slice(0, -3);
+          }}
+        }}
+      }}
+
+      return `${{prefix}}${{formattedNum}}${{tierSuffix}}${{customTag}}`;
     }}
 
     // Clean Spanish Date Formatter for Chart X-Axis and Tooltips
