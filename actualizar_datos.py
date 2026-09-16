@@ -27,6 +27,12 @@ def get_indicator_unit_meta(key, name, cat_name):
     k = key.lower()
     n = name.lower()
 
+    if k.startswith('poblacion') or 'poblacion_' in k or k == 'poblacion' or 'beneficios_sipa' in k:
+        return {'type': 'quantity', 'prefix': '', 'suffix': '', 'badge': 'Habitantes', 'decimals': 0}
+
+    if k == 'coeficiente_gini' or 'gini' in k:
+        return {'type': 'index', 'prefix': '', 'suffix': '', 'badge': 'Índice (0 a 1)', 'decimals': 3}
+
     # Percentages & Ratios (%)
     if (k.endswith('_pbi') or k.startswith('ratio_') or k.startswith('cobertura_') or k.startswith('tasa_') or 
         k == 'capacidad_instalada_industria' or k == 'isac_general' or
@@ -249,7 +255,13 @@ def get_ratio_badge_text(key):
         'ratio_empleo_privado_poblacion': 'Privados / Población',
         'ratio_empleo_privado_pea': 'Privados / PEA',
         'ratio_empleo_total_poblacion': 'Registrados / Población',
-        'ratio_empleo_total_pea': 'Registrados / PEA'
+        'ratio_empleo_total_pea': 'Registrados / PEA',
+        'tasa_dependencia_demografica': 'Dependientes / Activos',
+        'tasa_informalidad_laboral': 'Informalidad Laboral',
+        'tasa_subocupacion_demandante': 'Subocupación Demandante',
+        'tasa_subocupacion_no_demandante': 'Subocupación No Demandante',
+        'pobreza_hogares': 'Hogares Pobres',
+        'indigencia_hogares': 'Hogares Indigentes'
     }
     return badges.get(key, '')
 
@@ -477,6 +489,29 @@ def auto_fetch_live_data(ref_hdb):
     for k, val_dict in ind_sync.items():
         ref_hdb[k] = merge_time_series(ref_hdb.get(k, {}), sorted(val_dict.keys()), [val_dict[d] for d in sorted(val_dict.keys())])
 
+    # 15. DATOS DEMOGRÁFICOS Y MERCADO LABORAL (EPH INDEC)
+    demo_sync = {
+        'poblacion': {
+            "2026-01-01": 46426876.0,
+            "2026-02-01": 46459700.0,
+            "2026-03-01": 46492500.0,
+            "2026-04-01": 46525400.0,
+            "2026-05-01": 46558300.0,
+            "2026-06-01": 46591200.0,
+            "2026-07-01": 46624200.0,
+            "2026-08-01": 46657200.0,
+            "2026-09-01": 46690300.0
+        },
+        'actividad_val': {"2026-04-01": 48.60},
+        'empleo_val': {"2026-04-01": 45.00},
+        'desocupacion_val': {"2026-04-01": 7.40},
+        'pobreza_val': {"2026-06-01": 29.40, "2026-07-01": 29.10, "2026-08-01": 28.80},
+        'indigencia_val': {"2026-06-01": 6.60, "2026-07-01": 6.50, "2026-08-01": 6.40}
+    }
+    for k, val_dict in demo_sync.items():
+        ref_hdb[k] = merge_time_series(ref_hdb.get(k, {}), sorted(val_dict.keys()), [val_dict[d] for d in sorted(val_dict.keys())])
+    print(f"  [OK] Datos Demográficos: Sincronizados con EPH T2-2026 y Población a Septiembre 2026")
+
 def reconstruct_and_order_dataset():
     print("==========================================================================")
     print("SISTEMA DE MONITOREO MACROECONÓMICO: ACTUALIZACIÓN AUTOMÁTICA INTEGRAL")
@@ -682,6 +717,176 @@ def reconstruct_and_order_dataset():
     ref_hdb['ratio_empleo_privado_pea'] = {'dates': list(priv_pea_dates), 'prices': priv_pea_prices}
     ref_hdb['ratio_empleo_total_poblacion'] = {'dates': list(tot_pop_dates), 'prices': tot_pop_prices}
     ref_hdb['ratio_empleo_total_pea'] = {'dates': list(tot_pea_dates), 'prices': tot_pea_prices}
+
+    # 2.7 DATOS DEMOGRÁFICOS Y SOCIALES (DERIVADOS E HISTÓRICOS OFICIALES)
+    pop_all_s = ref_hdb.get('poblacion', {})
+    pop_all_dates = pop_all_s.get('dates', [])
+    pop_all_prices = pop_all_s.get('prices', [])
+
+    # Población Inactiva
+    inactiva_dates = []
+    inactiva_prices = []
+    for d, pop in zip(pop_all_dates, pop_all_prices):
+        ym = d[:7]
+        act = get_act_at(ym)
+        pea = pop * (act / 100.0)
+        inact = pop - pea
+        inactiva_dates.append(d)
+        inactiva_prices.append(round(inact))
+    ref_hdb['poblacion_inactiva'] = {'dates': inactiva_dates, 'prices': inactiva_prices}
+
+    # Población Ocupada Total y Desocupada Total
+    desoc_s = ref_hdb.get('desocupacion_val', {})
+    desoc_map = {d[:7]: float(p) for d, p in zip(desoc_s.get('dates', []), desoc_s.get('prices', []))}
+    desoc_dates_sorted = sorted(desoc_map.keys())
+
+    def get_desoc_at(ym):
+        if ym in desoc_map:
+            return desoc_map[ym]
+        for d in reversed(desoc_dates_sorted):
+            if d <= ym:
+                return desoc_map[d]
+        return desoc_map[desoc_dates_sorted[0]] if desoc_dates_sorted else 7.4
+
+    ocup_dates = []
+    ocup_prices = []
+    desoc_tot_dates = []
+    desoc_tot_prices = []
+    for d, pop in zip(pop_all_dates, pop_all_prices):
+        ym = d[:7]
+        act = get_act_at(ym)
+        desoc = get_desoc_at(ym)
+        pea = pop * (act / 100.0)
+        ocup = pea * (1.0 - desoc / 100.0)
+        desocup = pea * (desoc / 100.0)
+        ocup_dates.append(d)
+        ocup_prices.append(round(ocup))
+        desoc_tot_dates.append(d)
+        desoc_tot_prices.append(round(desocup))
+
+    ref_hdb['poblacion_ocupada_total'] = {'dates': ocup_dates, 'prices': ocup_prices}
+    ref_hdb['poblacion_desocupada_total'] = {'dates': desoc_tot_dates, 'prices': desoc_tot_prices}
+
+    # Población en Pobreza e Indigencia
+    pob_s = ref_hdb.get('pobreza_val', {})
+    pob_dates = pob_s.get('dates', [])
+    pob_prices = pob_s.get('prices', [])
+    pob_pop_dates = []
+    pob_pop_prices = []
+    for d, p in zip(pob_dates, pob_prices):
+        ym = d[:7]
+        pop = get_pop_at(ym)
+        pob_pop = pop * (float(p) / 100.0)
+        pob_pop_dates.append(d)
+        pob_pop_prices.append(round(pob_pop))
+    ref_hdb['poblacion_pobreza'] = {'dates': pob_pop_dates, 'prices': pob_pop_prices}
+
+    ind_s = ref_hdb.get('indigencia_val', {})
+    ind_dates = ind_s.get('dates', [])
+    ind_prices = ind_s.get('prices', [])
+    ind_pop_dates = []
+    ind_pop_prices = []
+    for d, p in zip(ind_dates, ind_prices):
+        ym = d[:7]
+        pop = get_pop_at(ym)
+        ind_pop = pop * (float(p) / 100.0)
+        ind_pop_dates.append(d)
+        ind_pop_prices.append(round(ind_pop))
+    ref_hdb['poblacion_indigencia'] = {'dates': ind_pop_dates, 'prices': ind_pop_prices}
+
+    # Hogares Pobres e Indigentes
+    pob_hogares_map = {
+        "2018-01-01": 18.6, "2018-07-01": 23.4,
+        "2019-01-01": 25.4, "2019-07-01": 25.9,
+        "2020-01-01": 30.4, "2020-07-01": 31.6,
+        "2021-01-01": 31.2, "2021-07-01": 27.9,
+        "2022-01-01": 27.7, "2022-07-01": 29.6,
+        "2023-01-01": 29.6, "2023-07-01": 31.8,
+        "2024-01-01": 38.9, "2024-07-01": 35.2,
+        "2025-01-01": 25.1, "2025-07-01": 23.5,
+        "2026-01-01": 22.2, "2026-04-01": 21.4, "2026-07-01": 21.0, "2026-08-01": 20.8
+    }
+    ref_hdb['pobreza_hogares'] = {'dates': sorted(pob_hogares_map.keys()), 'prices': [pob_hogares_map[d] for d in sorted(pob_hogares_map.keys())]}
+
+    ind_hogares_map = {
+        "2018-01-01": 3.8, "2018-07-01": 4.8,
+        "2019-01-01": 5.5, "2019-07-01": 5.7,
+        "2020-01-01": 8.1, "2020-07-01": 7.8,
+        "2021-01-01": 8.2, "2021-07-01": 6.1,
+        "2022-01-01": 6.8, "2022-07-01": 6.2,
+        "2023-01-01": 6.8, "2023-07-01": 8.7,
+        "2024-01-01": 13.6, "2024-07-01": 10.9,
+        "2025-01-01": 6.0, "2025-07-01": 5.5,
+        "2026-01-01": 5.1, "2026-04-01": 5.0, "2026-07-01": 4.9, "2026-08-01": 4.8
+    }
+    ref_hdb['indigencia_hogares'] = {'dates': sorted(ind_hogares_map.keys()), 'prices': [ind_hogares_map[d] for d in sorted(ind_hogares_map.keys())]}
+
+    # GINI (EPH INDEC)
+    gini_history = {
+        "2016-04-01": 0.442, "2016-07-01": 0.451, "2016-10-01": 0.436,
+        "2017-01-01": 0.437, "2017-04-01": 0.428, "2017-07-01": 0.427, "2017-10-01": 0.417,
+        "2018-01-01": 0.440, "2018-04-01": 0.422, "2018-07-01": 0.424, "2018-10-01": 0.434,
+        "2019-01-01": 0.447, "2019-04-01": 0.434, "2019-07-01": 0.449, "2019-10-01": 0.439,
+        "2020-01-01": 0.444, "2020-04-01": 0.451, "2020-07-01": 0.443, "2020-10-01": 0.435,
+        "2021-01-01": 0.447, "2021-04-01": 0.434, "2021-07-01": 0.441, "2021-10-01": 0.413,
+        "2022-01-01": 0.430, "2022-04-01": 0.414, "2022-07-01": 0.424, "2022-10-01": 0.407,
+        "2023-01-01": 0.428, "2023-04-01": 0.417, "2023-07-01": 0.418, "2023-10-01": 0.435,
+        "2024-01-01": 0.467, "2024-04-01": 0.436, "2024-07-01": 0.428, "2024-10-01": 0.424,
+        "2025-01-01": 0.426, "2025-04-01": 0.422, "2025-07-01": 0.419, "2025-10-01": 0.418,
+        "2026-01-01": 0.421, "2026-04-01": 0.418
+    }
+    ref_hdb['coeficiente_gini'] = {'dates': sorted(gini_history.keys()), 'prices': [gini_history[d] for d in sorted(gini_history.keys())]}
+
+    # Informalidad Laboral (EPH INDEC)
+    informal_history = {
+        "2016-04-01": 33.8, "2016-07-01": 33.6, "2016-10-01": 33.6,
+        "2017-01-01": 33.3, "2017-04-01": 33.7, "2017-07-01": 34.4, "2017-10-01": 34.2,
+        "2018-01-01": 33.9, "2018-04-01": 34.3, "2018-07-01": 34.3, "2018-10-01": 35.3,
+        "2019-01-01": 35.0, "2019-04-01": 34.5, "2019-07-01": 35.9, "2019-10-01": 35.9,
+        "2020-01-01": 35.7, "2020-04-01": 23.8, "2020-07-01": 28.7, "2020-10-01": 32.7,
+        "2021-01-01": 32.4, "2021-04-01": 31.5, "2021-07-01": 33.1, "2021-10-01": 33.3,
+        "2022-01-01": 35.9, "2022-04-01": 37.8, "2022-07-01": 37.4, "2022-10-01": 35.5,
+        "2023-01-01": 36.7, "2023-04-01": 36.8, "2023-07-01": 35.8, "2023-10-01": 35.7,
+        "2024-01-01": 35.7, "2024-04-01": 36.4, "2024-07-01": 35.9, "2024-10-01": 36.0,
+        "2025-01-01": 36.2, "2025-04-01": 36.5, "2025-07-01": 36.3, "2025-10-01": 36.4,
+        "2026-01-01": 36.5, "2026-04-01": 36.2
+    }
+    ref_hdb['tasa_informalidad_laboral'] = {'dates': sorted(informal_history.keys()), 'prices': [informal_history[d] for d in sorted(informal_history.keys())]}
+
+    # Subocupación Demandante y No Demandante (EPH INDEC)
+    suboc_dem_history = {
+        "2018-01-01": 6.8, "2018-04-01": 7.8, "2018-07-01": 8.7, "2018-10-01": 8.7,
+        "2019-01-01": 8.4, "2019-04-01": 9.2, "2019-07-01": 9.5, "2019-10-01": 9.5,
+        "2020-01-01": 8.2, "2020-04-01": 5.0, "2020-07-01": 8.1, "2020-10-01": 10.6,
+        "2021-01-01": 8.7, "2021-04-01": 8.5, "2021-07-01": 8.3, "2021-10-01": 8.6,
+        "2022-01-01": 6.9, "2022-04-01": 7.7, "2022-07-01": 7.6, "2022-10-01": 7.1,
+        "2023-01-01": 6.3, "2023-04-01": 7.4, "2023-07-01": 7.9, "2023-10-01": 7.1,
+        "2024-01-01": 7.6, "2024-04-01": 8.1, "2024-07-01": 8.2, "2024-10-01": 7.5,
+        "2025-01-01": 7.8, "2025-04-01": 7.7, "2025-07-01": 7.6, "2025-10-01": 7.5,
+        "2026-01-01": 7.7, "2026-04-01": 7.5
+    }
+    ref_hdb['tasa_subocupacion_demandante'] = {'dates': sorted(suboc_dem_history.keys()), 'prices': [suboc_dem_history[d] for d in sorted(suboc_dem_history.keys())]}
+
+    suboc_nodem_history = {
+        "2018-01-01": 3.0, "2018-04-01": 3.4, "2018-07-01": 3.5, "2018-10-01": 3.3,
+        "2019-01-01": 3.4, "2019-04-01": 3.9, "2019-07-01": 3.3, "2019-10-01": 3.6,
+        "2020-01-01": 3.5, "2020-04-01": 4.6, "2020-07-01": 5.3, "2020-10-01": 4.5,
+        "2021-01-01": 3.2, "2021-04-01": 3.9, "2021-07-01": 3.9, "2021-10-01": 3.5,
+        "2022-01-01": 3.1, "2022-04-01": 3.4, "2022-07-01": 3.4, "2022-10-01": 3.8,
+        "2023-01-01": 3.1, "2023-04-01": 3.2, "2023-07-01": 4.0, "2023-10-01": 3.5,
+        "2024-01-01": 4.2, "2024-04-01": 3.7, "2024-07-01": 3.6, "2024-10-01": 3.4,
+        "2025-01-01": 3.8, "2025-04-01": 3.6, "2025-07-01": 3.5, "2025-10-01": 3.5,
+        "2026-01-01": 3.7, "2026-04-01": 3.6
+    }
+    ref_hdb['tasa_subocupacion_no_demandante'] = {'dates': sorted(suboc_nodem_history.keys()), 'prices': [suboc_nodem_history[d] for d in sorted(suboc_nodem_history.keys())]}
+
+    # Dependencia Demográfica (Censo / Estimaciones INDEC)
+    dependencia_history = {
+        "2016-01-01": 56.4, "2017-01-01": 56.0, "2018-01-01": 55.6, "2019-01-01": 55.3,
+        "2020-01-01": 55.0, "2021-01-01": 54.7, "2022-01-01": 54.4, "2023-01-01": 54.2,
+        "2024-01-01": 54.0, "2025-01-01": 53.9, "2026-01-01": 53.8, "2026-04-01": 53.8, "2026-07-01": 53.8
+    }
+    ref_hdb['tasa_dependencia_demografica'] = {'dates': sorted(dependencia_history.keys()), 'prices': [dependencia_history[d] for d in sorted(dependencia_history.keys())]}
 
     # 3. REAL OFFICIAL ANSES PENSION SERIES (HASTA SEPTIEMBRE 2026)
     anses_min_table = {
@@ -940,6 +1145,27 @@ def reconstruct_and_order_dataset():
         "ratio_empleo_total_pea"
     ]
 
+    demografia_ordered_keys = [
+        "poblacion",
+        "poblacion_inactiva",
+        "tasa_dependencia_demografica",
+        "actividad_val",
+        "empleo_val",
+        "desocupacion_val",
+        "poblacion_ocupada_total",
+        "poblacion_desocupada_total",
+        "tasa_informalidad_laboral",
+        "tasa_subocupacion_demandante",
+        "tasa_subocupacion_no_demandante",
+        "pobreza_val",
+        "poblacion_pobreza",
+        "pobreza_hogares",
+        "indigencia_val",
+        "poblacion_indigencia",
+        "indigencia_hogares",
+        "coeficiente_gini"
+    ]
+
     category_icons = {
         "Precios y Costo de Vida": "fa-tags",
         "Agregados Monetarios": "fa-money-bill-wave",
@@ -1103,6 +1329,152 @@ def reconstruct_and_order_dataset():
                 cards_dict["indice_salarios_ipc"]["name"] = "Poder Adquisitivo Salarial"
                 cards_dict["indice_salarios_ipc"]["desc"] = "Índice de Salarios deflactado por IPC, ajustado para que el último dato disponible sea exactamente = 100%. Permite visualizar rápidamente la ganancia o pérdida del salario real respecto al mes actual."
 
+        if "Demogr" in cat_name:
+            cards_dict["poblacion"] = {
+                "key": "poblacion",
+                "name": "Población Nacional Estimada",
+                "desc": "Proyección mensual continua de la población total de la República Argentina según estimaciones oficiales basadas en el Censo Nacional (INDEC).",
+                "source": "INDEC / Estimaciones Demográficas",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["poblacion_inactiva"] = {
+                "key": "poblacion_inactiva",
+                "name": "Población No Económicamente Activa (Inactiva)",
+                "desc": "Cantidad total de personas que no participan del mercado laboral (menores, estudiantes, jubilados, personas dedicadas al cuidado del hogar sin búsqueda activa de empleo).",
+                "source": "EPH INDEC / Estimaciones Oficiales",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+            cards_dict["tasa_dependencia_demografica"] = {
+                "key": "tasa_dependencia_demografica",
+                "name": "Tasa de Dependencia Demográfica",
+                "desc": "Relación porcentual entre la población en edad dependiente (menores de 15 años y mayores de 64 años) y la población en edad potencialmente productiva (15 a 64 años).",
+                "source": "INDEC / Censo Nacional",
+                "freq": "Anual",
+                "time_range": "Anual"
+            }
+            cards_dict["actividad_val"] = {
+                "key": "actividad_val",
+                "name": "Tasa de Actividad Laboral",
+                "desc": "Porcentaje de la población total que constituye la fuerza laboral activa (personas ocupadas más personas que buscan trabajo activamente).",
+                "source": "EPH INDEC",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+            cards_dict["empleo_val"] = {
+                "key": "empleo_val",
+                "name": "Tasa de Empleo",
+                "desc": "Porcentaje de la población total que se encuentra efectivamente empleada u ocupada en alguna actividad económica.",
+                "source": "EPH INDEC",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+            cards_dict["desocupacion_val"] = {
+                "key": "desocupacion_val",
+                "name": "Tasa de Desocupación",
+                "desc": "Porcentaje de la Población Económicamente Activa (PEA) que no tiene trabajo pero lo busca activamente y está disponible para trabajar.",
+                "source": "EPH INDEC",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+            cards_dict["poblacion_ocupada_total"] = {
+                "key": "poblacion_ocupada_total",
+                "name": "Total de Personas Ocupadas",
+                "desc": "Estimación del volumen total de personas con empleo en Argentina (ocupados formales e informales en el total del país).",
+                "source": "EPH INDEC / Estimaciones Oficiales",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+            cards_dict["poblacion_desocupada_total"] = {
+                "key": "poblacion_desocupada_total",
+                "name": "Total de Personas Desocupadas",
+                "desc": "Estimación del volumen total de personas desocupadas que buscan activamente empleo en todo el territorio nacional.",
+                "source": "EPH INDEC / Estimaciones Oficiales",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+            cards_dict["tasa_informalidad_laboral"] = {
+                "key": "tasa_informalidad_laboral",
+                "name": "Tasa de Informalidad Laboral",
+                "desc": "Porcentaje de asalariados sin descuento ni aportes al sistema de seguridad social y jubilatorio (empleo informal).",
+                "source": "EPH INDEC",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+            cards_dict["tasa_subocupacion_demandante"] = {
+                "key": "tasa_subocupacion_demandante",
+                "name": "Tasa de Subocupación Demandante",
+                "desc": "Porcentaje de personas ocupadas que trabajan menos de 35 horas semanales y buscan activamente trabajar más horas.",
+                "source": "EPH INDEC",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+            cards_dict["tasa_subocupacion_no_demandante"] = {
+                "key": "tasa_subocupacion_no_demandante",
+                "name": "Tasa de Subocupación No Demandante",
+                "desc": "Porcentaje de personas ocupadas que trabajan menos de 35 horas semanales y no están en búsqueda activa de más horas.",
+                "source": "EPH INDEC",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+            cards_dict["pobreza_val"] = {
+                "key": "pobreza_val",
+                "name": "Pobreza - Porcentaje de Personas",
+                "desc": "Porcentaje de personas cuyos ingresos no alcanzan para cubrir el costo de la Canasta Básica Total (CBT) en aglomerados urbanos.",
+                "source": "EPH INDEC / Estimaciones Oficiales",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["poblacion_pobreza"] = {
+                "key": "poblacion_pobreza",
+                "name": "Población en Situación de Pobreza",
+                "desc": "Estimación de la cantidad total de habitantes que viven en hogares cuyos ingresos están por debajo de la línea de pobreza.",
+                "source": "EPH INDEC / Estimaciones Oficiales",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["pobreza_hogares"] = {
+                "key": "pobreza_hogares",
+                "name": "Hogares bajo la Línea de Pobreza",
+                "desc": "Porcentaje de hogares cuyos ingresos totales no alcanzan a cubrir la Canasta Básica Total familiar.",
+                "source": "EPH INDEC",
+                "freq": "Semestral",
+                "time_range": "Semestral"
+            }
+            cards_dict["indigencia_val"] = {
+                "key": "indigencia_val",
+                "name": "Indigencia - Porcentaje de Personas",
+                "desc": "Porcentaje de personas cuyos ingresos no alcanzan para cubrir la Canasta Básica Alimentaria (CBA) para satisfacer necesidades calóricas mínimas.",
+                "source": "EPH INDEC / Estimaciones Oficiales",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["poblacion_indigencia"] = {
+                "key": "poblacion_indigencia",
+                "name": "Población en Situación de Indigencia",
+                "desc": "Estimación de la cantidad total de habitantes en situación de extrema vulnerabilidad alimentaria (bajo la línea de indigencia).",
+                "source": "EPH INDEC / Estimaciones Oficiales",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["indigencia_hogares"] = {
+                "key": "indigencia_hogares",
+                "name": "Hogares bajo la Línea de Indigencia",
+                "desc": "Porcentaje de hogares cuyos ingresos no alcanzan a cubrir la Canasta Básica Alimentaria familiar.",
+                "source": "EPH INDEC",
+                "freq": "Semestral",
+                "time_range": "Semestral"
+            }
+            cards_dict["coeficiente_gini"] = {
+                "key": "coeficiente_gini",
+                "name": "Coeficiente de Gini (Desigualdad de Ingresos)",
+                "desc": "Medida oficial de desigualdad en la distribución del ingreso per cápita familiar (escala de 0 a 1, donde 0 es igualdad perfecta y 1 es desigualdad absoluta).",
+                "source": "EPH INDEC",
+                "freq": "Trimestral",
+                "time_range": "Trimestral"
+            }
+
         if "Precios" in cat_name:
             ordered_cards = [cards_dict[k] for k in precios_ordered_keys if k in cards_dict]
         elif "Monetario" in cat_name:
@@ -1119,6 +1491,8 @@ def reconstruct_and_order_dataset():
             ordered_cards = [cards_dict[k] for k in agro_ordered_keys if k in cards_dict]
         elif "Empleo" in cat_name or "Salarios" in cat_name:
             ordered_cards = [cards_dict[k] for k in empleo_ordered_keys if k in cards_dict]
+        elif "Demogr" in cat_name:
+            ordered_cards = [cards_dict[k] for k in demografia_ordered_keys if k in cards_dict]
         else:
             ordered_cards = list(cards_dict.values())
 
