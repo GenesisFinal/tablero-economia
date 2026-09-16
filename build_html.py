@@ -573,6 +573,14 @@ def build_index_html():
       const k = (card.key || '').toLowerCase();
       const n = (card.name || '').toLowerCase();
 
+      if (k.startsWith('poblacion') || k.includes('poblacion_') || k === 'poblacion' || k.includes('beneficios_sipa')) {{
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Habitantes', decimals: 0 }};
+      }}
+
+      if (k === 'coeficiente_gini' || k.includes('gini')) {{
+        return {{ type: 'index', prefix: '', suffix: '', badge: 'Índice (0 a 1)', decimals: 3 }};
+      }}
+
       // Check Percentage & Ratios
       if (k.endsWith('_pbi') || k.startsWith('ratio_') || k.startsWith('cobertura_') || k.startsWith('tasa_') || 
           k === 'capacidad_instalada_industria' || k === 'isac_general' ||
@@ -592,10 +600,6 @@ def build_index_html():
 
       if (k.includes('relacion_activo_pasivo')) {{
         return {{ type: 'ratio', prefix: '', suffix: '', badge: 'Activos / Pasivos', decimals: 2 }};
-      }}
-
-      if (k.includes('poblacion') || k.includes('beneficios_sipa')) {{
-        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Habitantes', decimals: 0 }};
       }}
 
       if (k.includes('isac_') || k.includes('icc_') || k.includes('salarios_indice') || k.includes('emae_construccion') || k === 'ipi_manufacturero_nivel') {{
