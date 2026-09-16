@@ -2,9 +2,9 @@
   "metadata": {
     "title": "Tablero de Indicadores Económicos",
     "version": "3.5.0",
-    "last_updated": "2026-09-15 21:44:08",
+    "last_updated": "2026-09-15 22:45:36",
     "total_categories": 12,
-    "total_indicators": 152
+    "total_indicators": 151
   },
   "categories": [
     {
@@ -4120,44 +4120,6 @@
             23998814.0
           ],
           "ratio_badge": ""
-        },
-        {
-          "key": "tasa_dependencia_demografica",
-          "name": "Tasa de Dependencia Demográfica",
-          "category": "Datos Demográficos",
-          "desc": "Relación porcentual entre la población en edad dependiente (menores de 15 años y mayores de 64 años) y la población en edad potencialmente productiva (15 a 64 años).",
-          "source": "INDEC / Censo Nacional",
-          "freq": "Anual",
-          "value": 53.8,
-          "display_value": "53,80%",
-          "display_change": "0.00% a/a",
-          "var_ia": "0.00% i.a.",
-          "unit_type": "percent",
-          "unit_prefix": "",
-          "unit_suffix": "%",
-          "unit_badge": "Porcentaje (%)",
-          "decimals": 2,
-          "latest_date_raw": "2026-07-01",
-          "latest_date": "Jul 2026",
-          "range_min": 53.8,
-          "range_max": 56.4,
-          "total_points": 13,
-          "sparkline": [
-            56.4,
-            56.0,
-            55.6,
-            55.3,
-            55.0,
-            54.7,
-            54.4,
-            54.2,
-            54.0,
-            53.9,
-            53.8,
-            53.8,
-            53.8
-          ],
-          "ratio_badge": "Dependientes / Activos"
         },
         {
           "key": "actividad_val",
@@ -60845,38 +60807,6 @@
         23998814.0
       ]
     },
-    "tasa_dependencia_demografica": {
-      "dates": [
-        "2016-01-01",
-        "2017-01-01",
-        "2018-01-01",
-        "2019-01-01",
-        "2020-01-01",
-        "2021-01-01",
-        "2022-01-01",
-        "2023-01-01",
-        "2024-01-01",
-        "2025-01-01",
-        "2026-01-01",
-        "2026-04-01",
-        "2026-07-01"
-      ],
-      "prices": [
-        56.4,
-        56.0,
-        55.6,
-        55.3,
-        55.0,
-        54.7,
-        54.4,
-        54.2,
-        54.0,
-        53.9,
-        53.8,
-        53.8,
-        53.8
-      ]
-    },
     "actividad_val": {
       "dates": [
         "2011-04-01",
@@ -79173,38 +79103,6 @@
         23964839.0,
         23981801.0,
         23998814.0
-      ]
-    },
-    "tasa_dependencia_demografica": {
-      "dates": [
-        "2016-01-01",
-        "2017-01-01",
-        "2018-01-01",
-        "2019-01-01",
-        "2020-01-01",
-        "2021-01-01",
-        "2022-01-01",
-        "2023-01-01",
-        "2024-01-01",
-        "2025-01-01",
-        "2026-01-01",
-        "2026-04-01",
-        "2026-07-01"
-      ],
-      "prices": [
-        56.4,
-        56.0,
-        55.6,
-        55.3,
-        55.0,
-        54.7,
-        54.4,
-        54.2,
-        54.0,
-        53.9,
-        53.8,
-        53.8,
-        53.8
       ]
     },
     "actividad_val": {
