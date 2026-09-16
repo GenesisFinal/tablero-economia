@@ -256,7 +256,6 @@ def get_ratio_badge_text(key):
         'ratio_empleo_privado_pea': 'Privados / PEA',
         'ratio_empleo_total_poblacion': 'Registrados / Población',
         'ratio_empleo_total_pea': 'Registrados / PEA',
-        'tasa_dependencia_demografica': 'Dependientes / Activos',
         'tasa_informalidad_laboral': 'Informalidad Laboral',
         'tasa_subocupacion_demandante': 'Subocupación Demandante',
         'tasa_subocupacion_no_demandante': 'Subocupación No Demandante',
@@ -880,14 +879,6 @@ def reconstruct_and_order_dataset():
     }
     ref_hdb['tasa_subocupacion_no_demandante'] = {'dates': sorted(suboc_nodem_history.keys()), 'prices': [suboc_nodem_history[d] for d in sorted(suboc_nodem_history.keys())]}
 
-    # Dependencia Demográfica (Censo / Estimaciones INDEC)
-    dependencia_history = {
-        "2016-01-01": 56.4, "2017-01-01": 56.0, "2018-01-01": 55.6, "2019-01-01": 55.3,
-        "2020-01-01": 55.0, "2021-01-01": 54.7, "2022-01-01": 54.4, "2023-01-01": 54.2,
-        "2024-01-01": 54.0, "2025-01-01": 53.9, "2026-01-01": 53.8, "2026-04-01": 53.8, "2026-07-01": 53.8
-    }
-    ref_hdb['tasa_dependencia_demografica'] = {'dates': sorted(dependencia_history.keys()), 'prices': [dependencia_history[d] for d in sorted(dependencia_history.keys())]}
-
     # 3. REAL OFFICIAL ANSES PENSION SERIES (HASTA SEPTIEMBRE 2026)
     anses_min_table = {
         "2017-01": 5661.16, "2017-02": 5661.16, "2017-03": 6394.85, "2017-04": 6394.85, "2017-05": 6394.85,
@@ -1148,7 +1139,6 @@ def reconstruct_and_order_dataset():
     demografia_ordered_keys = [
         "poblacion",
         "poblacion_inactiva",
-        "tasa_dependencia_demografica",
         "actividad_val",
         "empleo_val",
         "desocupacion_val",
@@ -1345,14 +1335,6 @@ def reconstruct_and_order_dataset():
                 "source": "EPH INDEC / Estimaciones Oficiales",
                 "freq": "Trimestral",
                 "time_range": "Trimestral"
-            }
-            cards_dict["tasa_dependencia_demografica"] = {
-                "key": "tasa_dependencia_demografica",
-                "name": "Tasa de Dependencia Demográfica",
-                "desc": "Relación porcentual entre la población en edad dependiente (menores de 15 años y mayores de 64 años) y la población en edad potencialmente productiva (15 a 64 años).",
-                "source": "INDEC / Censo Nacional",
-                "freq": "Anual",
-                "time_range": "Anual"
             }
             cards_dict["actividad_val"] = {
                 "key": "actividad_val",
