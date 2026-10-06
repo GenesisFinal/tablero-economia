@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import requests
 import datetime
 import urllib3
@@ -299,6 +300,23 @@ def auto_fetch_live_data(ref_hdb):
             print(f"  [OK] Riesgo País: {len(d_list)} puntos. Último: {d_list[-1]} -> {p_list[-1]} bps")
     except Exception as e:
         print(f"  [WARN] Falló consulta Riesgo País: {e}")
+
+    # Captura complementaria de cierre diario en Rava Bursátil (si ArgentinaDatos tiene rezago de actualización)
+    try:
+        today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+        current_last_date = ref_hdb.get("riesgo_pais", {}).get("dates", [""])[-1]
+        weekday = datetime.datetime.now().weekday()
+        if weekday < 5 and current_last_date < today_str:
+            r_rava = requests.get("https://www.rava.com/perfil/RIESGO%20PAIS", headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}, timeout=8)
+            if r_rava.status_code == 200:
+                m_rava = re.search(r'<meta\s+property=["\']og:description["\']\s+content=["\']\$?([0-9\.\,]+)', r_rava.text, re.IGNORECASE)
+                if m_rava:
+                    rava_val = float(m_rava.group(1).replace('.', '').replace(',', '.'))
+                    if rava_val > 0:
+                        ref_hdb["riesgo_pais"] = merge_time_series(ref_hdb.get("riesgo_pais", {}), [today_str], [rava_val])
+                        print(f"  [OK] Riesgo País (Cierre en tiempo real Rava Bursátil): {today_str} -> {rava_val} bps")
+    except Exception as e_rava:
+        print(f"  [WARN] Falló consulta complementaria Rava: {e_rava}")
 
     # 4. UVA (BCRA)
     try:
