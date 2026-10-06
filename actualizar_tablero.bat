@@ -24,6 +24,12 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo.
+echo [3/3] Sincronizando con la nube (GitHub Pages)...
+if exist "deploy_to_github.py" (
+    python deploy_to_github.py
+)
+
+echo.
 echo [OK] ¡Tablero de Indicadores Económicos actualizado con éxito!
 echo Abriendo en el navegador...
 start "" "index.html"
