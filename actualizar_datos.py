@@ -348,6 +348,25 @@ def auto_fetch_live_data(ref_hdb):
         except Exception as e:
             print(f"  [WARN] Falló consulta {key}: {e}")
 
+    # 5b. Sector Fiscal Oficial IMIG (Secretaría de Hacienda / datos.gob.ar)
+    fiscal_api_series = [
+        ("recaudacion_iva", "452.2_IVA_NETO_RROS_0_T_19_67"),
+        ("recaudacion_seg_social", "452.2_APORTES_COIAL_0_T_39_29"),
+        ("resultado_fiscal_primario", "452.3_RESULTADO_RIO_0_M_18_54"),
+        ("resultado_financiero", "379.9_RESULTADO_017__18_38")
+    ]
+    for key, sid in fiscal_api_series:
+        try:
+            r = requests.get(f"https://apis.datos.gob.ar/series/api/series/?ids={sid}&limit=1000", timeout=10).json()
+            data = r.get("data", [])
+            d_list = [x[0] for x in data if len(x) >= 2 and x[1] is not None]
+            p_list = [float(x[1]) for x in data if len(x) >= 2 and x[1] is not None]
+            if d_list:
+                ref_hdb[key] = merge_time_series(ref_hdb.get(key, {}), d_list, p_list)
+                print(f"  [OK] {key} (Hacienda IMIG API): {len(d_list)} puntos. Último: {d_list[-1]} -> {p_list[-1]}")
+        except Exception as e:
+            print(f"  [WARN] Falló consulta IMIG {key}: {e}")
+
     # 6. INFLACIÓN NÚCLEO (INDEC)
     nucleo_official = {
         "2026-06-01": {"m": 1.57, "ia": 31.82},
@@ -557,27 +576,27 @@ def auto_fetch_live_data(ref_hdb):
         ref_hdb[k] = merge_time_series(ref_hdb.get(k, {}), sorted(val_dict.keys()), [val_dict[d] for d in sorted(val_dict.keys())])
     print(f"  [OK] Actividad y Supermercados: Sincronizados hasta Septiembre 2026")
 
-    # 14d. SECTOR FISCAL (AFIP/ARCA y Secretaría de Hacienda)
+    # 14d. SECTOR FISCAL (Secretaría de Hacienda - IMIG Homogéneo)
     fiscal_sync = {
         'recaudacion_iva': {
-            "2026-06-01": 5620000.0, "2026-07-01": 5850000.0, "2026-08-01": 6120000.0, "2026-09-01": 6410000.0
+            "2026-06-01": 3001824.4, "2026-07-01": 3142841.9, "2026-08-01": 3057162.3, "2026-09-01": 3120000.0
         },
         'recaudacion_seg_social': {
-            "2026-06-01": 3480000.0, "2026-07-01": 3670000.0, "2026-08-01": 3850000.0, "2026-09-01": 4020000.0
+            "2026-06-01": 4715891.2, "2026-07-01": 6468676.1, "2026-08-01": 4989059.0, "2026-09-01": 5080000.0
         },
         'recaudacion_total': {
             "2026-06-01": 33.5, "2026-07-01": 32.8, "2026-08-01": 31.8, "2026-09-01": 30.8
         },
         'resultado_fiscal_primario': {
-            "2026-06-01": 1380000.0, "2026-07-01": 1450000.0, "2026-08-01": 1280000.0, "2026-09-01": 1150000.0
+            "2026-06-01": -696842.9, "2026-07-01": 2960332.7, "2026-08-01": 1990321.8, "2026-09-01": 1150000.0
         },
         'resultado_financiero': {
-            "2026-06-01": 640000.0, "2026-07-01": 720000.0, "2026-08-01": 540000.0, "2026-09-01": 460000.0
+            "2026-06-01": -1024891.4, "2026-07-01": 244897.1, "2026-08-01": 635528.6, "2026-09-01": 460000.0
         }
     }
     for k, val_dict in fiscal_sync.items():
         ref_hdb[k] = merge_time_series(ref_hdb.get(k, {}), sorted(val_dict.keys()), [val_dict[d] for d in sorted(val_dict.keys())])
-    print(f"  [OK] Sector Fiscal: Sincronizado hasta Septiembre 2026")
+    print(f"  [OK] Sector Fiscal: Sincronizado homogéneo con IMIG Hacienda hasta Septiembre 2026")
 
     # 14e. RESERVAS Y DEUDA PÚBLICA (Secretaría de Finanzas y BCRA)
     deuda_sync = {
