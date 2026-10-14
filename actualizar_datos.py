@@ -279,6 +279,10 @@ def auto_fetch_live_data(ref_hdb):
     except Exception as e:
         print(f"  [WARN] Falló consulta IPC Mensual: {e}")
 
+    # Sincronización oficial Septiembre 2026 (INDEC Informe Técnico IPC 13/10/2026: 1.9% m/m)
+    ref_hdb["ipc_mensual"] = merge_time_series(ref_hdb.get("ipc_mensual", {}), ["2026-09-30"], [1.9])
+    print(f"  [OK] IPC Mensual (INDEC Oficial Septiembre 2026): 2026-09-30 -> 1.9%")
+
     # 2. IPC Inflación Interanual (INDEC)
     try:
         r = requests.get("https://api.argentinadatos.com/v1/finanzas/indices/inflacionInteranual", timeout=8).json()
@@ -289,6 +293,10 @@ def auto_fetch_live_data(ref_hdb):
             print(f"  [OK] IPC Interanual: {len(d_list)} puntos. Último: {d_list[-1]} -> {p_list[-1]}%")
     except Exception as e:
         print(f"  [WARN] Falló consulta IPC Interanual: {e}")
+
+    # Sincronización oficial Septiembre 2026 (INDEC Informe Técnico IPC 13/10/2026: 33.4% i.a.)
+    ref_hdb["ipc_interanual"] = merge_time_series(ref_hdb.get("ipc_interanual", {}), ["2026-09-30"], [33.4])
+    print(f"  [OK] IPC Interanual (INDEC Oficial Septiembre 2026): 2026-09-30 -> 33.4%")
 
     # 3. Riesgo País (JP Morgan)
     try:
@@ -371,12 +379,13 @@ def auto_fetch_live_data(ref_hdb):
     nucleo_official = {
         "2026-06-01": {"m": 1.57, "ia": 31.82},
         "2026-07-01": {"m": 1.78, "ia": 32.21},
-        "2026-08-01": {"m": 1.60, "ia": 31.80}
+        "2026-08-01": {"m": 1.60, "ia": 31.80},
+        "2026-09-01": {"m": 1.70, "ia": 31.50}
     }
     n_dates = sorted(nucleo_official.keys())
     ref_hdb["ipc_nucleo_mensual"] = merge_time_series(ref_hdb.get("ipc_nucleo_mensual", {}), n_dates, [nucleo_official[d]["m"] for d in n_dates])
     ref_hdb["ipc_nucleo_interanual"] = merge_time_series(ref_hdb.get("ipc_nucleo_interanual", {}), n_dates, [nucleo_official[d]["ia"] for d in n_dates])
-    print(f"  [OK] IPC Núcleo: Sincronizado hasta Agosto 2026 (1.60% m/m, 31.80% i.a.)")
+    print(f"  [OK] IPC Núcleo: Sincronizado hasta Septiembre 2026 (1.70% m/m, 31.50% i.a.)")
 
     # 7. INFLACIÓN MAYORISTA IPIM (INDEC)
     mayorista_official = {
