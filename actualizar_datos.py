@@ -396,7 +396,8 @@ def auto_fetch_live_data(ref_hdb):
         "2026-05-01": {"m": 2.5, "ia": 34.5},
         "2026-06-01": {"m": 1.1, "ia": 33.7},
         "2026-07-01": {"m": 0.8, "ia": 31.1},
-        "2026-08-01": {"m": 1.5, "ia": 30.5}
+        "2026-08-01": {"m": 1.5, "ia": 30.5},
+        "2026-09-01": {"m": 3.2, "ia": 29.2}
     }
     m_dates = sorted(mayorista_official.keys())
     m_monthly = [mayorista_official[d]["m"] for d in m_dates]
@@ -408,29 +409,37 @@ def auto_fetch_live_data(ref_hdb):
     # 8. CANASTAS BÁSICAS CBA Y CBT (INDEC)
     canastas_official = {
         "cba": {
-            "2026-05-01": 218200.00, "2026-06-01": 223258.00, "2026-07-01": 229131.47, "2026-08-01": 232568.44, "2026-09-01": 236754.24
+            "2026-05-01": 218200.00, "2026-06-01": 223258.00, "2026-07-01": 229131.47, "2026-08-01": 232568.44, "2026-09-01": 239058.00
         },
         "cbt": {
-            "2026-05-01": 482500.00, "2026-06-01": 495620.00, "2026-07-01": 506380.55, "2026-08-01": 514988.62, "2026-09-01": 524258.41
+            "2026-05-01": 482500.00, "2026-06-01": 495620.00, "2026-07-01": 506380.55, "2026-08-01": 514988.62, "2026-09-01": 528319.00
+        },
+        "cba_hogar2": {
+            "2026-09-01": 738690.00
+        },
+        "cbt_hogar2": {
+            "2026-09-01": 1632505.00
         }
     }
     cba_d = sorted(canastas_official["cba"].keys())
+    cba_h2_p = [canastas_official["cba_hogar2"].get(d, round(canastas_official["cba"][d] * 3.0900, 2)) for d in cba_d]
     ref_hdb["canasta_alimentaria_val"] = merge_time_series(ref_hdb.get("canasta_alimentaria_val", {}), cba_d, [canastas_official["cba"][d] for d in cba_d])
-    ref_hdb["canasta_alimentaria_hogar2"] = merge_time_series(ref_hdb.get("canasta_alimentaria_hogar2", {}), cba_d, [round(canastas_official["cba"][d] * 3.0900, 2) for d in cba_d])
+    ref_hdb["canasta_alimentaria_hogar2"] = merge_time_series(ref_hdb.get("canasta_alimentaria_hogar2", {}), cba_d, cba_h2_p)
 
     cbt_d = sorted(canastas_official["cbt"].keys())
+    cbt_h2_p = [canastas_official["cbt_hogar2"].get(d, round(canastas_official["cbt"][d] * 3.0900, 2)) for d in cbt_d]
     ref_hdb["canasta_total_val"] = merge_time_series(ref_hdb.get("canasta_total_val", {}), cbt_d, [canastas_official["cbt"][d] for d in cbt_d])
-    ref_hdb["canasta_total_hogar2"] = merge_time_series(ref_hdb.get("canasta_total_hogar2", {}), cbt_d, [round(canastas_official["cbt"][d] * 3.0900, 2) for d in cbt_d])
-    print(f"  [OK] Canastas CBA y CBT: Actualizadas hasta Septiembre 2026 (CBA: ${canastas_official['cba']['2026-09-01']:,.2f}, CBT: ${canastas_official['cbt']['2026-09-01']:,.2f})")
+    ref_hdb["canasta_total_hogar2"] = merge_time_series(ref_hdb.get("canasta_total_hogar2", {}), cbt_d, cbt_h2_p)
+    print(f"  [OK] Canastas CBA y CBT: Actualizadas con informe INDEC a Septiembre 2026 (CBA: ${canastas_official['cba']['2026-09-01']:,.2f}, CBT: ${canastas_official['cbt']['2026-09-01']:,.2f})")
 
     # 9. CIARA-CEC Liquidación Mensual
     ciara_official = {
         "2026-01-01": 1850.8, "2026-02-01": 1289.2, "2026-03-01": 2032.5, "2026-04-01": 2494.5,
-        "2026-05-01": 2676.8, "2026-06-01": 3007.7, "2026-07-01": 2945.7, "2026-08-01": 2750.7, "2026-09-01": 2108.3
+        "2026-05-01": 2676.8, "2026-06-01": 3007.7, "2026-07-01": 2945.7, "2026-08-01": 2750.7, "2026-09-01": 3228.0
     }
     c_dates = sorted(ciara_official.keys())
     ref_hdb["liquidacion_divisas_ciara"] = merge_time_series(ref_hdb.get("liquidacion_divisas_ciara", {}), c_dates, [ciara_official[d] for d in c_dates])
-    print(f"  [OK] CIARA-CEC Liquidación Divisas: Sincronizada hasta {c_dates[-1]} (USD {ciara_official[c_dates[-1]]} M)")
+    print(f"  [OK] CIARA-CEC Liquidación Divisas: Sincronizada oficial hasta {c_dates[-1]} (USD {ciara_official[c_dates[-1]]} M)")
 
     # 10. PBI TRIMESTRAL OFICIAL (INDEC Cuentas Nacionales)
     pbi_c = ref_hdb.get('pbi_corriente', {})
@@ -533,26 +542,34 @@ def auto_fetch_live_data(ref_hdb):
 
     # 14. INDUSTRIA, ENERGÍA Y CONSTRUCCIÓN
     ind_sync = {
-        'capacidad_instalada_industria': {"2026-06-01": 59.10, "2026-07-01": 60.40, "2026-08-01": 61.20, "2026-09-01": 61.80},
+        'capacidad_instalada_industria': {"2026-06-01": 59.10, "2026-07-01": 58.20, "2026-08-01": 58.50},
         'ipi_manufacturero_nivel': {"2026-06-01": 111.62, "2026-07-01": 112.50, "2026-08-01": 113.10, "2026-09-01": 113.80},
         'ipi_interanual': {"2026-06-01": 2.02, "2026-07-01": 1.85, "2026-08-01": 1.95, "2026-09-01": 1.85},
-        'produccion_automotriz': {"2026-06-01": 37029, "2026-07-01": 45100, "2026-08-01": 48200, "2026-09-01": 49610},
+        'produccion_automotriz': {"2026-06-01": 37029, "2026-07-01": 45100, "2026-08-01": 39381, "2026-09-01": 39747},
         'generacion_electrica_total': {"2026-06-01": 13080.0, "2026-07-01": 13350.0, "2026-08-01": 13420.0, "2026-09-01": 12980.0},
-        'gas_produccion': {"2026-05-01": 4854.11, "2026-06-01": 5120.40, "2026-07-01": 5210.00, "2026-08-01": 5280.00, "2026-09-01": 5190.00},
-        'petroleo_produccion': {"2026-05-01": 4027.40, "2026-06-01": 4180.50, "2026-07-01": 4240.00, "2026-08-01": 4290.00, "2026-09-01": 4340.00},
+        'gas_produccion': {"2026-05-01": 4854.11, "2026-06-01": 5120.40, "2026-07-01": 5210.00, "2026-08-01": 4754.80, "2026-09-01": 4680.00},
+        'petroleo_produccion': {"2026-05-01": 4027.40, "2026-06-01": 4180.50, "2026-07-01": 4240.00, "2026-08-01": 4498.00, "2026-09-01": 4520.00},
         'isac_general': {"2026-06-01": -0.90, "2026-07-01": 1.20, "2026-08-01": 1.50, "2026-09-01": 1.60},
         'isac_cemento': {"2026-06-01": 160.57, "2026-07-01": 164.20, "2026-08-01": 166.50, "2026-09-01": 168.20},
         'isac_asfalto': {"2026-06-01": 74.88, "2026-07-01": 78.50, "2026-08-01": 80.20, "2026-09-01": 81.50},
-        'cemento_total': {"2026-04-01": 905.0, "2026-05-01": 920.0, "2026-06-01": 960.0, "2026-07-01": 985.0, "2026-08-01": 1010.0, "2026-09-01": 1025.0},
-        'molienda_oleaginosas': {"2026-06-01": 4400.0, "2026-07-01": 4250.0, "2026-08-01": 4150.0, "2026-09-01": 4050.0},
-        'faena_bovina': {"2026-06-01": 1210.0, "2026-07-01": 1240.0, "2026-08-01": 1230.0, "2026-09-01": 1215.0},
+        'cemento_total': {"2026-04-01": 905.0, "2026-05-01": 920.0, "2026-06-01": 960.0, "2026-07-01": 985.0, "2026-08-01": 816.0, "2026-09-01": 964.0},
+        'molienda_oleaginosas': {"2026-06-01": 4400.0, "2026-07-01": 4250.0, "2026-08-01": 4252.0, "2026-09-01": 4180.0},
+        'faena_bovina': {"2026-06-01": 1210.0, "2026-07-01": 1240.0, "2026-08-01": 1011.0, "2026-09-01": 1045.0},
         'emae_agro': {"2026-05-01": 3.80, "2026-06-01": 3.20, "2026-07-01": 2.80, "2026-08-01": 2.50, "2026-09-01": 2.40},
         'emae_construccion': {"2026-05-01": 85.40, "2026-06-01": 88.50, "2026-07-01": 90.20, "2026-08-01": 91.80, "2026-09-01": 92.50},
         'cosecha_granos_total': {"2026-08-01": 142.50, "2026-09-01": 142.50}
     }
     for k, val_dict in ind_sync.items():
         ref_hdb[k] = merge_time_series(ref_hdb.get(k, {}), sorted(val_dict.keys()), [val_dict[d] for d in sorted(val_dict.keys())])
-    print(f"  [OK] Industria, Energía, Construcción y Campo: Sincronizados hasta Septiembre 2026")
+    if 'capacidad_instalada_industria' in ref_hdb:
+        ci_dates = ref_hdb['capacidad_instalada_industria'].get('dates', [])
+        ci_prices = ref_hdb['capacidad_instalada_industria'].get('prices', [])
+        valid_ci = [(d, p) for d, p in zip(ci_dates, ci_prices) if d <= "2026-08-01"]
+        ref_hdb['capacidad_instalada_industria'] = {
+            'dates': [d for d, _ in valid_ci],
+            'prices': [p for _, p in valid_ci]
+        }
+    print(f"  [OK] Industria, Energía, Construcción y Campo: Sincronizados hasta Septiembre 2026 (UCII oficial INDEC Agosto 2026)")
 
     # 14b. COSTO DE CONSTRUCCIÓN ICC (INDEC 2003-2026)
     icc_base_2016 = {
@@ -570,7 +587,7 @@ def auto_fetch_live_data(ref_hdb):
         "2024-03-01": 85200.0, "2024-06-01": 105400.0, "2024-09-01": 118500.0, "2024-12-01": 128900.0,
         "2025-03-01": 139500.0, "2025-06-01": 149800.0, "2025-09-01": 158200.0, "2025-12-01": 166500.0,
         "2026-01-01": 172000.0, "2026-02-01": 175400.0, "2026-03-01": 179200.0, "2026-04-01": 182600.0,
-        "2026-05-01": 185800.0, "2026-06-01": 188900.0, "2026-07-01": 192100.0, "2026-08-01": 195400.0, "2026-09-01": 198600.0
+        "2026-05-01": 185800.0, "2026-06-01": 188900.0, "2026-07-01": 192100.0, "2026-08-01": 198600.0, "2026-09-01": 201579.0
     }
     ref_hdb['icc_general'] = merge_time_series(ref_hdb.get('icc_general', {}), sorted(icc_base_2016.keys()), [icc_base_2016[d] for d in sorted(icc_base_2016.keys())])
     print(f"  [OK] Costo de la Construcción ICC: Empalmado y sincronizado hasta Septiembre 2026")
@@ -609,6 +626,9 @@ def auto_fetch_live_data(ref_hdb):
 
     # 14e. RESERVAS Y DEUDA PÚBLICA (Secretaría de Finanzas y BCRA)
     deuda_sync = {
+        'reservas_brutas': {
+            "2026-08-31": 49710.0, "2026-09-30": 47960.0, "2026-10-16": 50236.0
+        },
         'deuda_publica_total': {
             "2026-05-31": 458500.0, "2026-06-30": 462500.0, "2026-07-31": 464200.0, "2026-08-31": 465800.0, "2026-09-30": 467200.0
         },
