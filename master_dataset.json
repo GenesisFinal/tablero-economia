@@ -2,7 +2,7 @@
   "metadata": {
     "title": "Tablero de Indicadores Económicos",
     "version": "3.5.0",
-    "last_updated": "2026-10-18 22:47:43",
+    "last_updated": "2026-10-19 00:32:35",
     "total_categories": 12,
     "total_indicators": 151
   },
@@ -19,10 +19,10 @@
           "desc": "Mide el costo mensual de alimentos mínimos para la subsistencia de un adulto equivalente (línea de indigencia).",
           "source": "INDEC",
           "freq": "Mensual",
-          "value": 236754.24,
-          "display_value": "$ 236.754",
-          "display_change": "+1.80% m/m",
-          "var_ia": "+38.62% i.a.",
+          "value": 239058.0,
+          "display_value": "$ 239.058",
+          "display_change": "+2.79% m/m",
+          "var_ia": "+39.97% i.a.",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
@@ -31,7 +31,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 1514.53,
-          "range_max": 236754.24,
+          "range_max": 239058.0,
           "total_points": 126,
           "sparkline": [
             140653.57,
@@ -57,7 +57,7 @@
             223258.0,
             229131.47,
             232568.44,
-            236754.24
+            239058.0
           ],
           "ratio_badge": ""
         },
@@ -68,10 +68,10 @@
           "desc": "Mide el costo histórico de la CBA ajustado por inflación (IPC) a pesos del último dato disponible.",
           "source": "INDEC / Ajuste IPC",
           "freq": "Mensual",
-          "value": 236754.24,
-          "display_value": "$ 236.754",
-          "display_change": "-0.10% m/m real",
-          "var_ia": "+4.00% i.a. Real",
+          "value": 239058.0,
+          "display_value": "$ 239.058",
+          "display_change": "+0.87% m/m real",
+          "var_ia": "+5.01% i.a. Real",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
@@ -106,7 +106,7 @@
             236226.12,
             237454.21,
             236987.24,
-            236754.24
+            239058.0
           ],
           "ratio_badge": ""
         },
@@ -117,10 +117,10 @@
           "desc": "Valor dolarizado por el Dólar MEP implícito de la fecha para aislar el efecto inflacionario.",
           "source": "INDEC / BCRA / Dólar MEP",
           "freq": "Mensual",
-          "value": 152.06,
-          "display_value": "USD 152,06",
-          "display_change": "+0.61% m/m",
-          "var_ia": "+33.83% i.a.",
+          "value": 153.54,
+          "display_value": "USD 153,54",
+          "display_change": "+1.59% m/m",
+          "var_ia": "+35.13% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -129,7 +129,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 45.31,
-          "range_max": 152.08,
+          "range_max": 153.54,
           "total_points": 126,
           "sparkline": [
             124.62,
@@ -155,7 +155,7 @@
             146.98,
             150.54,
             151.14,
-            152.06
+            153.54
           ],
           "ratio_badge": ""
         },
@@ -166,10 +166,10 @@
           "desc": "Costo mensual de la Canasta Básica Alimentaria para una familia tipo integrada por cuatro miembros. Establece la línea de indigencia para el hogar.",
           "source": "INDEC",
           "freq": "Mensual",
-          "value": 731570.6,
-          "display_value": "$ 731.571",
-          "display_change": "+1.80% m/m",
-          "var_ia": "+38.62% i.a.",
+          "value": 738690.0,
+          "display_value": "$ 738.690",
+          "display_change": "+2.79% m/m",
+          "var_ia": "+39.97% i.a.",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
@@ -178,7 +178,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 4679.9,
-          "range_max": 731570.6,
+          "range_max": 738690.0,
           "total_points": 126,
           "sparkline": [
             434619.53,
@@ -204,7 +204,7 @@
             689867.22,
             708016.24,
             718636.48,
-            731570.6
+            738690.0
           ],
           "ratio_badge": ""
         },
@@ -215,10 +215,10 @@
           "desc": "Costo histórico de la CBA para un hogar de 4 integrantes ajustado por inflación (IPC) a pesos del último dato disponible.",
           "source": "INDEC / Ajuste IPC",
           "freq": "Mensual",
-          "value": 731570.6,
-          "display_value": "$ 731.571",
-          "display_change": "-0.10% m/m real",
-          "var_ia": "+4.00% i.a. Real",
+          "value": 738690.0,
+          "display_value": "$ 738.690",
+          "display_change": "+0.87% m/m real",
+          "var_ia": "+5.01% i.a. Real",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
@@ -253,7 +253,7 @@
             729938.7,
             733733.51,
             732290.57,
-            731570.6
+            738690.0
           ],
           "ratio_badge": ""
         },
@@ -264,10 +264,10 @@
           "desc": "Valor dolarizado por el Dólar MEP implícito de la fecha para aislar el efecto inflacionario.",
           "source": "INDEC / BCRA / Dólar MEP",
           "freq": "Mensual",
-          "value": 469.86,
-          "display_value": "USD 469,86",
-          "display_change": "+0.61% m/m",
-          "var_ia": "+33.83% i.a.",
+          "value": 474.43,
+          "display_value": "USD 474,43",
+          "display_change": "+1.59% m/m",
+          "var_ia": "+35.13% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -276,7 +276,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 140.0,
-          "range_max": 469.92,
+          "range_max": 474.43,
           "total_points": 126,
           "sparkline": [
             385.06,
@@ -302,7 +302,7 @@
             454.16,
             465.16,
             467.01,
-            469.86
+            474.43
           ],
           "ratio_badge": ""
         },
@@ -313,10 +313,10 @@
           "desc": "Mide el costo mensual de la canasta alimentaria más servicios básicos, vestimenta y transporte para un adulto equivalente (línea de pobreza).",
           "source": "INDEC",
           "freq": "Mensual",
-          "value": 524258.41,
-          "display_value": "$ 524.258",
-          "display_change": "+1.80% m/m",
-          "var_ia": "+37.65% i.a.",
+          "value": 528319.0,
+          "display_value": "$ 528.319",
+          "display_change": "+2.59% m/m",
+          "var_ia": "+38.72% i.a.",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
@@ -325,7 +325,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 3663.66,
-          "range_max": 524258.41,
+          "range_max": 528319.0,
           "total_points": 126,
           "sparkline": [
             319283.6,
@@ -351,7 +351,7 @@
             495620.0,
             506380.55,
             514988.62,
-            524258.41
+            528319.0
           ],
           "ratio_badge": ""
         },
@@ -362,10 +362,10 @@
           "desc": "Mide el costo histórico de la CBT ajustado por inflación (IPC) a pesos del último dato disponible.",
           "source": "INDEC / Ajuste IPC",
           "freq": "Mensual",
-          "value": 524258.41,
-          "display_value": "$ 524.258",
-          "display_change": "-0.10% m/m real",
-          "var_ia": "+3.27% i.a. Real",
+          "value": 528319.0,
+          "display_value": "$ 528.319",
+          "display_change": "+0.68% m/m real",
+          "var_ia": "+4.07% i.a. Real",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
@@ -400,7 +400,7 @@
             524408.48,
             524773.81,
             524773.4,
-            524258.41
+            528319.0
           ],
           "ratio_badge": ""
         },
@@ -411,10 +411,10 @@
           "desc": "Valor dolarizado por el Dólar MEP implícito de la fecha para aislar el efecto inflacionario.",
           "source": "INDEC / BCRA / Dólar MEP",
           "freq": "Mensual",
-          "value": 336.71,
-          "display_value": "USD 336,71",
-          "display_change": "+0.61% m/m",
-          "var_ia": "+32.89% i.a.",
+          "value": 339.32,
+          "display_value": "USD 339,32",
+          "display_change": "+1.39% m/m",
+          "var_ia": "+33.92% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -423,7 +423,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 110.1,
-          "range_max": 336.71,
+          "range_max": 339.32,
           "total_points": 126,
           "sparkline": [
             282.88,
@@ -449,7 +449,7 @@
             326.28,
             332.69,
             334.67,
-            336.71
+            339.32
           ],
           "ratio_badge": ""
         },
@@ -460,10 +460,10 @@
           "desc": "Costo mensual estimado de la Canasta Básica Total para una familia tipo integrada por cuatro miembros (dos adultos y dos menores). Establece la línea de pobreza para el hogar.",
           "source": "INDEC",
           "freq": "Mensual",
-          "value": 1619958.49,
-          "display_value": "$ 1.619.958",
-          "display_change": "+1.80% m/m",
-          "var_ia": "+37.65% i.a.",
+          "value": 1632505.0,
+          "display_value": "$ 1.632.505",
+          "display_change": "+2.59% m/m",
+          "var_ia": "+38.72% i.a.",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
@@ -472,7 +472,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 11320.71,
-          "range_max": 1619958.49,
+          "range_max": 1632505.0,
           "total_points": 126,
           "sparkline": [
             986586.32,
@@ -498,7 +498,7 @@
             1531465.8,
             1564715.9,
             1591314.84,
-            1619958.49
+            1632505.0
           ],
           "ratio_badge": ""
         },
@@ -509,10 +509,10 @@
           "desc": "Costo histórico de la CBT para un hogar de 4 integrantes ajustado por inflación (IPC) a pesos del último dato disponible.",
           "source": "INDEC / Ajuste IPC",
           "freq": "Mensual",
-          "value": 1619958.49,
-          "display_value": "$ 1.619.958",
-          "display_change": "-0.10% m/m real",
-          "var_ia": "+3.27% i.a. Real",
+          "value": 1632505.0,
+          "display_value": "$ 1.632.505",
+          "display_change": "+0.68% m/m real",
+          "var_ia": "+4.07% i.a. Real",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
@@ -547,7 +547,7 @@
             1620422.19,
             1621551.08,
             1621549.82,
-            1619958.49
+            1632505.0
           ],
           "ratio_badge": ""
         },
@@ -558,10 +558,10 @@
           "desc": "Valor dolarizado por el Dólar MEP implícito de la fecha para aislar el efecto inflacionario.",
           "source": "INDEC / BCRA / Dólar MEP",
           "freq": "Mensual",
-          "value": 1040.44,
-          "display_value": "USD 1.040,44",
-          "display_change": "+0.61% m/m",
-          "var_ia": "+32.90% i.a.",
+          "value": 1048.49,
+          "display_value": "USD 1.048,49",
+          "display_change": "+1.39% m/m",
+          "var_ia": "+33.92% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -570,7 +570,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 340.2,
-          "range_max": 1040.44,
+          "range_max": 1048.49,
           "total_points": 126,
           "sparkline": [
             874.09,
@@ -596,7 +596,7 @@
             1008.21,
             1028.0,
             1034.13,
-            1040.44
+            1048.49
           ],
           "ratio_badge": ""
         },
@@ -803,22 +803,21 @@
           "desc": "Mide la evolución de los precios de los productos destinados al mercado interno (IPIM), de origen nacional o importado.",
           "source": "INDEC",
           "freq": "Mensual",
-          "value": 1.5,
-          "display_value": "1,50%",
-          "display_change": "+87.50% m/m",
-          "var_ia": "-51.66% i.a.",
+          "value": 3.2,
+          "display_value": "3,20%",
+          "display_change": "+113.33% m/m",
+          "var_ia": "-13.36% i.a.",
           "unit_type": "percent",
           "unit_prefix": "",
           "unit_suffix": "%",
           "unit_badge": "Porcentaje (%)",
           "decimals": 2,
-          "latest_date_raw": "2026-08-01",
-          "latest_date": "Ago 2026",
+          "latest_date_raw": "2026-09-01",
+          "latest_date": "Sep 2026",
           "range_min": -1.2953438055334665,
           "range_max": 54.0316765835519,
-          "total_points": 128,
+          "total_points": 129,
           "sparkline": [
-            1.9759260118844768,
             1.1832494950191785,
             1.3876168220342322,
             0.8483512031612905,
@@ -841,7 +840,8 @@
             2.5,
             1.1,
             0.8,
-            1.5
+            1.5,
+            3.2
           ],
           "ratio_badge": ""
         },
@@ -852,22 +852,21 @@
           "desc": "Mide la variación interanual de los precios mayoristas domésticos.",
           "source": "INDEC",
           "freq": "Mensual",
-          "value": 30.5,
-          "display_value": "30,50%",
-          "display_change": "-1.93% m/m",
-          "var_ia": "+37.91% i.a.",
+          "value": 29.2,
+          "display_value": "29,20%",
+          "display_change": "-4.26% m/m",
+          "var_ia": "+20.79% i.a.",
           "unit_type": "percent",
           "unit_prefix": "",
           "unit_suffix": "%",
           "unit_badge": "Porcentaje (%)",
           "decimals": 2,
-          "latest_date_raw": "2026-08-01",
-          "latest_date": "Ago 2026",
+          "latest_date_raw": "2026-09-01",
+          "latest_date": "Sep 2026",
           "range_min": 13.903095901100993,
           "range_max": 330.5561686391092,
-          "total_points": 117,
+          "total_points": 118,
           "sparkline": [
-            197.29123334499383,
             179.66744131844513,
             155.21744756720017,
             67.09717998472942,
@@ -890,7 +889,8 @@
             34.5,
             33.7,
             31.1,
-            30.5
+            30.5,
+            29.2
           ],
           "ratio_badge": ""
         },
@@ -901,45 +901,45 @@
           "desc": "Unidad de Valor Adquisitivo diaria ajustable por CER.",
           "source": "BCRA",
           "freq": "Diario",
-          "value": 2159.1,
-          "display_value": "$ 2.159,10",
-          "display_change": "0.00% diario",
-          "var_ia": "+22.40% i.a.",
+          "value": 2163.03,
+          "display_value": "$ 2.163,03",
+          "display_change": "+0.18% diario",
+          "var_ia": "+22.19% i.a.",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
           "unit_badge": "En Pesos ($)",
           "decimals": 0,
-          "latest_date_raw": "2026-10-18",
-          "latest_date": "18 Oct 2026",
+          "latest_date_raw": "2026-10-20",
+          "latest_date": "20 Oct 2026",
           "range_min": 14.05,
-          "range_max": 2159.1,
-          "total_points": 3854,
+          "range_max": 2163.03,
+          "total_points": 3856,
           "sparkline": [
-            1805.57,
-            1824.1,
+            1809.26,
+            1825.96,
             1838.15,
             1858.61,
-            1874.1,
-            1895.39,
+            1879.29,
+            1899.62,
             1914.5,
-            1938.11,
-            1956.47,
-            1969.47,
-            1989.13,
-            2002.93,
-            2018.25,
+            1942.44,
+            1958.09,
+            1976.0,
+            1992.43,
+            2007.1,
+            2021.05,
             2029.47,
-            2045.53,
-            2057.99,
-            2068.01,
-            2083.66,
-            2096.27,
-            2111.79,
+            2048.02,
+            2059.24,
+            2073.04,
+            2086.45,
+            2100.49,
+            2114.62,
             2125.3,
-            2137.27,
-            2149.32,
-            2159.1
+            2139.68,
+            2150.53,
+            2163.03
           ],
           "ratio_badge": ""
         }
@@ -2546,45 +2546,45 @@
           "desc": "Activos externos líquidos totales controlados por el BCRA (oro, divisas, swap de China, depósitos), medido en millones de dólares.",
           "source": "BCRA",
           "freq": "Diario",
-          "value": 49628.0,
-          "display_value": "USD 49.628",
-          "display_change": "0.00% diario",
-          "var_ia": "+27.69% i.a.",
+          "value": 50236.0,
+          "display_value": "USD 50.236",
+          "display_change": "+4.75% diario",
+          "var_ia": "+17.59% i.a.",
           "unit_type": "currency_usd_millions",
           "unit_prefix": "USD ",
           "unit_suffix": "",
           "unit_badge": "Millones de USD",
           "decimals": 0,
-          "latest_date_raw": "2026-08-15",
-          "latest_date": "15 Ago 2026",
+          "latest_date_raw": "2026-10-16",
+          "latest_date": "16 Oct 2026",
           "range_min": 10071.0,
           "range_max": 54905.0,
-          "total_points": 1248,
+          "total_points": 1251,
           "sparkline": [
-            40763.0,
-            39879.0,
-            40374.0,
-            41741.0,
-            40764.0,
-            40684.0,
-            41773.0,
-            42283.0,
-            43393.0,
-            44808.0,
-            45104.0,
-            45130.0,
-            46210.0,
-            44495.0,
-            44445.0,
-            45781.0,
-            45678.0,
-            46585.0,
-            48372.0,
-            47373.0,
-            48241.0,
-            48921.0,
-            49639.0,
-            49628.0
+            40531.0,
+            39264.0,
+            42701.0,
+            41316.0,
+            40785.0,
+            40622.0,
+            41890.0,
+            42418.0,
+            44782.0,
+            45397.0,
+            44753.0,
+            46635.0,
+            45767.0,
+            43841.0,
+            45435.0,
+            46174.0,
+            46144.0,
+            47909.0,
+            47834.0,
+            46936.0,
+            48724.0,
+            49187.0,
+            49457.0,
+            50236.0
           ],
           "ratio_badge": ""
         },
@@ -2595,45 +2595,45 @@
           "desc": "Mide el stock de reservas brutas del Banco Central como porcentaje del Producto Bruto Interno.",
           "source": "BCRA / INDEC",
           "freq": "Diario",
-          "value": 7.04,
-          "display_value": "7,04%",
-          "display_change": "0.00% t/t",
-          "var_ia": "+0.14% i.a.",
+          "value": 7.12,
+          "display_value": "7,12%",
+          "display_change": "+4.71% t/t",
+          "var_ia": "+1.14% i.a.",
           "unit_type": "percent",
           "unit_prefix": "",
           "unit_suffix": "%",
           "unit_badge": "Porcentaje (%)",
           "decimals": 2,
-          "latest_date_raw": "2026-08-15",
-          "latest_date": "15 Ago 2026",
+          "latest_date_raw": "2026-10-16",
+          "latest_date": "16 Oct 2026",
           "range_min": 1.84,
           "range_max": 19.43,
-          "total_points": 1248,
+          "total_points": 1251,
           "sparkline": [
-            6.41,
-            6.26,
-            6.12,
-            6.2,
-            6.58,
-            6.43,
-            6.42,
-            6.59,
-            6.67,
-            6.53,
+            6.22,
+            6.03,
             6.74,
-            6.78,
-            6.79,
-            6.31,
-            6.07,
-            6.07,
+            6.52,
+            6.43,
+            6.41,
+            6.61,
+            6.69,
+            6.73,
+            6.83,
+            6.73,
+            7.01,
             6.25,
-            6.23,
-            6.36,
-            6.85,
-            6.71,
-            6.84,
-            6.93,
-            7.04
+            5.98,
+            6.2,
+            6.3,
+            6.3,
+            6.54,
+            6.78,
+            6.65,
+            6.9,
+            6.97,
+            7.01,
+            7.12
           ],
           "ratio_badge": "Reservas / PBI"
         },
@@ -2644,10 +2644,10 @@
           "desc": "Porcentaje de la Deuda Externa Total cubierto por las Reservas Internacionales Brutas del BCRA.",
           "source": "BCRA / INDEC",
           "freq": "Mensual",
-          "value": 17.17,
-          "display_value": "17,17%",
-          "display_change": "-0.23% m/m",
-          "var_ia": "+79.98% i.a.",
+          "value": 16.59,
+          "display_value": "16,59%",
+          "display_change": "-3.77% m/m",
+          "var_ia": "+73.90% i.a.",
           "unit_type": "percent",
           "unit_prefix": "",
           "unit_suffix": "%",
@@ -2681,8 +2681,8 @@
             13.83,
             14.69,
             15.61,
-            17.21,
-            17.17
+            17.24,
+            16.59
           ],
           "ratio_badge": "Reservas / Deuda Ext."
         },
@@ -2693,10 +2693,10 @@
           "desc": "Relación porcentual entre las Reservas Brutas del BCRA y los vencimientos de deuda con el FMI.",
           "source": "BCRA / Min. Economía",
           "freq": "Mensual",
-          "value": 118.44,
-          "display_value": "118,44%",
-          "display_change": "+0.48% m/m",
-          "var_ia": "+22.52% i.a.",
+          "value": 114.46,
+          "display_value": "114,46%",
+          "display_change": "-3.07% m/m",
+          "var_ia": "+18.40% i.a.",
           "unit_type": "percent",
           "unit_prefix": "",
           "unit_suffix": "%",
@@ -2730,8 +2730,8 @@
             112.6,
             105.58,
             112.53,
-            117.88,
-            118.44
+            118.08,
+            114.46
           ],
           "ratio_badge": "Reservas / Deuda FMI"
         },
@@ -3185,43 +3185,43 @@
           "freq": "Diario",
           "value": 648.0,
           "display_value": "648 bps",
-          "display_change": "+4.18% diario",
-          "var_ia": "-4.14% i.a.",
+          "display_change": "0.00% diario",
+          "var_ia": "-1.37% i.a.",
           "unit_type": "bps",
           "unit_prefix": "",
           "unit_suffix": " bps",
           "unit_badge": "Puntos Básicos (bps)",
           "decimals": 0,
-          "latest_date_raw": "2026-10-16",
-          "latest_date": "16 Oct 2026",
+          "latest_date_raw": "2026-10-19",
+          "latest_date": "19 Oct 2026",
           "range_min": 184.0,
           "range_max": 7222.0,
-          "total_points": 7725,
+          "total_points": 7726,
           "sparkline": [
-            616.0,
-            648.0,
-            602.0,
-            571.0,
-            577.0,
-            513.0,
-            502.0,
-            537.0,
-            583.0,
-            600.0,
-            611.0,
-            526.0,
-            558.0,
-            543.0,
-            490.0,
-            425.0,
-            431.0,
-            405.0,
-            442.0,
-            465.0,
-            509.0,
-            490.0,
+            647.0,
+            573.0,
+            569.0,
+            581.0,
+            494.0,
+            507.0,
+            545.0,
+            555.0,
+            603.0,
+            610.0,
             533.0,
-            599.0
+            554.0,
+            547.0,
+            488.0,
+            430.0,
+            426.0,
+            410.0,
+            441.0,
+            466.0,
+            512.0,
+            494.0,
+            555.0,
+            573.0,
+            648.0
           ],
           "ratio_badge": ""
         }
@@ -5752,10 +5752,10 @@
           "desc": "Porcentaje de la Canasta Básica Total individual (Línea de Pobreza) cubierto por el haber mínimo jubilatorio.",
           "source": "ANSES / INDEC",
           "freq": "Mensual",
-          "value": 86.68,
-          "display_value": "86,68%",
-          "display_change": "-0.09% m/m",
-          "var_ia": "-1.30% i.a.",
+          "value": 86.01,
+          "display_value": "86,01%",
+          "display_change": "-0.86% m/m",
+          "var_ia": "-2.06% i.a.",
           "unit_type": "percent",
           "unit_prefix": "",
           "unit_suffix": "%",
@@ -5790,7 +5790,7 @@
             86.48,
             86.42,
             86.76,
-            86.68
+            86.01
           ],
           "ratio_badge": "Cobertura Pobreza (CBT)"
         },
@@ -5801,10 +5801,10 @@
           "desc": "Porcentaje de la Canasta Básica Alimentaria individual (Línea de Indigencia) cubierto por el haber mínimo.",
           "source": "ANSES / INDEC",
           "freq": "Mensual",
-          "value": 191.94,
-          "display_value": "191,94%",
-          "display_change": "-0.10% m/m",
-          "var_ia": "-1.99% i.a.",
+          "value": 190.09,
+          "display_value": "190,09%",
+          "display_change": "-1.06% m/m",
+          "var_ia": "-2.93% i.a.",
           "unit_type": "percent",
           "unit_prefix": "",
           "unit_suffix": "%",
@@ -5839,7 +5839,7 @@
             191.99,
             191.0,
             192.13,
-            191.94
+            190.09
           ],
           "ratio_badge": "Cobertura Indigencia (CBA)"
         },
@@ -6501,21 +6501,22 @@
           "desc": "Porcentaje de utilización del potencial productivo de las plantas industriales manufactureras según el relevamiento mensual oficial del INDEC.",
           "source": "INDEC (UCII)",
           "freq": "Mensual",
-          "value": 61.8,
-          "display_value": "61,80%",
-          "display_change": "+0.98% m/m",
-          "var_ia": "-0.48% i.a.",
+          "value": 58.5,
+          "display_value": "58,50%",
+          "display_change": "+0.52% m/m",
+          "var_ia": "-5.34% i.a.",
           "unit_type": "percent",
           "unit_prefix": "",
           "unit_suffix": "%",
           "unit_badge": "Porcentaje (%)",
           "decimals": 2,
-          "latest_date_raw": "2026-09-01",
-          "latest_date": "Sep 2026",
+          "latest_date_raw": "2026-08-01",
+          "latest_date": "Ago 2026",
           "range_min": 42.0,
           "range_max": 69.1,
-          "total_points": 117,
+          "total_points": 116,
           "sparkline": [
+            62.4,
             62.8,
             63.2,
             60.1,
@@ -6537,9 +6538,8 @@
             59.9,
             58.4,
             59.1,
-            60.4,
-            61.2,
-            61.8
+            58.2,
+            58.5
           ],
           "ratio_badge": ""
         },
@@ -6648,10 +6648,10 @@
           "desc": "Volumen total mensual de gas natural extraído en cuencas productivas nacionales (convencional y no convencional / Vaca Muerta).",
           "source": "Secretaría de Energía",
           "freq": "Mensual",
-          "value": 5190.0,
-          "display_value": "5.190,00",
-          "display_change": "-1.70% m/m",
-          "var_ia": "+24.78% i.a.",
+          "value": 4680.0,
+          "display_value": "4.680,00",
+          "display_change": "-1.57% m/m",
+          "var_ia": "+12.52% i.a.",
           "unit_type": "quantity",
           "unit_prefix": "",
           "unit_suffix": "",
@@ -6660,7 +6660,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 3191.6594644,
-          "range_max": 5280.0,
+          "range_max": 5210.0,
           "total_points": 154,
           "sparkline": [
             4128.077407799999,
@@ -6685,8 +6685,8 @@
             4854.11,
             5120.4,
             5210.0,
-            5280.0,
-            5190.0
+            4754.8,
+            4680.0
           ],
           "ratio_badge": ""
         },
@@ -6697,10 +6697,10 @@
           "desc": "Volumen mensual de petróleo crudo producido en las cuencas hidrocarburíferas del país, expresado en miles de m³ mensuales.",
           "source": "Secretaría de Energía",
           "freq": "Mensual",
-          "value": 4340.0,
-          "display_value": "4.340,00",
-          "display_change": "+1.17% m/m",
-          "var_ia": "+22.61% i.a.",
+          "value": 4520.0,
+          "display_value": "4.520,00",
+          "display_change": "+0.49% m/m",
+          "var_ia": "+27.70% i.a.",
           "unit_type": "quantity",
           "unit_prefix": "",
           "unit_suffix": "",
@@ -6709,7 +6709,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 2149.2932381,
-          "range_max": 4340.0,
+          "range_max": 4520.0,
           "total_points": 155,
           "sparkline": [
             3368.7010129000014,
@@ -6734,8 +6734,8 @@
             4027.4,
             4180.5,
             4240.0,
-            4290.0,
-            4340.0
+            4498.0,
+            4520.0
           ],
           "ratio_badge": ""
         },
@@ -6746,10 +6746,10 @@
           "desc": "Cantidad mensual de vehículos y utilitarios producidos por las terminales automotrices radicadas en Argentina.",
           "source": "ADEFA",
           "freq": "Mensual",
-          "value": 49610.0,
-          "display_value": "49.610",
-          "display_change": "+2.93% m/m",
-          "var_ia": "+6.69% i.a.",
+          "value": 39747.0,
+          "display_value": "39.747",
+          "display_change": "+0.93% m/m",
+          "var_ia": "-14.52% i.a.",
           "unit_type": "quantity",
           "unit_prefix": "",
           "unit_suffix": "",
@@ -6783,8 +6783,8 @@
             35994.0,
             37029.0,
             45100.0,
-            48200.0,
-            49610.0
+            39381.0,
+            39747.0
           ],
           "ratio_badge": ""
         },
@@ -6851,10 +6851,10 @@
           "desc": "Ingreso mensual de divisas al Mercado Libre de Cambios por exportaciones de granos, harinas, aceites y biodiésel informado por CIARA-CEC.",
           "source": "CIARA-CEC",
           "freq": "Mensual",
-          "value": 2108.3,
-          "display_value": "USD 2.108",
-          "display_change": "-23.35% m/m",
-          "var_ia": "-10.29% i.a.",
+          "value": 3228.0,
+          "display_value": "USD 3.228",
+          "display_change": "+17.35% m/m",
+          "var_ia": "+37.36% i.a.",
           "unit_type": "currency_usd_millions",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -6889,7 +6889,7 @@
             3007.7,
             2945.7,
             2750.7,
-            2108.3
+            3228.0
           ],
           "ratio_badge": ""
         },
@@ -7047,10 +7047,10 @@
           "desc": "Volumen mensual procesado por la industria aceitera para elaboración de harina, pellets y aceite vegetal.",
           "source": "Secretaría de Bioeconomía / SAGyP",
           "freq": "Mensual",
-          "value": 4050.0,
-          "display_value": "4.050",
-          "display_change": "-2.41% m/m",
-          "var_ia": "+8.00% i.a.",
+          "value": 4180.0,
+          "display_value": "4.180",
+          "display_change": "-1.69% m/m",
+          "var_ia": "+11.47% i.a.",
           "unit_type": "quantity",
           "unit_prefix": "",
           "unit_suffix": "",
@@ -7084,8 +7084,8 @@
             4750.0,
             4400.0,
             4250.0,
-            4150.0,
-            4050.0
+            4252.0,
+            4180.0
           ],
           "ratio_badge": ""
         },
@@ -7096,10 +7096,10 @@
           "desc": "Cantidad mensual de cabezas de ganado vacuno faenadas en frigoríficos y establecimientos registrados en la DNCCA / SAGyP.",
           "source": "SAGyP / DNCCA / IPCVA",
           "freq": "Mensual",
-          "value": 1215.0,
-          "display_value": "1.215",
-          "display_change": "-1.22% m/m",
-          "var_ia": "-0.41% i.a.",
+          "value": 1045.0,
+          "display_value": "1.045",
+          "display_change": "+3.36% m/m",
+          "var_ia": "-14.34% i.a.",
           "unit_type": "quantity",
           "unit_prefix": "",
           "unit_suffix": "",
@@ -7107,7 +7107,7 @@
           "decimals": 0,
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
-          "range_min": 1080.0,
+          "range_min": 1011.0,
           "range_max": 1270.0,
           "total_points": 117,
           "sparkline": [
@@ -7133,8 +7133,8 @@
             1220.0,
             1210.0,
             1240.0,
-            1230.0,
-            1215.0
+            1011.0,
+            1045.0
           ],
           "ratio_badge": ""
         },
@@ -7188,10 +7188,10 @@
           "desc": "Despachos totales de cemento portland al mercado interno en miles de toneladas (Asociación de Fabricantes de Cemento Portland).",
           "source": "INDEC",
           "freq": "Mensual",
-          "value": 1025.0,
-          "display_value": "1.025",
-          "display_change": "+1.49% m/m",
-          "var_ia": "-94.41% i.a.",
+          "value": 964.0,
+          "display_value": "964",
+          "display_change": "+18.14% m/m",
+          "var_ia": "-94.74% i.a.",
           "unit_type": "quantity",
           "unit_prefix": "",
           "unit_suffix": "",
@@ -7199,7 +7199,7 @@
           "decimals": 0,
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
-          "range_min": 905.0,
+          "range_min": 816.0,
           "range_max": 23738.0,
           "total_points": 155,
           "sparkline": [
@@ -7225,8 +7225,8 @@
             920.0,
             960.0,
             985.0,
-            1010.0,
-            1025.0
+            816.0,
+            964.0
           ],
           "ratio_badge": ""
         },
@@ -7286,10 +7286,10 @@
           "desc": "Variación mensual del nivel general del Índice del Costo de la Construcción.",
           "source": "INDEC",
           "freq": "Mensual",
-          "value": 198600.0,
-          "display_value": "198.600",
-          "display_change": "+1.64% m/m",
-          "var_ia": "+42.37% i.a.",
+          "value": 201579.0,
+          "display_value": "201.579",
+          "display_change": "+1.50% m/m",
+          "var_ia": "+44.50% i.a.",
           "unit_type": "index",
           "unit_prefix": "",
           "unit_suffix": "",
@@ -7298,7 +7298,7 @@
           "latest_date_raw": "2026-09-01",
           "latest_date": "Sep 2026",
           "range_min": 137.5,
-          "range_max": 198600.0,
+          "range_max": 201579.0,
           "total_points": 195,
           "sparkline": [
             7450.0,
@@ -7323,8 +7323,8 @@
             185800.0,
             188900.0,
             192100.0,
-            195400.0,
-            198600.0
+            198600.0,
+            201579.0
           ],
           "ratio_badge": ""
         },
@@ -7734,7 +7734,7 @@
         223258.0,
         229131.47,
         232568.44,
-        236754.24
+        239058.0
       ]
     },
     "canasta_alimentaria_constante": {
@@ -7992,7 +7992,7 @@
         236226.12,
         237454.21,
         236987.24,
-        236754.24
+        239058.0
       ]
     },
     "canasta_alimentaria_usd": {
@@ -8250,7 +8250,7 @@
         146.98,
         150.54,
         151.14,
-        152.06
+        153.54
       ]
     },
     "canasta_alimentaria_hogar2": {
@@ -8508,7 +8508,7 @@
         689867.22,
         708016.24,
         718636.48,
-        731570.6
+        738690.0
       ]
     },
     "canasta_alimentaria_hogar2_constante": {
@@ -8766,7 +8766,7 @@
         729938.7,
         733733.51,
         732290.57,
-        731570.6
+        738690.0
       ]
     },
     "canasta_alimentaria_hogar2_usd": {
@@ -9024,7 +9024,7 @@
         454.16,
         465.16,
         467.01,
-        469.86
+        474.43
       ]
     },
     "canasta_total_val": {
@@ -9282,7 +9282,7 @@
         495620.0,
         506380.55,
         514988.62,
-        524258.41
+        528319.0
       ]
     },
     "canasta_total_constante": {
@@ -9540,7 +9540,7 @@
         524408.48,
         524773.81,
         524773.4,
-        524258.41
+        528319.0
       ]
     },
     "canasta_total_usd": {
@@ -9798,7 +9798,7 @@
         326.28,
         332.69,
         334.67,
-        336.71
+        339.32
       ]
     },
     "canasta_total_hogar2": {
@@ -10056,7 +10056,7 @@
         1531465.8,
         1564715.9,
         1591314.84,
-        1619958.49
+        1632505.0
       ]
     },
     "canasta_total_hogar2_constante": {
@@ -10314,7 +10314,7 @@
         1620422.19,
         1621551.08,
         1621549.82,
-        1619958.49
+        1632505.0
       ]
     },
     "canasta_total_hogar2_usd": {
@@ -10572,7 +10572,7 @@
         1008.21,
         1028.0,
         1034.13,
-        1040.44
+        1048.49
       ]
     },
     "ipc_mensual": {
@@ -15166,7 +15166,8 @@
         "2026-05-01",
         "2026-06-01",
         "2026-07-01",
-        "2026-08-01"
+        "2026-08-01",
+        "2026-09-01"
       ],
       "prices": [
         8.787179072642193,
@@ -15296,7 +15297,8 @@
         2.5,
         1.1,
         0.8,
-        1.5
+        1.5,
+        3.2
       ]
     },
     "ipc_mayorista_interanual": {
@@ -15417,7 +15419,8 @@
         "2026-05-01",
         "2026-06-01",
         "2026-07-01",
-        "2026-08-01"
+        "2026-08-01",
+        "2026-09-01"
       ],
       "prices": [
         34.52899147654691,
@@ -15536,7 +15539,8 @@
         34.5,
         33.7,
         31.1,
-        30.5
+        30.5,
+        29.2
       ]
     },
     "uva_val": {
@@ -19394,7 +19398,9 @@
         "2026-10-15",
         "2026-10-16",
         "2026-10-17",
-        "2026-10-18"
+        "2026-10-18",
+        "2026-10-19",
+        "2026-10-20"
       ],
       "prices": [
         14.05,
@@ -23250,7 +23256,9 @@
         2156.58,
         2157.79,
         2159.1,
-        2159.1
+        2159.1,
+        2159.1,
+        2163.03
       ]
     },
     "agregado_b1": {
@@ -33162,7 +33170,10 @@
         "2026-08-12",
         "2026-08-13",
         "2026-08-14",
-        "2026-08-15"
+        "2026-08-15",
+        "2026-08-31",
+        "2026-09-30",
+        "2026-10-16"
       ],
       "prices": [
         15088.0,
@@ -34412,7 +34423,10 @@
         49628.0,
         49628.0,
         49628.0,
-        49628.0
+        49628.0,
+        49710.0,
+        47960.0,
+        50236.0
       ]
     },
     "reservas_pbi": {
@@ -35664,7 +35678,10 @@
         "2026-08-12",
         "2026-08-13",
         "2026-08-14",
-        "2026-08-15"
+        "2026-08-15",
+        "2026-08-31",
+        "2026-09-30",
+        "2026-10-16"
       ],
       "prices": [
         2.76,
@@ -36914,7 +36931,10 @@
         7.04,
         7.04,
         7.04,
-        7.04
+        7.04,
+        7.05,
+        6.8,
+        7.12
       ]
     },
     "ratio_reservas_deuda_externa": {
@@ -37061,8 +37081,8 @@
         13.83,
         14.69,
         15.61,
-        17.21,
-        17.17
+        17.24,
+        16.59
       ]
     },
     "ratio_reservas_deuda_fmi": {
@@ -37397,8 +37417,8 @@
         112.6,
         105.58,
         112.53,
-        117.88,
-        118.44
+        118.08,
+        114.46
       ]
     },
     "deuda_publica_total": {
@@ -49637,7 +49657,8 @@
         "2026-10-13",
         "2026-10-14",
         "2026-10-15",
-        "2026-10-16"
+        "2026-10-16",
+        "2026-10-19"
       ],
       "prices": [
         937.0,
@@ -57364,6 +57385,7 @@
         597.0,
         611.0,
         622.0,
+        648.0,
         648.0
       ]
     },
@@ -74218,7 +74240,7 @@
         86.48,
         86.42,
         86.76,
-        86.68
+        86.01
       ]
     },
     "cobertura_cba_jub_min": {
@@ -74476,7 +74498,7 @@
         191.99,
         191.0,
         192.13,
-        191.94
+        190.09
       ]
     },
     "tasa_sustitucion_ripte": {
@@ -77470,8 +77492,7 @@
         "2026-05-01",
         "2026-06-01",
         "2026-07-01",
-        "2026-08-01",
-        "2026-09-01"
+        "2026-08-01"
       ],
       "prices": [
         60.6,
@@ -77588,9 +77609,8 @@
         59.9,
         58.4,
         59.1,
-        60.4,
-        61.2,
-        61.8
+        58.2,
+        58.5
       ]
     },
     "ipi_manufacturero_nivel": {
@@ -78383,8 +78403,8 @@
         4854.11,
         5120.4,
         5210.0,
-        5280.0,
-        5190.0
+        4754.8,
+        4680.0
       ]
     },
     "petroleo_produccion": {
@@ -78699,8 +78719,8 @@
         4027.4,
         4180.5,
         4240.0,
-        4290.0,
-        4340.0
+        4498.0,
+        4520.0
       ]
     },
     "produccion_automotriz": {
@@ -78939,8 +78959,8 @@
         35994.0,
         37029.0,
         45100.0,
-        48200.0,
-        49610.0
+        39381.0,
+        39747.0
       ]
     },
     "generacion_electrica_total": {
@@ -79280,7 +79300,7 @@
         3007.7,
         2945.7,
         2750.7,
-        2108.3
+        3228.0
       ]
     },
     "exportaciones_moa": {
@@ -80433,8 +80453,8 @@
         4750.0,
         4400.0,
         4250.0,
-        4150.0,
-        4050.0
+        4252.0,
+        4180.0
       ]
     },
     "faena_bovina": {
@@ -80673,8 +80693,8 @@
         1220.0,
         1210.0,
         1240.0,
-        1230.0,
-        1215.0
+        1011.0,
+        1045.0
       ]
     },
     "cosecha_granos_total": {
@@ -81017,8 +81037,8 @@
         920.0,
         960.0,
         985.0,
-        1010.0,
-        1025.0
+        816.0,
+        964.0
       ]
     },
     "emae_construccion": {
@@ -81727,8 +81747,8 @@
         185800.0,
         188900.0,
         192100.0,
-        195400.0,
-        198600.0
+        198600.0,
+        201579.0
       ]
     },
     "isac_asfalto": {
@@ -82718,7 +82738,7 @@
         223258.0,
         229131.47,
         232568.44,
-        236754.24
+        239058.0
       ]
     },
     "canasta_alimentaria_constante": {
@@ -82772,7 +82792,7 @@
         236226.12,
         237454.21,
         236987.24,
-        236754.24
+        239058.0
       ]
     },
     "canasta_alimentaria_usd": {
@@ -82826,7 +82846,7 @@
         146.98,
         150.54,
         151.14,
-        152.06
+        153.54
       ]
     },
     "canasta_alimentaria_hogar2": {
@@ -82880,7 +82900,7 @@
         689867.22,
         708016.24,
         718636.48,
-        731570.6
+        738690.0
       ]
     },
     "canasta_alimentaria_hogar2_constante": {
@@ -82934,7 +82954,7 @@
         729938.7,
         733733.51,
         732290.57,
-        731570.6
+        738690.0
       ]
     },
     "canasta_alimentaria_hogar2_usd": {
@@ -82988,7 +83008,7 @@
         454.16,
         465.16,
         467.01,
-        469.86
+        474.43
       ]
     },
     "canasta_total_val": {
@@ -83042,7 +83062,7 @@
         495620.0,
         506380.55,
         514988.62,
-        524258.41
+        528319.0
       ]
     },
     "canasta_total_constante": {
@@ -83096,7 +83116,7 @@
         524408.48,
         524773.81,
         524773.4,
-        524258.41
+        528319.0
       ]
     },
     "canasta_total_usd": {
@@ -83150,7 +83170,7 @@
         326.28,
         332.69,
         334.67,
-        336.71
+        339.32
       ]
     },
     "canasta_total_hogar2": {
@@ -83204,7 +83224,7 @@
         1531465.8,
         1564715.9,
         1591314.84,
-        1619958.49
+        1632505.0
       ]
     },
     "canasta_total_hogar2_constante": {
@@ -83258,7 +83278,7 @@
         1620422.19,
         1621551.08,
         1621549.82,
-        1619958.49
+        1632505.0
       ]
     },
     "canasta_total_hogar2_usd": {
@@ -83312,7 +83332,7 @@
         1008.21,
         1028.0,
         1034.13,
-        1040.44
+        1048.49
       ]
     },
     "ipc_mensual": {
@@ -83533,7 +83553,6 @@
     },
     "ipc_mayorista_mensual": {
       "dates": [
-        "2024-09-01",
         "2024-10-01",
         "2024-11-01",
         "2024-12-01",
@@ -83556,10 +83575,10 @@
         "2026-05-01",
         "2026-06-01",
         "2026-07-01",
-        "2026-08-01"
+        "2026-08-01",
+        "2026-09-01"
       ],
       "prices": [
-        1.9759260118844768,
         1.1832494950191785,
         1.3876168220342322,
         0.8483512031612905,
@@ -83582,12 +83601,12 @@
         2.5,
         1.1,
         0.8,
-        1.5
+        1.5,
+        3.2
       ]
     },
     "ipc_mayorista_interanual": {
       "dates": [
-        "2024-09-01",
         "2024-10-01",
         "2024-11-01",
         "2024-12-01",
@@ -83610,10 +83629,10 @@
         "2026-05-01",
         "2026-06-01",
         "2026-07-01",
-        "2026-08-01"
+        "2026-08-01",
+        "2026-09-01"
       ],
       "prices": [
-        197.29123334499383,
         179.66744131844513,
         155.21744756720017,
         67.09717998472942,
@@ -83636,13 +83655,12 @@
         34.5,
         33.7,
         31.1,
-        30.5
+        30.5,
+        29.2
       ]
     },
     "uva_val": {
       "dates": [
-        "2026-09-25",
-        "2026-09-26",
         "2026-09-27",
         "2026-09-28",
         "2026-09-29",
@@ -83664,33 +83682,35 @@
         "2026-10-15",
         "2026-10-16",
         "2026-10-17",
-        "2026-10-18"
+        "2026-10-18",
+        "2026-10-19",
+        "2026-10-20"
       ],
       "prices": [
-        1805.57,
-        1824.1,
+        1809.26,
+        1825.96,
         1838.15,
         1858.61,
-        1874.1,
-        1895.39,
+        1879.29,
+        1899.62,
         1914.5,
-        1938.11,
-        1956.47,
-        1969.47,
-        1989.13,
-        2002.93,
-        2018.25,
+        1942.44,
+        1958.09,
+        1976.0,
+        1992.43,
+        2007.1,
+        2021.05,
         2029.47,
-        2045.53,
-        2057.99,
-        2068.01,
-        2083.66,
-        2096.27,
-        2111.79,
+        2048.02,
+        2059.24,
+        2073.04,
+        2086.45,
+        2100.49,
+        2114.62,
         2125.3,
-        2137.27,
-        2149.32,
-        2159.1
+        2139.68,
+        2150.53,
+        2163.03
       ]
     },
     "agregado_b1": {
@@ -85423,9 +85443,6 @@
     },
     "reservas_brutas": {
       "dates": [
-        "2026-07-15",
-        "2026-07-16",
-        "2026-07-17",
         "2026-07-20",
         "2026-07-21",
         "2026-07-22",
@@ -85446,40 +85463,40 @@
         "2026-08-12",
         "2026-08-13",
         "2026-08-14",
-        "2026-08-15"
+        "2026-08-15",
+        "2026-08-31",
+        "2026-09-30",
+        "2026-10-16"
       ],
       "prices": [
-        40763.0,
-        39879.0,
-        40374.0,
-        41741.0,
-        40764.0,
-        40684.0,
-        41773.0,
-        42283.0,
-        43393.0,
-        44808.0,
-        45104.0,
-        45130.0,
-        46210.0,
-        44495.0,
-        44445.0,
-        45781.0,
-        45678.0,
-        46585.0,
-        48372.0,
-        47373.0,
-        48241.0,
-        48921.0,
-        49639.0,
-        49628.0
+        40531.0,
+        39264.0,
+        42701.0,
+        41316.0,
+        40785.0,
+        40622.0,
+        41890.0,
+        42418.0,
+        44782.0,
+        45397.0,
+        44753.0,
+        46635.0,
+        45767.0,
+        43841.0,
+        45435.0,
+        46174.0,
+        46144.0,
+        47909.0,
+        47834.0,
+        46936.0,
+        48724.0,
+        49187.0,
+        49457.0,
+        50236.0
       ]
     },
     "reservas_pbi": {
       "dates": [
-        "2026-07-15",
-        "2026-07-16",
-        "2026-07-17",
         "2026-07-20",
         "2026-07-21",
         "2026-07-22",
@@ -85500,33 +85517,36 @@
         "2026-08-12",
         "2026-08-13",
         "2026-08-14",
-        "2026-08-15"
+        "2026-08-15",
+        "2026-08-31",
+        "2026-09-30",
+        "2026-10-16"
       ],
       "prices": [
-        6.41,
-        6.26,
-        6.12,
-        6.2,
-        6.58,
-        6.43,
-        6.42,
-        6.59,
-        6.67,
-        6.53,
+        6.22,
+        6.03,
         6.74,
-        6.78,
-        6.79,
-        6.31,
-        6.07,
-        6.07,
+        6.52,
+        6.43,
+        6.41,
+        6.61,
+        6.69,
+        6.73,
+        6.83,
+        6.73,
+        7.01,
         6.25,
-        6.23,
-        6.36,
-        6.85,
-        6.71,
-        6.84,
-        6.93,
-        7.04
+        5.98,
+        6.2,
+        6.3,
+        6.3,
+        6.54,
+        6.78,
+        6.65,
+        6.9,
+        6.97,
+        7.01,
+        7.12
       ]
     },
     "ratio_reservas_deuda_externa": {
@@ -85579,8 +85599,8 @@
         13.83,
         14.69,
         15.61,
-        17.21,
-        17.17
+        17.24,
+        16.59
       ]
     },
     "ratio_reservas_deuda_fmi": {
@@ -85633,8 +85653,8 @@
         112.6,
         105.58,
         112.53,
-        117.88,
-        118.44
+        118.08,
+        114.46
       ]
     },
     "deuda_publica_total": {
@@ -86125,7 +86145,6 @@
     },
     "riesgo_pais": {
       "dates": [
-        "2026-09-15",
         "2026-09-16",
         "2026-09-17",
         "2026-09-18",
@@ -86148,33 +86167,34 @@
         "2026-10-13",
         "2026-10-14",
         "2026-10-15",
-        "2026-10-16"
+        "2026-10-16",
+        "2026-10-19"
       ],
       "prices": [
-        616.0,
-        648.0,
-        602.0,
-        571.0,
-        577.0,
-        513.0,
-        502.0,
-        537.0,
-        583.0,
-        600.0,
-        611.0,
-        526.0,
-        558.0,
-        543.0,
-        490.0,
-        425.0,
-        431.0,
-        405.0,
-        442.0,
-        465.0,
-        509.0,
-        490.0,
+        647.0,
+        573.0,
+        569.0,
+        581.0,
+        494.0,
+        507.0,
+        545.0,
+        555.0,
+        603.0,
+        610.0,
         533.0,
-        599.0
+        554.0,
+        547.0,
+        488.0,
+        430.0,
+        426.0,
+        410.0,
+        441.0,
+        466.0,
+        512.0,
+        494.0,
+        555.0,
+        573.0,
+        648.0
       ]
     },
     "ripte_val": {
@@ -88982,7 +89002,7 @@
         86.48,
         86.42,
         86.76,
-        86.68
+        86.01
       ]
     },
     "cobertura_cba_jub_min": {
@@ -89036,7 +89056,7 @@
         191.99,
         191.0,
         192.13,
-        191.94
+        190.09
       ]
     },
     "tasa_sustitucion_ripte": {
@@ -89743,6 +89763,7 @@
     },
     "capacidad_instalada_industria": {
       "dates": [
+        "2024-09-01",
         "2024-10-01",
         "2024-11-01",
         "2024-12-01",
@@ -89765,10 +89786,10 @@
         "2026-05-01",
         "2026-06-01",
         "2026-07-01",
-        "2026-08-01",
-        "2026-09-01"
+        "2026-08-01"
       ],
       "prices": [
+        62.4,
         62.8,
         63.2,
         60.1,
@@ -89790,9 +89811,8 @@
         59.9,
         58.4,
         59.1,
-        60.4,
-        61.2,
-        61.8
+        58.2,
+        58.5
       ]
     },
     "ipi_manufacturero_nivel": {
@@ -89953,8 +89973,8 @@
         4854.11,
         5120.4,
         5210.0,
-        5280.0,
-        5190.0
+        4754.8,
+        4680.0
       ]
     },
     "petroleo_produccion": {
@@ -90007,8 +90027,8 @@
         4027.4,
         4180.5,
         4240.0,
-        4290.0,
-        4340.0
+        4498.0,
+        4520.0
       ]
     },
     "produccion_automotriz": {
@@ -90061,8 +90081,8 @@
         35994.0,
         37029.0,
         45100.0,
-        48200.0,
-        49610.0
+        39381.0,
+        39747.0
       ]
     },
     "generacion_electrica_total": {
@@ -90170,7 +90190,7 @@
         3007.7,
         2945.7,
         2750.7,
-        2108.3
+        3228.0
       ]
     },
     "exportaciones_moa": {
@@ -90385,8 +90405,8 @@
         4750.0,
         4400.0,
         4250.0,
-        4150.0,
-        4050.0
+        4252.0,
+        4180.0
       ]
     },
     "faena_bovina": {
@@ -90439,8 +90459,8 @@
         1220.0,
         1210.0,
         1240.0,
-        1230.0,
-        1215.0
+        1011.0,
+        1045.0
       ]
     },
     "cosecha_granos_total": {
@@ -90521,8 +90541,8 @@
         920.0,
         960.0,
         985.0,
-        1010.0,
-        1025.0
+        816.0,
+        964.0
       ]
     },
     "emae_construccion": {
@@ -90629,8 +90649,8 @@
         185800.0,
         188900.0,
         192100.0,
-        195400.0,
-        198600.0
+        198600.0,
+        201579.0
       ]
     },
     "isac_asfalto": {
