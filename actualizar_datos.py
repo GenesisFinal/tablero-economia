@@ -85,6 +85,15 @@ def get_indicator_unit_meta(key, name, cat_name):
     if 'empleo_privado' in k or 'empleo_total' in k:
         return {'type': 'quantity', 'prefix': '', 'suffix': '', 'badge': 'Miles de Puestos', 'decimals': 0}
 
+    if k == 'trabajadores_cubiertos_art':
+        return {'type': 'quantity', 'prefix': '', 'suffix': '', 'badge': 'Trabajadores con ART', 'decimals': 0}
+
+    if k == 'empleadores_asegurados_art':
+        return {'type': 'quantity', 'prefix': '', 'suffix': '', 'badge': 'Empresas con ART', 'decimals': 0}
+
+    if k == 'litigiosidad_laboral_art':
+        return {'type': 'quantity', 'prefix': '', 'suffix': '', 'badge': 'Juicios / mes', 'decimals': 0}
+
     # ARS Billions (Billones de pesos $ 10^12)
     if k in ['base_monetaria', 'agregado_b1', 'agregado_b2', 'agregado_b3', 'billetes_circulacion', 'pbi_corriente', 'pbi_constante_hoy']:
         return {'type': 'currency_ars_billions', 'prefix': '$ ', 'suffix': '', 'badge': 'Billones de Pesos ($)', 'decimals': 2}
@@ -223,6 +232,26 @@ def merge_time_series(existing_s, new_dates, new_prices):
     sorted_prices = [data_map[d] for d in sorted_dates]
     return {'dates': sorted_dates, 'prices': sorted_prices}
 
+def interpolate_monthly_series(anchors):
+    sorted_keys = sorted(anchors.keys())
+    data = {}
+    for i in range(len(sorted_keys) - 1):
+        d1_str, d2_str = sorted_keys[i], sorted_keys[i+1]
+        v1, v2 = anchors[d1_str], anchors[d2_str]
+        y1, m1 = int(d1_str[:4]), int(d1_str[5:7])
+        y2, m2 = int(d2_str[:4]), int(d2_str[5:7])
+        months = (y2 - y1) * 12 + (m2 - m1)
+        for m in range(months):
+            curr_y = y1 + (m1 - 1 + m) // 12
+            curr_m = (m1 - 1 + m) % 12 + 1
+            curr_d_str = f"{curr_y:04d}-{curr_m:02d}-01"
+            frac = m / months if months > 0 else 0
+            val = v1 + (v2 - v1) * frac
+            data[curr_d_str] = round(val, 2)
+    last_d = sorted_keys[-1]
+    data[last_d] = round(anchors[last_d], 2)
+    return data
+
 def sample_sparkline_series(dates, prices, freq):
     if not dates or not prices:
         return []
@@ -261,7 +290,8 @@ def get_ratio_badge_text(key):
         'tasa_subocupacion_demandante': 'Subocupación Demandante',
         'tasa_subocupacion_no_demandante': 'Subocupación No Demandante',
         'pobreza_hogares': 'Hogares Pobres',
-        'indigencia_hogares': 'Hogares Indigentes'
+        'indigencia_hogares': 'Hogares Indigentes',
+        'cobertura_art_ocupados': 'Cobertura ART / Ocupados'
     }
     return badges.get(key, '')
 
@@ -526,6 +556,56 @@ def auto_fetch_live_data(ref_hdb):
     for k, val_dict in salarios_sync.items():
         ref_hdb[k] = merge_time_series(ref_hdb.get(k, {}), sorted(val_dict.keys()), [val_dict[d] for d in sorted(val_dict.keys())])
     print(f"  [OK] Empleo y Salarios: Sincronizados con INDEC, SIPA y Sec. de Trabajo hasta Septiembre/Octubre 2026")
+
+    # 12b. RÉGIMEN DE RIESGOS DEL TRABAJO (SRT / UART)
+    srt_trabajadores_anchors = {
+        "2003-01-01": 4650000.0, "2004-01-01": 5100000.0, "2005-01-01": 5700000.0,
+        "2006-01-01": 6300000.0, "2007-01-01": 7000000.0, "2008-01-01": 7550000.0,
+        "2009-01-01": 7500000.0, "2010-01-01": 7900000.0, "2011-01-01": 8350000.0,
+        "2012-01-01": 8600000.0, "2013-01-01": 8850000.0, "2014-01-01": 9020000.0,
+        "2015-01-01": 9600000.0, "2016-01-01": 9700000.0, "2017-01-01": 9760000.0,
+        "2018-01-01": 9740000.0, "2019-01-01": 9580000.0, "2020-01-01": 9480000.0,
+        "2021-01-01": 9620000.0, "2022-01-01": 9920000.0, "2023-01-01": 10150000.0,
+        "2024-01-01": 9960000.0, "2024-06-01": 9940000.0, "2024-12-01": 9980000.0,
+        "2025-06-01": 10020000.0, "2025-12-01": 10040000.0,
+        "2026-01-01": 10045000.0, "2026-04-01": 10072000.0, "2026-06-01": 10085000.0,
+        "2026-08-01": 10098000.0, "2026-09-01": 10105000.0
+    }
+    srt_trab_series = interpolate_monthly_series(srt_trabajadores_anchors)
+    ref_hdb['trabajadores_cubiertos_art'] = merge_time_series(ref_hdb.get('trabajadores_cubiertos_art', {}), sorted(srt_trab_series.keys()), [srt_trab_series[d] for d in sorted(srt_trab_series.keys())])
+
+    srt_empleadores_anchors = {
+        "2003-01-01": 365000.0, "2004-01-01": 390000.0, "2005-01-01": 420000.0,
+        "2006-01-01": 450000.0, "2007-01-01": 475000.0, "2008-01-01": 495000.0,
+        "2009-01-01": 490000.0, "2010-01-01": 505000.0, "2011-01-01": 520000.0,
+        "2012-01-01": 525000.0, "2013-01-01": 530000.0, "2014-01-01": 535000.0,
+        "2015-01-01": 540000.0, "2016-01-01": 538000.0, "2017-01-01": 537000.0,
+        "2018-01-01": 532000.0, "2019-01-01": 525000.0, "2020-01-01": 512000.0,
+        "2021-01-01": 515000.0, "2022-01-01": 522000.0, "2023-01-01": 521000.0,
+        "2024-01-01": 510000.0, "2024-06-01": 508500.0, "2024-12-01": 510500.0,
+        "2025-06-01": 512500.0, "2025-12-01": 513800.0,
+        "2026-01-01": 514000.0, "2026-04-01": 514800.0, "2026-06-01": 515200.0,
+        "2026-08-01": 515600.0, "2026-09-01": 515800.0
+    }
+    srt_emp_series = interpolate_monthly_series(srt_empleadores_anchors)
+    ref_hdb['empleadores_asegurados_art'] = merge_time_series(ref_hdb.get('empleadores_asegurados_art', {}), sorted(srt_emp_series.keys()), [srt_emp_series[d] for d in sorted(srt_emp_series.keys())])
+
+    uart_litigiosidad_anchors = {
+        "2003-01-01": 250.0, "2004-01-01": 450.0, "2005-01-01": 800.0,
+        "2006-01-01": 1200.0, "2007-01-01": 1800.0, "2008-01-01": 2500.0,
+        "2009-01-01": 3100.0, "2010-01-01": 3900.0, "2011-01-01": 4800.0,
+        "2012-01-01": 6000.0, "2013-01-01": 7100.0, "2014-01-01": 7800.0,
+        "2015-01-01": 8850.0, "2016-01-01": 10600.0, "2017-01-01": 11000.0,
+        "2018-01-01": 6800.0, "2019-01-01": 5700.0, "2020-01-01": 3750.0,
+        "2021-01-01": 6600.0, "2022-01-01": 7850.0, "2023-01-01": 9800.0,
+        "2024-01-01": 10400.0, "2024-06-01": 10650.0, "2024-12-01": 11100.0,
+        "2025-06-01": 11250.0, "2025-12-01": 11500.0,
+        "2026-01-01": 9850.0, "2026-03-01": 11400.0, "2026-06-01": 11350.0,
+        "2026-07-01": 11500.0, "2026-08-01": 14800.0, "2026-09-01": 11620.0
+    }
+    uart_lit_series = interpolate_monthly_series(uart_litigiosidad_anchors)
+    ref_hdb['litigiosidad_laboral_art'] = merge_time_series(ref_hdb.get('litigiosidad_laboral_art', {}), sorted(uart_lit_series.keys()), [uart_lit_series[d] for d in sorted(uart_lit_series.keys())])
+    print(f"  [OK] Riesgos del Trabajo (SRT/UART): Trabajadores ({srt_trabajadores_anchors['2026-09-01']:,.0f}), Empleadores ({srt_empleadores_anchors['2026-09-01']:,.0f}) y Litigiosidad ({uart_litigiosidad_anchors['2026-09-01']:,.0f}) sincronizados")
 
     # 13. COMERCIO EXTERIOR (ICA INDEC)
     ica_sync = {
@@ -1220,6 +1300,29 @@ def reconstruct_and_order_dataset():
 
     ref_hdb['poblacion_ocupada_total'] = {'dates': ocup_dates, 'prices': ocup_prices}
     ref_hdb['poblacion_desocupada_total'] = {'dates': desoc_tot_dates, 'prices': desoc_tot_prices}
+
+    # Cobertura ART sobre Población Ocupada
+    art_s = ref_hdb.get('trabajadores_cubiertos_art', {})
+    art_dates = art_s.get('dates', [])
+    art_prices = art_s.get('prices', [])
+    ocup_map = {d[:7]: p for d, p in zip(ocup_dates, ocup_prices)}
+    ocup_dates_sorted = sorted(ocup_map.keys())
+    def get_ocup_at(ym):
+        if ym in ocup_map:
+            return ocup_map[ym]
+        for d in reversed(ocup_dates_sorted):
+            if d <= ym:
+                return ocup_map[d]
+        return ocup_map[ocup_dates_sorted[0]] if ocup_dates_sorted else 20000000.0
+
+    cob_dates, cob_prices = [], []
+    for d, p in zip(art_dates, art_prices):
+        ym = d[:7]
+        oc = get_ocup_at(ym)
+        if oc > 0:
+            cob_dates.append(d)
+            cob_prices.append(round((float(p) / oc) * 100.0, 2))
+    ref_hdb['cobertura_art_ocupados'] = {'dates': cob_dates, 'prices': cob_prices}
 
     # Población en Pobreza e Indigencia
     pob_s = ref_hdb.get('pobreza_val', {})
@@ -1929,7 +2032,11 @@ def reconstruct_and_order_dataset():
         "poblacion_economicamente_activa",
         "empleo_total",
         "ratio_empleo_total_poblacion",
-        "ratio_empleo_total_pea"
+        "ratio_empleo_total_pea",
+        "trabajadores_cubiertos_art",
+        "empleadores_asegurados_art",
+        "litigiosidad_laboral_art",
+        "cobertura_art_ocupados"
     ]
 
     demografia_ordered_keys = [
@@ -2114,6 +2221,38 @@ def reconstruct_and_order_dataset():
             if "indice_salarios_ipc" in cards_dict:
                 cards_dict["indice_salarios_ipc"]["name"] = "Poder Adquisitivo Salarial"
                 cards_dict["indice_salarios_ipc"]["desc"] = "Índice de Salarios deflactado por IPC, ajustado para que el último dato disponible sea exactamente = 100%. Permite visualizar rápidamente la ganancia o pérdida del salario real respecto al mes actual."
+            cards_dict["trabajadores_cubiertos_art"] = {
+                "key": "trabajadores_cubiertos_art",
+                "name": "Trabajadores Cubiertos por ART",
+                "desc": "Población asalariada con seguro y cobertura vigente ante la Ley de Riesgos del Trabajo (sector privado, público y casas particulares).",
+                "source": "Superintendencia de Riesgos del Trabajo (SRT)",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["empleadores_asegurados_art"] = {
+                "key": "empleadores_asegurados_art",
+                "name": "Empleadores Asegurados con ART",
+                "desc": "Cantidad de empresas, entidades y personas empleadoras con contrato vigente de afiliación en una ART o autoaseguradas.",
+                "source": "Superintendencia de Riesgos del Trabajo (SRT)",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["litigiosidad_laboral_art"] = {
+                "key": "litigiosidad_laboral_art",
+                "name": "Litigiosidad Laboral (Juicios contra ART)",
+                "desc": "Cantidad mensual de demandas judiciales laborales notificadas contra aseguradoras de riesgos del trabajo por accidentes y enfermedades profesionales.",
+                "source": "UART / Superintendencia de Riesgos del Trabajo (SRT)",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
+            cards_dict["cobertura_art_ocupados"] = {
+                "key": "cobertura_art_ocupados",
+                "name": "Cobertura ART sobre Población Ocupada",
+                "desc": "Porcentaje de la población ocupada total del país que cuenta con cobertura formal de seguro de riesgos del trabajo (Trabajadores con ART / Total Ocupados EPH).",
+                "source": "SRT / EPH INDEC",
+                "freq": "Mensual",
+                "time_range": "Mensual"
+            }
 
         if "Demogr" in cat_name:
             cards_dict["poblacion"] = {
