@@ -642,6 +642,18 @@ def build_index_html():
         return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Miles de Puestos', decimals: 0 }};
       }}
 
+      if (k === 'trabajadores_cubiertos_art') {{
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Trabajadores con ART', decimals: 0 }};
+      }}
+
+      if (k === 'empleadores_asegurados_art') {{
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Empresas con ART', decimals: 0 }};
+      }}
+
+      if (k === 'litigiosidad_laboral_art') {{
+        return {{ type: 'quantity', prefix: '', suffix: '', badge: 'Juicios / mes', decimals: 0 }};
+      }}
+
       // ARS Billions (Billones de pesos $ 10^12)
       if (['base_monetaria', 'agregado_b1', 'agregado_b2', 'agregado_b3', 'billetes_circulacion', 'pbi_corriente', 'pbi_constante_hoy'].includes(k)) {{
         return {{ type: 'currency_ars_billions', prefix: '$ ', suffix: '', badge: 'Billones de Pesos ($)', decimals: 2 }};
