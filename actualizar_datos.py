@@ -1,6 +1,8 @@
 import json
 import os
 import re
+import warnings
+warnings.filterwarnings("ignore", message=".*OpenSSL.*")
 import requests
 import datetime
 import urllib3
