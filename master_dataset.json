@@ -2,7 +2,7 @@
   "metadata": {
     "title": "Tablero de Indicadores Económicos",
     "version": "3.5.0",
-    "last_updated": "2026-11-11 23:18:14",
+    "last_updated": "2026-11-12 17:22:31",
     "total_categories": 12,
     "total_indicators": 155
   },
@@ -901,45 +901,45 @@
           "desc": "Unidad de Valor Adquisitivo diaria ajustable por CER.",
           "source": "BCRA",
           "freq": "Diario",
-          "value": 2193.45,
-          "display_value": "$ 2.193,45",
-          "display_change": "+0.36% diario",
-          "var_ia": "+33.33% i.a.",
+          "value": 2194.78,
+          "display_value": "$ 2.194,78",
+          "display_change": "+0.06% diario",
+          "var_ia": "+33.32% i.a.",
           "unit_type": "currency_ars",
           "unit_prefix": "$ ",
           "unit_suffix": "",
           "unit_badge": "En Pesos ($)",
           "decimals": 0,
-          "latest_date_raw": "2026-11-12",
-          "latest_date": "12 Nov 2026",
+          "latest_date_raw": "2026-11-13",
+          "latest_date": "13 Nov 2026",
           "range_min": 14.05,
-          "range_max": 2193.45,
-          "total_points": 3879,
+          "range_max": 2194.78,
+          "total_points": 3880,
           "sparkline": [
             1850.06,
-            1867.2,
-            1884.86,
-            1901.74,
-            1927.34,
+            1868.92,
+            1886.96,
+            1908.11,
+            1929.49,
             1946.77,
-            1964.58,
+            1966.21,
             1980.92,
-            1992.43,
-            2011.27,
-            2022.45,
-            2039.33,
+            1998.77,
+            2012.67,
+            2026.66,
+            2040.57,
             2050.51,
-            2064.25,
+            2065.5,
             2076.82,
-            2090.66,
-            2104.72,
-            2116.04,
-            2131.28,
+            2092.06,
+            2106.13,
+            2120.3,
+            2132.48,
             2142.08,
-            2155.36,
+            2156.58,
             2168.29,
-            2181.5,
-            2193.45
+            2182.82,
+            2194.78
           ],
           "ratio_badge": ""
         }
@@ -3183,45 +3183,45 @@
           "desc": "Diferencial de tasa de rendimiento exigida a los bonos soberanos argentinos sobre los bonos del Tesoro de EE.UU., medido por J.P. Morgan.",
           "source": "J.P. Morgan / Rava",
           "freq": "Diario",
-          "value": 852.0,
-          "display_value": "852 bps",
-          "display_change": "-0.93% diario",
-          "var_ia": "+42.47% i.a.",
+          "value": 841.0,
+          "display_value": "841 bps",
+          "display_change": "-1.29% diario",
+          "var_ia": "+39.01% i.a.",
           "unit_type": "bps",
           "unit_prefix": "",
           "unit_suffix": " bps",
           "unit_badge": "Puntos Básicos (bps)",
           "decimals": 0,
-          "latest_date_raw": "2026-11-11",
-          "latest_date": "11 Nov 2026",
+          "latest_date_raw": "2026-11-12",
+          "latest_date": "12 Nov 2026",
           "range_min": 184.0,
           "range_max": 7222.0,
-          "total_points": 7743,
+          "total_points": 7744,
           "sparkline": [
+            580.0,
+            566.0,
+            526.0,
+            512.0,
+            519.0,
             575.0,
-            579.0,
-            546.0,
-            516.0,
+            633.0,
+            609.0,
+            519.0,
+            539.0,
+            538.0,
+            493.0,
+            437.0,
+            437.0,
+            402.0,
+            437.0,
+            451.0,
+            505.0,
+            490.0,
             524.0,
-            546.0,
-            602.0,
-            612.0,
-            518.0,
-            567.0,
-            525.0,
-            494.0,
-            443.0,
-            437.0,
-            404.0,
-            437.0,
-            446.0,
-            532.0,
-            494.0,
-            515.0,
-            636.0,
-            622.0,
-            741.0,
-            852.0
+            655.0,
+            648.0,
+            787.0,
+            841.0
           ],
           "ratio_badge": ""
         }
@@ -3484,10 +3484,10 @@
           "desc": "Monto del Salario Mínimo Vital y Móvil expresado en dólares estadounidenses al tipo de cambio MEP del día.",
           "source": "Secretaría de Trabajo / MEP",
           "freq": "Mensual",
-          "value": 251.15,
-          "display_value": "USD 251,15",
-          "display_change": "+1.12% m/m",
-          "var_ia": "+13.41% i.a.",
+          "value": 252.68,
+          "display_value": "USD 252,68",
+          "display_change": "+1.73% m/m",
+          "var_ia": "+14.10% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -3522,7 +3522,7 @@
             244.74,
             247.27,
             248.38,
-            251.15
+            252.68
           ],
           "ratio_badge": ""
         },
@@ -5164,10 +5164,10 @@
           "desc": "Haber mínimo jubilatorio nacional expresado en dólares estadounidenses al tipo de cambio MEP del día.",
           "source": "ANSES / MEP",
           "freq": "Mensual",
-          "value": 296.57,
-          "display_value": "USD 296,57",
-          "display_change": "+1.07% m/m",
-          "var_ia": "+24.43% i.a.",
+          "value": 298.38,
+          "display_value": "USD 298,38",
+          "display_change": "+1.69% m/m",
+          "var_ia": "+25.19% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -5202,7 +5202,7 @@
             290.37,
             291.86,
             293.43,
-            296.57
+            298.38
           ],
           "ratio_badge": ""
         },
@@ -5311,10 +5311,10 @@
           "desc": "Monto del haber mínimo más bono extraordinario expresado en dólares MEP.",
           "source": "ANSES / BCRA",
           "freq": "Mensual",
-          "value": 340.66,
-          "display_value": "USD 340,66",
-          "display_change": "+0.83% m/m",
-          "var_ia": "+19.30% i.a.",
+          "value": 342.73,
+          "display_value": "USD 342,73",
+          "display_change": "+1.44% m/m",
+          "var_ia": "+20.02% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -5349,7 +5349,7 @@
             335.86,
             336.81,
             337.87,
-            340.66
+            342.73
           ],
           "ratio_badge": ""
         },
@@ -5458,10 +5458,10 @@
           "desc": "Monto mensual de la PUAM expresado en dólares MEP.",
           "source": "ANSES / BCRA",
           "freq": "Mensual",
-          "value": 237.26,
-          "display_value": "USD 237,26",
-          "display_change": "+1.07% m/m",
-          "var_ia": "+24.43% i.a.",
+          "value": 238.7,
+          "display_value": "USD 238,70",
+          "display_change": "+1.69% m/m",
+          "var_ia": "+25.18% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -5496,7 +5496,7 @@
             232.3,
             233.49,
             234.74,
-            237.26
+            238.7
           ],
           "ratio_badge": ""
         },
@@ -5605,10 +5605,10 @@
           "desc": "Monto de la AUH expresado en dólares MEP.",
           "source": "ANSES / BCRA",
           "freq": "Mensual",
-          "value": 109.14,
-          "display_value": "USD 109,14",
-          "display_change": "+1.07% m/m",
-          "var_ia": "+24.43% i.a.",
+          "value": 109.8,
+          "display_value": "USD 109,80",
+          "display_change": "+1.69% m/m",
+          "var_ia": "+25.19% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -5643,7 +5643,7 @@
             106.86,
             107.4,
             107.98,
-            109.14
+            109.8
           ],
           "ratio_badge": ""
         },
@@ -5752,10 +5752,10 @@
           "desc": "Haber máximo jubilatorio nacional expresado en dólares estadounidenses al tipo de cambio MEP del día.",
           "source": "ANSES / MEP",
           "freq": "Mensual",
-          "value": 1995.59,
-          "display_value": "USD 1.995,59",
-          "display_change": "+1.07% m/m",
-          "var_ia": "+24.43% i.a.",
+          "value": 2007.73,
+          "display_value": "USD 2.007,73",
+          "display_change": "+1.69% m/m",
+          "var_ia": "+25.18% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -5790,7 +5790,7 @@
             1953.86,
             1963.85,
             1974.42,
-            1995.59
+            2007.73
           ],
           "ratio_badge": ""
         },
@@ -5899,10 +5899,10 @@
           "desc": "Haber promedio jubilatorio nacional (SIPA) expresado en dólares estadounidenses al tipo de cambio MEP del día.",
           "source": "ANSES / MEP",
           "freq": "Mensual",
-          "value": 355.89,
-          "display_value": "USD 355,89",
-          "display_change": "+1.07% m/m",
-          "var_ia": "+24.43% i.a.",
+          "value": 358.05,
+          "display_value": "USD 358,05",
+          "display_change": "+1.69% m/m",
+          "var_ia": "+25.18% i.a.",
           "unit_type": "currency_usd",
           "unit_prefix": "USD ",
           "unit_suffix": "",
@@ -5937,7 +5937,7 @@
             348.45,
             350.23,
             352.11,
-            355.89
+            358.05
           ],
           "ratio_badge": ""
         },
@@ -19620,7 +19620,8 @@
         "2026-11-09",
         "2026-11-10",
         "2026-11-11",
-        "2026-11-12"
+        "2026-11-12",
+        "2026-11-13"
       ],
       "prices": [
         14.05,
@@ -23501,7 +23502,8 @@
         2185.48,
         2185.48,
         2185.48,
-        2193.45
+        2193.45,
+        2194.78
       ]
     },
     "agregado_b1": {
@@ -50016,7 +50018,8 @@
         "2026-11-06",
         "2026-11-09",
         "2026-11-10",
-        "2026-11-11"
+        "2026-11-11",
+        "2026-11-12"
       ],
       "prices": [
         937.0,
@@ -57760,8 +57763,9 @@
         925.0,
         939.0,
         873.0,
-        860.0,
-        852.0
+        853.0,
+        852.0,
+        841.0
       ]
     },
     "ripte_val": {
@@ -59639,7 +59643,7 @@
         244.74,
         247.27,
         248.38,
-        251.15
+        252.68
       ]
     },
     "salarios_indice": {
@@ -69559,7 +69563,7 @@
         290.37,
         291.86,
         293.43,
-        296.57
+        298.38
       ]
     },
     "jubilacion_minima_bono": {
@@ -71293,7 +71297,7 @@
         335.86,
         336.81,
         337.87,
-        340.66
+        342.73
       ]
     },
     "puam_val": {
@@ -72067,7 +72071,7 @@
         232.3,
         233.49,
         234.74,
-        237.26
+        238.7
       ]
     },
     "auh_val": {
@@ -73315,7 +73319,7 @@
         106.86,
         107.4,
         107.98,
-        109.14
+        109.8
       ]
     },
     "jubilacion_maxima": {
@@ -75049,7 +75053,7 @@
         1953.86,
         1963.85,
         1974.42,
-        1995.59
+        2007.73
       ]
     },
     "jubilacion_promedio": {
@@ -76783,7 +76787,7 @@
         348.45,
         350.23,
         352.11,
-        355.89
+        358.05
       ]
     },
     "cobertura_cbt_jub_min": {
@@ -86504,7 +86508,6 @@
     },
     "uva_val": {
       "dates": [
-        "2026-10-20",
         "2026-10-21",
         "2026-10-22",
         "2026-10-23",
@@ -86527,33 +86530,34 @@
         "2026-11-09",
         "2026-11-10",
         "2026-11-11",
-        "2026-11-12"
+        "2026-11-12",
+        "2026-11-13"
       ],
       "prices": [
         1850.06,
-        1867.2,
-        1884.86,
-        1901.74,
-        1927.34,
+        1868.92,
+        1886.96,
+        1908.11,
+        1929.49,
         1946.77,
-        1964.58,
+        1966.21,
         1980.92,
-        1992.43,
-        2011.27,
-        2022.45,
-        2039.33,
+        1998.77,
+        2012.67,
+        2026.66,
+        2040.57,
         2050.51,
-        2064.25,
+        2065.5,
         2076.82,
-        2090.66,
-        2104.72,
-        2116.04,
-        2131.28,
+        2092.06,
+        2106.13,
+        2120.3,
+        2132.48,
         2142.08,
-        2155.36,
+        2156.58,
         2168.29,
-        2181.5,
-        2193.45
+        2182.82,
+        2194.78
       ]
     },
     "agregado_b1": {
@@ -88988,7 +88992,6 @@
     },
     "riesgo_pais": {
       "dates": [
-        "2026-10-09",
         "2026-10-12",
         "2026-10-13",
         "2026-10-14",
@@ -89011,33 +89014,34 @@
         "2026-11-06",
         "2026-11-09",
         "2026-11-10",
-        "2026-11-11"
+        "2026-11-11",
+        "2026-11-12"
       ],
       "prices": [
+        580.0,
+        566.0,
+        526.0,
+        512.0,
+        519.0,
         575.0,
-        579.0,
-        546.0,
-        516.0,
+        633.0,
+        609.0,
+        519.0,
+        539.0,
+        538.0,
+        493.0,
+        437.0,
+        437.0,
+        402.0,
+        437.0,
+        451.0,
+        505.0,
+        490.0,
         524.0,
-        546.0,
-        602.0,
-        612.0,
-        518.0,
-        567.0,
-        525.0,
-        494.0,
-        443.0,
-        437.0,
-        404.0,
-        437.0,
-        446.0,
-        532.0,
-        494.0,
-        515.0,
-        636.0,
-        622.0,
-        741.0,
-        852.0
+        655.0,
+        648.0,
+        787.0,
+        841.0
       ]
     },
     "ripte_val": {
@@ -89361,7 +89365,7 @@
         244.74,
         247.27,
         248.38,
-        251.15
+        252.68
       ]
     },
     "salarios_indice": {
@@ -91197,7 +91201,7 @@
         290.37,
         291.86,
         293.43,
-        296.57
+        298.38
       ]
     },
     "jubilacion_minima_bono": {
@@ -91359,7 +91363,7 @@
         335.86,
         336.81,
         337.87,
-        340.66
+        342.73
       ]
     },
     "puam_val": {
@@ -91521,7 +91525,7 @@
         232.3,
         233.49,
         234.74,
-        237.26
+        238.7
       ]
     },
     "auh_val": {
@@ -91683,7 +91687,7 @@
         106.86,
         107.4,
         107.98,
-        109.14
+        109.8
       ]
     },
     "jubilacion_maxima": {
@@ -91845,7 +91849,7 @@
         1953.86,
         1963.85,
         1974.42,
-        1995.59
+        2007.73
       ]
     },
     "jubilacion_promedio": {
@@ -92007,7 +92011,7 @@
         348.45,
         350.23,
         352.11,
-        355.89
+        358.05
       ]
     },
     "cobertura_cbt_jub_min": {
